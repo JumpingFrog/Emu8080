@@ -1,6 +1,10 @@
 package com.dwotherspoon.Emu8080;
 
 public interface IODevice {
+	/*----------------------------------------------------
+	 * Interface for Emu8080 IO Devices. No warranty given.
+	 * (C) David Wotherspoon 2013
+	------------------------------------------------------*/
 	
 	public void in(byte data); //function for writing to device.
 	

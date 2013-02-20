@@ -27,7 +27,7 @@ public class Core8080 {
 	public void addDevice(IODevice dev) throws PortAlreadyUsedException { //add a device to the CPU instance.
 		for (int port = 0; port < dev.getPorts().length; port++) {
 			if (devices[dev.getPorts()[port]] == null) {
-			devices[dev.getPorts()[port]] = dev;
+				devices[dev.getPorts()[port]] = dev;
 			}
 			else {
 				throw new PortAlreadyUsedException("Error: A device is already using this port!");
