@@ -16,8 +16,7 @@ public class DevConsole implements IODevice {
 	
 	@Override
 	public void in(byte data) {
-		// TODO Auto-generated method stub
-		
+		System.out.print((char)data);
 	}
 
 	@Override
