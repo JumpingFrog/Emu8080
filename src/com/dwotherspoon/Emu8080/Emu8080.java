@@ -32,7 +32,7 @@ public class Emu8080 {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} 
-			Core8080 cpu = new Core8080();
+			Core8080 cpu = new Core8080(mem);
 			
 			try {
 				cpu.addDevice(new DevConsole((byte)0,(byte)1));

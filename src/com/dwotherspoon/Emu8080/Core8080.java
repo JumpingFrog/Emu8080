@@ -13,27 +13,43 @@ public class Core8080 {
 	private byte flags = 2;
 	private byte bytes_left = 0;
 	private short cur_opp = 0;
-	private int sp = 65536;
+	private int sp = 65535;
 	private byte[] memory;
 	private byte temp; //use for 2 operand instructions.
 	
 	
-	public Core8080() {	
+	public Core8080(byte[] memory) {	
 		devices = new IODevice[256];
 		halt = false;
 		pc = 0;
 		regs = new byte[7];
-		memory = new byte[65536];
-			}
+		this.memory = memory;
+	}
 	
 	public void run() {
+		for (int i = 0; i < 65535; i++) {
+			System.out.printf("%d - 0x%02x\n", i, memory[i]);
+		}
 		while (!halt) {
+			//printDebug();
 			execute();	
-			System.out.println(Integer.toHexString(pc));
+			//System.out.println(Integer.toHexString(pc));
 		}
 		System.out.println("System was halted!");
 	}
-	/** Start Flags **/
+	
+	private void printDebug() {
+		System.out.printf("PC: 0x%x  [PC]: 0x%02x  [PC+1]: 0x%02x\n", pc, memory[pc], memory[pc+1]);
+		System.out.printf("A: 0x%02x\t F: 0x%02x\n", regs[0], flags);
+		System.out.printf("B: 0x%02x\t C: 0x%02x\n", regs[1], regs[2]);
+		System.out.printf("D: 0x%02x\t E: 0x%02x\n", regs[3], regs[4]);
+		System.out.printf("H: 0x%02x\t L: 0x%02x\n", regs[5], regs[6]);
+		System.out.printf("SP: 0x%x [SP]: 0x%02x [SP+1]: 0x%02x\n", sp, memory[sp], memory[(sp == 65535) ? 0 : (sp+1)]);
+		System.out.println("---------------------------------------------------");
+	}
+	
+	
+	/** Start Flags - Sign **/
 	private void setSFlag(boolean value) {
 		if (value) {
 			flags = (byte)(flags | 0x80); }
@@ -41,10 +57,10 @@ public class Core8080 {
 			flags = (byte)(flags & 0x7F); }
 	}
 	
-	private boolean getSFlag() {
+	private boolean getSFlag() { 
 		return ((flags & 0x80) != 0);
 	}
-	
+	//Zero
 	private void setZFlag(boolean value) {
 		if (value) {
 			flags = (byte)(flags | 0x40); }
@@ -55,7 +71,7 @@ public class Core8080 {
 	private boolean getZFlag() {
 		return ((flags & 0x40) != 0);
 	}
-	
+	//Auxiliary Carry
 	private void setACFlag(boolean value) {
 		if (value) {
 			flags = (byte)(flags | 0x10); }
@@ -66,7 +82,7 @@ public class Core8080 {
 	private boolean getACFlag() {
 		return ((flags & 0x10) != 0);
 	}
-	
+	//Parity
 	private void setPFlag(boolean value) {
 		if (value) {
 			flags = (byte)(flags | 0x04); }
@@ -77,7 +93,7 @@ public class Core8080 {
 	private boolean getPFlag() {
 		return ((flags & 0x04) != 0);
 	}
-	
+	//Carry
 	private void setCYFlag(boolean value) {
 		if (value) {
 			flags = (byte)(flags | 0x01); }
@@ -117,33 +133,34 @@ public class Core8080 {
 		return ((high & 0xFF) << 8) + (low & 0xFF);
 	}
 	
-	private void execute() {
+	private void execute() { //execute loop
 		if (bytes_left == 0) {
-			cur_opp = (short)(memory[pc] & 0xFF); }
+			cur_opp = (short)(memory[pc] & 0xFF); 
+		}
 		switch (cur_opp) {
 		/** Start Control **/
-			case 0: //NOP
+			case 0x00: //NOP
 				incPC();
 				break;
-			case 55: //STC
+			case 0x37: //STC
 				setCYFlag(true);
 				incPC();
 				break;
-			case 63: //CMC
+			case 0x3F: //CMC
 				setCYFlag(!getCYFlag());
 				incPC();
 				break;
-			case 118: //HALT
+			case 0x76: //HALT
 				halt = true;
 				break;
-			case 243: //DI
+			case 0xF3: //DI NOT IMPLEMENTED
 				incPC();
 				break;
-			case 251: //EI
+			case 0xFB: //EI NOT IMPLEMENTED
 				incPC();
 				break;
 		/** End Control - Start Data Transfer  **/
-			case 1: //LXI B
+			case 0x01: //LXI B
 				if (bytes_left == 1) {
 					bytes_left--;
 					regs[1] = memory[pc]; //B is Most sig last bit read.
@@ -158,15 +175,15 @@ public class Core8080 {
 				}
 				incPC();
 				break;
-			case 2: //STAX B
+			case 0x02: //STAX B
 				memory[bytesToInt(regs[1], regs[2])] = regs[0];
 				incPC();
 				break;
-			case 10: //LDAX B
+			case 0x0A: //LDAX B
 				regs[0] = memory[bytesToInt(regs[1],regs[2])];
 				incPC();
 				break;
-			case 17: //LXI D
+			case 0x11: //LXI D
 				if (bytes_left == 1) {
 					bytes_left--;
 					regs[3] = memory[pc]; //D is Most sig
@@ -181,15 +198,15 @@ public class Core8080 {
 				}
 				incPC();
 				break;
-			case 18: //STAX D
+			case 0x12: //STAX D
 				memory[bytesToInt(regs[3], regs[4])] = regs[0];
 				incPC();
 				break;
-			case 26: //LDAX D
+			case 0x1A: //LDAX D
 				regs[0] = memory[bytesToInt(regs[3],regs[4])];
 				incPC();
 				break;
-			case 33: //LXI H
+			case 0x21: //LXI H
 				if (bytes_left == 1) {
 					bytes_left--;
 					regs[5] = memory[pc]; //H is Most sig
@@ -204,7 +221,7 @@ public class Core8080 {
 				}
 				incPC();
 				break;
-			case 34: //SHLD
+			case 0x22: //SHLD
 				if (bytes_left == 1) {
 					bytes_left--;
 					int base = bytesToInt(memory[pc], temp);
@@ -220,7 +237,7 @@ public class Core8080 {
 				}
 				incPC();
 				break;
-			case 42: //LHLD
+			case 0x2A: //LHLD
 				if (bytes_left == 1) {
 					bytes_left--;
 					int base = bytesToInt(memory[pc], temp);
@@ -236,7 +253,7 @@ public class Core8080 {
 				}
 				incPC();
 				break;
-			case 50: //STA
+			case 0x32: //STA
 				if (bytes_left == 1) {
 					bytes_left--;
 					memory[bytesToInt(memory[pc], temp)] = regs[0];
@@ -250,7 +267,7 @@ public class Core8080 {
 				}
 				incPC();
 				break;
-			case 54: //MVI M
+			case 0x36: //MVI M
 				if (bytes_left == 1) {
 					bytes_left--;
 					memory[getHL()] = memory[pc];
@@ -260,7 +277,7 @@ public class Core8080 {
 				}
 				incPC();
 				break;
-			case 58: //LDA
+			case 0x3A: //LDA
 				if (bytes_left == 1) {
 					bytes_left--;
 					regs[0] = memory[bytesToInt(memory[pc], temp)];
@@ -274,7 +291,46 @@ public class Core8080 {
 				}
 				incPC();
 				break;
-			case 235: //XCHG
+			case 0xD3: //OUT
+				if (bytes_left == 1) {
+					bytes_left--;
+					devices[memory[pc]].in(regs[0]);
+				}
+				else {
+					bytes_left = 1;
+				}
+				incPC();
+				break;
+			case 0xDB: //IN
+				if (bytes_left == 1) {
+					bytes_left--;
+					regs[0] = devices[memory[pc]].out();
+				}
+				else {
+					bytes_left = 1;
+				}
+				incPC();
+				break;
+			case 0xE3: //XTHL (Best guess on functionality - rap around to 0 on SP= 0xFFFF)
+				if (sp == 65535) {
+					temp = memory[0]; //sp+1
+					memory[0] = regs[5]; //H->SP+1
+					regs[5] = temp; //SP+1->H
+					temp = memory[65535];//SP
+					memory[65535] = regs[6]; //L->SP
+					regs[6] = temp; //SP->L
+				}
+				else {
+					temp = memory[sp+1]; //sp+1
+					memory[sp+1] = regs[5]; //H->SP+1
+					regs[5] = temp; //SP+1->H
+					temp = memory[sp];//SP
+					memory[sp] = regs[6]; //L->SP
+					regs[6] = temp; //SP->L
+				}
+				incPC();
+				break;
+			case 0xEB: //XCHG
 				temp = regs[3]; //D
 				regs[3] = regs[5];//H->D
 				regs[5] = temp; //D->H
@@ -283,8 +339,51 @@ public class Core8080 {
 				regs[6] = temp; //E->L
 				incPC();
 				break;
+			case 0xF9: //SPHL
+				sp = bytesToInt(regs[5], regs[6]);
+				incPC();
+				break;
+			default: //instructions with operand in opcode
+				if ((cur_opp & 0xC7) == 6) { //MVI r/m group
+					if (bytes_left == 1) {
+						bytes_left--;
+						temp = regConv((cur_opp&0x38)>>3); //Separate out reg from op
+						if (temp == 7) { //M
+							memory[bytesToInt(regs[5],regs[6])] = memory[pc];
+						}
+						else { //r
+							regs[temp] = memory[pc];
+						}
+					}
+					else {
+						bytes_left = 1;
+					}
+				}
+				incPC();
+				break;
 		}
-		
 	}
+
+byte regConv(int in) { //converts between my register scheme and the opcode assembly scheme
+	switch (in) {
+		case 0: //B
+			return 1;
+		case 1: //C
+			return 2;
+		case 2: //D
+			return 3;
+		case 3: //E
+			return 4;
+		case 4: //H
+			return 5;
+		case 5: //L
+			return 6;
+		case 6: //M
+			return 7;
+		case 7: //A
+			return 0;
+	}
+	return 0;
+}
 
 }
