@@ -16,6 +16,7 @@ public class Core8080 {
 	private int sp = 65535;
 	private byte[] memory;
 	private byte temp; //use for 2 operand instructions.
+	private int res;
 	
 	
 	public Core8080(byte[] memory) {	
@@ -31,11 +32,11 @@ public class Core8080 {
 			System.out.printf("%d - 0x%02x\n", i, memory[i]);
 		}
 		while (!halt) {
-			//printDebug();
+			printDebug();
 			execute();	
 			//System.out.println(Integer.toHexString(pc));
 		}
-		System.out.println("System was halted!");
+		System.out.println("\nSystem was halted!");
 	}
 	
 	private void printDebug() {
@@ -294,7 +295,11 @@ public class Core8080 {
 			case 0xD3: //OUT
 				if (bytes_left == 1) {
 					bytes_left--;
+					if (devices[memory[pc]] == null) {
+					}
+					else {	
 					devices[memory[pc]].in(regs[0]);
+					}
 				}
 				else {
 					bytes_left = 1;
@@ -304,7 +309,12 @@ public class Core8080 {
 			case 0xDB: //IN
 				if (bytes_left == 1) {
 					bytes_left--;
+					if (devices[memory[pc]] == null) {
+						regs[0] = 0x00;
+					}
+					else {
 					regs[0] = devices[memory[pc]].out();
+					}
 				}
 				else {
 					bytes_left = 1;
@@ -343,6 +353,50 @@ public class Core8080 {
 				sp = bytesToInt(regs[5], regs[6]);
 				incPC();
 				break;
+			/** End Data Transfer - Start Arithmetic  **/
+			case 0xC6: //ADI
+				if (bytes_left == 1) {
+					bytes_left--;
+					res = (int)(0xFF&regs[0]) + (int)(0xFF&memory[pc]);
+					//TODO: Compress to ternary
+					if (res > 256) { //CY
+						setCYFlag(true);
+					}
+					else {
+						setCYFlag(false);
+					}
+					
+					if (((regs[0]&0x0F) + (memory[pc]&0x0F)) > 0x0F) { //half carry (AC)
+						setACFlag(true);
+					}
+					else {
+						setACFlag(false);
+					}
+					
+					if (temp == 0) { //Z Flag
+						setZFlag(true);
+					}
+					else {
+						setZFlag(false);
+					}
+					
+					if ((temp&0x80) > 0) { //S Flag
+						setSFlag(true);
+					}
+					else {
+						setSFlag(false);
+					}
+					//P Flag
+					regs[0] = (byte)(temp);
+				}
+				else {
+					bytes_left = 1;
+				}
+				incPC();
+				break;
+			case 0xCE: //ACI
+				incPC();
+				break;
 			default: //instructions with operand in opcode
 				if ((cur_opp & 0xC7) == 6) { //MVI r/m group
 					if (bytes_left == 1) {
@@ -357,6 +411,15 @@ public class Core8080 {
 					}
 					else {
 						bytes_left = 1;
+					}
+				}
+				else if ((cur_opp & 0xC0) == 64) { //MOV r/m group
+					temp =regConv((cur_opp&0x38)>>3); //dest
+					if (temp == 7) { //dest is M
+						memory[bytesToInt(regs[5],regs[6])] = regs[regConv(cur_opp&0x07)]; //mov m,m would have been caught by halt
+					}
+					else {
+						regs[temp] = (regConv(cur_opp&0x07) == 7)  ?  memory[bytesToInt(regs[5],regs[6])] : regs[regConv(cur_opp&0x07)];
 					}
 				}
 				incPC();
