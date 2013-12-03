@@ -107,6 +107,18 @@ public class Core8080 {
 		}
 		setPFlag((count % 2) == 0);	
 	}
+	
+	private void genPFlag(byte in) { //parity
+		int count = 0;
+		int temp = 0xFF&in;
+		for (int bit  = 0; bit < 8; bit++) {
+			if ((temp & 0x01) == 1) {
+				count++;
+			}
+			temp = temp >> 1;
+		}
+		setPFlag((count % 2) == 0);	
+	}
 	//Carry
 	private void setCYFlag(boolean value) {
 		if (value) {
@@ -170,7 +182,7 @@ public class Core8080 {
 	private void subACC(byte in) { //sub a byte
 		in = (byte) ((~in) + 1); //twos complement
 		int res = (regs[0] + (0xFF&in));
-		setCYFlag(res < 255); //If result is more than 255, clear the borrow flag
+		setCYFlag((byte)res < 0); //If result is more than 255, clear the borrow flag
 		setACFlag(((regs[0]&0x0F) + (in&0x0F)) > 0x0F); //First 4 bits summed result in half carry? (GNUSim8085 doesn't do this)
 		setZFlag((0xFF&res) == 0);
 		setSFlag((res&0x80) > 0);
@@ -182,13 +194,29 @@ public class Core8080 {
 		in = (byte) ((in&0xFF) + (getCYFlag() ? 1 : 0));
 		in = (byte) ((~in) + 1); //twos complement
 		int res = (regs[0] + (0xFF&in));
-		setCYFlag(res < 255); //If result is more than 255, clear the borrow flag
+		setCYFlag((byte)res < 0); //If result is more than 255, clear the borrow flag
 		setACFlag(((regs[0]&0x0F) + (in&0x0F)) > 0x0F); //First 4 bits summed result in half carry? (GNUSim8085 doesn't do this)
 		setZFlag((0xFF&res) == 0);
 		setSFlag((res&0x80) > 0);
 		regs[0] = (byte) (0xFF&res);
 		genPFlag();
 	}
+	//Stack
+	private void push(byte h, byte l) {
+		sp = (sp == 0) ? 0xFFFF : sp - 1;
+		memory[sp] = h;
+		sp = (sp == 0) ? 0xFFFF : sp - 1;
+		memory[sp] = l;
+	}
+	
+	private int pop() {
+		int res = (0xFF & memory[sp]);
+		sp = (sp == 0xFFFF) ? 0 : sp + 1;
+		res |= (0xFF & memory[sp]) << 8;
+		sp = (sp == 0xFFFF) ? 0 : sp + 1;
+		return res;
+	}
+	
 	private void execute() { //execute loop
 		if (bytes_left == 0) {
 			cur_opp = (short)(memory[pc] & 0xFF); 
@@ -489,7 +517,62 @@ public class Core8080 {
 				}
 				incPC();
 				break;
-			/** End Arithmetic - Start Branch  **/
+			/** End Arithmetic - Start Branch (JUMPS)  **/
+			case 0xC2: //JNZ
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getZFlag()) {
+						incPC();
+					}
+					else {
+						pc = bytesToInt(memory[pc], temp);
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xC3: //JMP
+				if (bytes_left == 1) {
+					bytes_left--;
+					pc = bytesToInt(memory[pc], temp);
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xCA: //JZ
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getZFlag()) {
+						pc = bytesToInt(memory[pc], temp);
+					}
+					else {
+						incPC();
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
 			case 0xD2: //JNC
 				if (bytes_left == 1) {
 					bytes_left--;
@@ -509,6 +592,545 @@ public class Core8080 {
 					bytes_left = 2;
 					incPC();
 				}
+				break;
+			case 0xDA: //JC
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getCYFlag()) {
+						pc = bytesToInt(memory[pc], temp);
+					}
+					else {
+						incPC();
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xE2: //JPO
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getPFlag()) {
+						incPC();
+					}
+					else {
+						pc = bytesToInt(memory[pc], temp);
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xE9: //PCHL
+				pc = getHL();
+				break;
+			case 0xEA: //JPE
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getPFlag()) {
+						pc = bytesToInt(memory[pc], temp);
+					}
+					else {
+						incPC();
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xF2: //JP
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getSFlag()) {
+						incPC();
+					}
+					else {
+						pc = bytesToInt(memory[pc], temp);
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xFA: //JM
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getSFlag()) {
+						pc = bytesToInt(memory[pc], temp);
+					}
+					else {
+						incPC();
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			/** End Branch (JUMPS) - Start Branch (CALLS)  **/
+			case 0xCC: //CZ
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getZFlag()) {
+						pc = bytesToInt(memory[pc], temp);
+						incPC(); //increment so return will be following instruction
+						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+					}
+					else {
+						incPC();
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xC4: //CNZ
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getZFlag()) {
+						incPC();
+					}
+					else {
+						pc = bytesToInt(memory[pc], temp);
+						incPC(); //increment so return will be following instruction
+						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xCD: //CALL
+				if (bytes_left == 1) {
+					bytes_left--;
+					pc = bytesToInt(memory[pc], temp);
+					incPC(); //increment so return will be following instruction
+					push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xDC: //CC
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getCYFlag()) {
+						pc = bytesToInt(memory[pc], temp);
+						incPC(); //increment so return will be following instruction
+						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+					}
+					else {
+						incPC();
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xD4: //CNC
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getCYFlag()) {
+						incPC();
+					}
+					else {
+						pc = bytesToInt(memory[pc], temp);
+						incPC(); //increment so return will be following instruction
+						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xE4: //CPO
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getPFlag()) {
+						incPC();
+					}
+					else {
+						pc = bytesToInt(memory[pc], temp);
+						incPC(); //increment so return will be following instruction
+						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xEC: //CPE
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getPFlag()) {
+						pc = bytesToInt(memory[pc], temp);
+						incPC(); //increment so return will be following instruction
+						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+					}
+					else {
+						incPC();
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xF4: //CP
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getSFlag()) {
+						incPC();
+					}
+					else {
+						pc = bytesToInt(memory[pc], temp);
+						incPC(); //increment so return will be following instruction
+						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			case 0xFC: //CM
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getSFlag()) {
+						pc = bytesToInt(memory[pc], temp);
+						incPC(); //increment so return will be following instruction
+						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+					}
+					else {
+						incPC();
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
+			/** End Branch (CALLS) - Start Branch (RETS)  **/
+			case 0xC9: //RET
+				pc = pop();
+				break;
+			case 0xD0: //RNC
+				if (getCYFlag()) {
+					incPC();
+				}
+				else {
+					pc = pop();
+				}
+				break;
+			case 0xD8: //RC
+				if (getCYFlag()) {
+					pc = pop();
+				}
+				else {
+					incPC();
+				}
+				break;
+			case 0xC0: //RNZ
+				if (getZFlag()) {
+					incPC();
+				}
+				else {
+					pc = pop();
+				}
+				break;
+			case 0xC8: //RZ
+				if (getZFlag()) {
+					pc = pop();
+				}
+				else {
+					incPC();
+				}
+				break;
+			case 0xF0: //RP
+				if (getSFlag()) {
+					incPC();
+				}
+				else {
+					pc = pop();
+				}
+				break;
+			case 0xF8: //RM
+				if (getSFlag()) {
+					pc = pop();
+				}
+				else {
+					incPC();
+				}
+				break;
+			case 0xE0: //RPO
+				if (getPFlag()) {
+					incPC();
+				}
+				else {
+					pc = pop();
+				}
+				break;
+			case 0xE8: //RPE
+				if (getPFlag()) {
+					pc = pop();
+				}
+				else {
+					incPC();
+				}
+				break;
+			/** End Branch - Start Logical  **/
+			case 0x07: //RLC
+				setCYFlag((regs[0]&0x80) > 0); //copy D7 into CY
+				regs[0] <<= 1;
+				regs[0] |= (getCYFlag() ? 1 : 0); //OR in D7/CY to D0
+				incPC();
+				break;
+			case 0x0F: //RRC
+				setCYFlag((regs[0] & 0x01) > 0); //store D0 in CY
+				regs[0] >>= 1;
+				regs[0] |= (getCYFlag() ? 0x80 : 0);
+				incPC();
+				break;
+			case 0x17: //RAL
+				temp = (byte) (getCYFlag() ? 1 : 0); //store CY
+				setCYFlag((regs[0] &0x80) > 0); //put D7 in CY
+				regs[0] <<= 1;
+				regs[0]|= temp; //copy CY in D0
+				incPC();
+				break;
+			case 0x1F: //RAR
+				temp = (byte) (getCYFlag() ? 0x80 : 0); //Store CY
+				setCYFlag((regs[0] & 0x01) > 0); //put D0 in CY
+				regs[0] >>= 1;
+				regs[0] |= temp; //copy CY in HIGH
+				incPC();
+				break;
+			case 0x2F: //CMA
+				regs[0] = (byte) ~regs[0];
+				incPC();
+				break;
+			case 0xE6: //ANI
+				if (bytes_left == 1) {
+					bytes_left--;
+					regs[0] &= memory[pc];
+					setCYFlag(false);
+					setACFlag(false);
+					genPFlag();
+					setZFlag(regs[0] == 0);
+					setSFlag((regs[0] & 0x80) > 0);
+				}
+				else {
+					bytes_left = 1;
+				}
+				incPC();
+				break;
+			case 0xEE: //XRI
+				if (bytes_left == 1) {
+					bytes_left--;
+					regs[0] ^= memory[pc];
+					setCYFlag(false);
+					setACFlag(false);
+					genPFlag();
+					setZFlag(regs[0] == 0);
+					setSFlag((regs[0] & 0x80) > 0);
+				}
+				else {
+					bytes_left = 1;
+				}
+				incPC();
+				break;
+			case 0xF6: //ORI
+				if (bytes_left == 1) {
+					bytes_left--;
+					regs[0] |= memory[pc];
+					setCYFlag(false);
+					setACFlag(false);
+					genPFlag();
+					setZFlag(regs[0] == 0);
+					setSFlag((regs[0] & 0x80) > 0);
+				}
+				else {
+					bytes_left = 1;
+				}
+				incPC();
+				break;
+			case 0xFE: //CPI
+				if (bytes_left == 1) {
+					bytes_left--;
+					temp = regs[0];
+					subACC(memory[pc]);
+					regs[0] = temp;
+				}
+				else {
+					bytes_left = 1;
+				}
+				incPC();
+				break;
+			/** End Logical - Start Increment  **/
+			case 0x03: //INX B
+				res = bytesToInt(regs[1], regs[2]) + 1;
+				regs[2] = (byte) (res & 0xFF);
+				regs[1] = (byte) ((res >> 8) & 0xFF);
+				incPC();
+				break;
+			case 0x0B: //DCX B
+				res = bytesToInt(regs[1], regs[2]) - 1;
+				regs[2] = (byte) (res & 0xFF);
+				regs[1] = (byte) ((res >> 8) & 0xFF);
+				incPC();
+				break;
+			case 0x13: //INX D
+				res = bytesToInt(regs[3], regs[4]) + 1;
+				regs[4] = (byte) (res & 0xFF);
+				regs[3] = (byte) ((res >> 8) & 0xFF);
+				incPC();
+				break;
+			case 0x1B: //DCX D
+				res = bytesToInt(regs[3], regs[4]) - 1;
+				regs[4] = (byte) (res & 0xFF);
+				regs[3] = (byte) ((res >> 8) & 0xFF);
+				incPC();
+				break;
+			case 0x23: //INX H
+				res = bytesToInt(regs[5], regs[6]) + 1;
+				regs[6] = (byte) (res & 0xFF);
+				regs[5] = (byte) ((res >> 8) & 0xFF);
+				incPC();
+				break;
+			case 0x2B: //DCX H
+				res = bytesToInt(regs[5], regs[6]) - 1;
+				regs[6] = (byte) (res & 0xFF);
+				regs[5] = (byte) ((res >> 8) & 0xFF);
+				incPC();
+				break;
+			case 0x33: //INX SP
+				sp = (sp == 0xFFFF) ? 0 : sp + 1;
+				incPC();
+				break;
+			case 0x3B: //DCX SP
+				sp = (sp == 0) ? 0xFFFF : sp - 1;
+				incPC();
+				break;
+			/** End Increment - Start Stack  **/
+			case 0xC1: //POP B
+				res = pop();
+				regs[1] = (byte) ((res & 0xFF00) >> 8);
+				regs[2] = (byte) (res & 0xFF);
+ 				incPC();
+				break;
+			case 0xC5: //PUSH B
+				push(regs[1], regs[2]);
+				incPC();
+				break;
+			case 0xD1: //POP D
+				res = pop();
+				regs[3] = (byte) ((res & 0xFF00) >> 8);
+				regs[4] = (byte) (res & 0xFF);
+ 				incPC();
+				break;
+			case 0xD5: //PUSH D
+				push(regs[3], regs[4]);
+				incPC();
+				break;
+			case 0xE1: //POP H
+				res = pop();
+				regs[5] = (byte) ((res & 0xFF00) >> 8);
+				regs[6] = (byte) (res & 0xFF);
+ 				incPC();
+				break;
+			case 0xE5: //PUSH H
+				push(regs[5], regs[6]);
+				incPC();
+				break;
+			case 0xF1: //POP PSW
+				res = pop();
+				regs[0] = (byte) ((res & 0xFF00) >> 8);
+				flags = (byte) (res & 0xFF);
+ 				incPC();
+				break;
+			case 0xF5: //PUSH PSW
+				push(regs[0], flags);
+				incPC();
 				break;
 			default: //instructions with operand in opcode
 				if ((cur_opp & 0xC7) == 0x06) { //MVI r/m group
@@ -550,6 +1172,79 @@ public class Core8080 {
 				else if ((cur_opp & 0xF8) == 0x91) { //SBB r/m group
 					temp = regConv((cur_opp&0x07));
 					sbbACC( (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp]);
+				}
+				else if ((cur_opp & 0xF8) == 0xA0) { //ANA r/m group
+					temp = regConv(cur_opp * 0x07);
+					regs[0] &= (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp];
+					setCYFlag(false);
+					setACFlag(false);
+					genPFlag();
+					setZFlag(regs[0] == 0);
+					setSFlag((regs[0] & 0x80) > 0);
+				}
+				else if ((cur_opp &  0xF8) == 0xA1) { //XRA r/m group
+					temp = regConv(cur_opp * 0x07);
+					regs[0] ^= (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp];
+					setCYFlag(false);
+					setACFlag(false);
+					genPFlag();
+					setZFlag(regs[0] == 0);
+					setSFlag((regs[0] & 0x80) > 0);					
+				}
+				else if ((cur_opp & 0xF8) == 0xB0) { //ORA r/m group
+					temp = regConv(cur_opp * 0x07);
+					regs[0] |= (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp];
+					setCYFlag(false);
+					setACFlag(false);
+					genPFlag();
+					setZFlag(regs[0] == 0);
+					setSFlag((regs[0] & 0x80) > 0);
+				}
+				else if ((cur_opp & 0xF8) == 0xB1) { //CMP r/m group
+					temp = regs[0];
+					subACC((regConv(cur_opp * 0x07) == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[regConv(cur_opp * 0x07)]);
+					regs[0] = temp;
+				}
+				else if ((cur_opp & 0xC7) == 0xC4) { //INR r/m group
+					temp = regConv((cur_opp & 0x38)>>3);
+					if (temp == 7) {
+						memory[getHL()]++;
+						setZFlag(memory[getHL()] == 0);
+						genPFlag(memory[getHL()]);
+						setSFlag((memory[getHL()]&0x80) > 0);
+						setACFlag((memory[getHL()] & 0x0F) == 0x00); //only condition for CY up 0x0F->0xA0
+					}
+					else {
+						regs[temp]++;
+						setZFlag(regs[temp] == 0);
+						genPFlag(regs[temp]);
+						setSFlag((regs[temp]&0x80) > 0);
+						setACFlag((regs[temp]&0x0F) == 0x00); //only condition for CY up 0x0F->0xA0
+					}
+				}
+				else if ((cur_opp & 0xC7) == 0x05) { //DCR r/m group
+					if (temp == 7) {
+						memory[getHL()] += 0xFE;
+						setZFlag(memory[getHL()] == 0);
+						genPFlag(memory[getHL()]);
+						setSFlag((memory[getHL()]&0x80) > 0);
+						//setACFlag((memory[getHL()] & 0x0F) == 0x00); //only condition for CY up 0x0F->0xA0
+					}
+					else {
+						regs[temp] += 0xFE;
+						setZFlag(regs[temp] == 0);
+						genPFlag(regs[temp]);
+						setSFlag((regs[temp]&0x80) > 0);
+						//setACFlag((regs[temp]&0x0F) == 0x00); //only condition for CY up 0x0F->0xA0
+						//TODO: AC Flag
+					}
+				}
+				else if ((cur_opp & 0xC7) == 0xC7) { //RST v group
+					temp = (byte) ((cur_opp&0x38) >> 3);
+					incPC();
+					push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+					pc = (temp * 8);
+					break;
 				}
 				incPC();
 				break;
