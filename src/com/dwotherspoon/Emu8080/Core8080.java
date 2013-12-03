@@ -46,6 +46,7 @@ public class Core8080 {
 		System.out.printf("D: 0x%02x\t E: 0x%02x\n", regs[3], regs[4]);
 		System.out.printf("H: 0x%02x\t L: 0x%02x\n", regs[5], regs[6]);
 		System.out.printf("SP: 0x%x [SP]: 0x%02x [SP+1]: 0x%02x\n", sp, memory[sp], memory[(sp == 65535) ? 0 : (sp+1)]);
+		System.out.printf("Sign: %b\t Zero: %b\t AC: %b\t Parity:%b\t Carry:%b\n", getSFlag(), getZFlag(), getACFlag(), getPFlag(), getCYFlag());
 		System.out.println("---------------------------------------------------");
 	}
 	
@@ -99,9 +100,10 @@ public class Core8080 {
 		int count = 0;
 		int temp = 0xFF&regs[0];
 		for (int bit  = 0; bit < 8; bit++) {
-			if (((temp>>1) & 0x01) == 1) {
+			if ((temp & 0x01) == 1) {
 				count++;
 			}
+			temp = temp >> 1;
 		}
 		setPFlag((count % 2) == 0);	
 	}
@@ -140,7 +142,7 @@ public class Core8080 {
 	private int getHL() {
 		return ((regs[5] & 0xFF) << 8)+(regs[6] & 0xFF);
 	}
-	
+	//Helper functions
 	private int bytesToInt(byte high, byte low) {
 		return ((high & 0xFF) << 8) + (low & 0xFF);
 	}
@@ -152,6 +154,7 @@ public class Core8080 {
 		setZFlag((0xFF&res) == 0);
 		setSFlag((res&0x80) > 0);
 		regs[0] = (byte) (0xFF&res);
+		genPFlag();
 	}
 	
 	private void adcACC (byte in) { //add + in + carry and gen flags
@@ -161,8 +164,31 @@ public class Core8080 {
 		setZFlag((0xFF&res) == 0);
 		setSFlag((res&0x80) > 0);
 		regs[0] = (byte) (0xFF&res);
+		genPFlag();
 	}
 	
+	private void subACC(byte in) { //sub a byte
+		in = (byte) ((~in) + 1); //twos complement
+		int res = (regs[0] + (0xFF&in));
+		setCYFlag(res < 255); //If result is more than 255, clear the borrow flag
+		setACFlag(((regs[0]&0x0F) + (in&0x0F)) > 0x0F); //First 4 bits summed result in half carry? (GNUSim8085 doesn't do this)
+		setZFlag((0xFF&res) == 0);
+		setSFlag((res&0x80) > 0);
+		regs[0] = (byte) (0xFF&res);
+		genPFlag();
+	}
+	
+	private void sbbACC(byte in) { //sub a byte with borrow
+		in = (byte) ((in&0xFF) + (getCYFlag() ? 1 : 0));
+		in = (byte) ((~in) + 1); //twos complement
+		int res = (regs[0] + (0xFF&in));
+		setCYFlag(res < 255); //If result is more than 255, clear the borrow flag
+		setACFlag(((regs[0]&0x0F) + (in&0x0F)) > 0x0F); //First 4 bits summed result in half carry? (GNUSim8085 doesn't do this)
+		setZFlag((0xFF&res) == 0);
+		setSFlag((res&0x80) > 0);
+		regs[0] = (byte) (0xFF&res);
+		genPFlag();
+	}
 	private void execute() { //execute loop
 		if (bytes_left == 0) {
 			cur_opp = (short)(memory[pc] & 0xFF); 
@@ -383,6 +409,46 @@ public class Core8080 {
 				incPC();
 				break;
 			/** End Data Transfer - Start Arithmetic  **/
+			case 0x09: //DAD B (B&C + H&L)
+				res = bytesToInt(regs[1], regs[2]) + bytesToInt(regs[5], regs[6]);//16 bit add
+				setCYFlag(res > 0xFFFF); //set the carry flag
+				regs[6] = (byte) (res & 0xFF); //lower 8 into L
+				regs[5] = (byte) ((res >> 8) & 0xFF); //upper 8 into H
+				incPC();
+				break;
+			case 0x19: //DAD D (D&E + H&L)
+				res = bytesToInt(regs[3], regs[4]) + bytesToInt(regs[5], regs[6]);//16 bit add
+				setCYFlag(res > 0xFFFF); //set the carry flag
+				regs[6] = (byte) (res & 0xFF); //lower 8 into L
+				regs[5] = (byte) ((res >> 8) & 0xFF); //upper 8 into H
+				incPC();
+				break;
+			case 0x27: //DAA
+				if (((regs[0] & 0x0F) > 9) || getACFlag()) { //LS Nibble > 9? OR AC
+					setACFlag(((regs[0] & 0x0F) + 0x06) > 0x0F); //carry out from +6?
+					regs[0] = (byte) ((regs[0] & 0xFF) + 0x06);
+				}
+				
+				if (((regs[0] & 0xF0) > 0x90) || getCYFlag()) { //MS Nibble > 9 or CY
+					setCYFlag(((regs[0] & 0xFF) + 0x60) > 0xFF); //Carry out?
+					regs[0] = (byte) ((regs[0] & 0xFF) + 0x60);
+				}
+				incPC();
+				break;
+			case 0x29: //DAD H (H&L * 2)
+				res = bytesToInt(regs[5], regs[6]) + bytesToInt(regs[5], regs[6]);//16 bit add
+				setCYFlag(res > 0xFFFF); //set the carry flag
+				regs[6] = (byte) (res & 0xFF); //lower 8 into L
+				regs[5] = (byte) ((res >> 8) & 0xFF); //upper 8 into H
+				incPC();
+				break;
+			case 0x39: //DAD SP (SP + H&L)
+				res = sp + bytesToInt(regs[5], regs[6]);//16 bit add
+				setCYFlag(res > 0xFFFF); //set the carry flag
+				regs[6] = (byte) (res & 0xFF); //lower 8 into L
+				regs[5] = (byte) ((res >> 8) & 0xFF); //upper 8 into H
+				incPC();
+				break;
 			case 0xC6: //ADI
 				if (bytes_left == 1) {
 					bytes_left--;
@@ -403,8 +469,49 @@ public class Core8080 {
 				}
 				incPC();
 				break;
+			case 0xD6: //SUI
+				if (bytes_left == 1) {
+					bytes_left--;
+					subACC(memory[pc]);
+				}
+				else {
+					bytes_left = 1;
+				}
+				incPC();
+				break;
+			case 0xDE: //SBI
+				if (bytes_left == 1) {
+					bytes_left--;
+					sbbACC(memory[pc]);
+				}
+				else {
+					bytes_left = 1;
+				}
+				incPC();
+				break;
+			/** End Arithmetic - Start Branch  **/
+			case 0xD2: //JNC
+				if (bytes_left == 1) {
+					bytes_left--;
+					if (getCYFlag()) {
+						incPC();
+					}
+					else {
+						pc = bytesToInt(memory[pc], temp);
+					}
+				}
+				else if (bytes_left == 2) {
+					bytes_left--;
+					temp = memory[pc];
+					incPC();
+				}
+				else {
+					bytes_left = 2;
+					incPC();
+				}
+				break;
 			default: //instructions with operand in opcode
-				if ((cur_opp & 0xC7) == 6) { //MVI r/m group
+				if ((cur_opp & 0xC7) == 0x06) { //MVI r/m group
 					if (bytes_left == 1) {
 						bytes_left--;
 						temp = regConv((cur_opp&0x38)>>3); //Separate out reg from op
@@ -419,7 +526,7 @@ public class Core8080 {
 						bytes_left = 1;
 					}
 				}
-				else if ((cur_opp & 0xC0) == 64) { //MOV r/m group
+				else if ((cur_opp & 0xC0) == 0x40) { //MOV r/m group
 					temp =regConv((cur_opp&0x38)>>3); //dest
 					if (temp == 7) { //dest is M
 						memory[bytesToInt(regs[5],regs[6])] = regs[regConv(cur_opp&0x07)]; //mov m,m would have been caught by halt
@@ -428,9 +535,21 @@ public class Core8080 {
 						regs[temp] = (regConv(cur_opp&0x07) == 7)  ?  memory[bytesToInt(regs[5],regs[6])] : regs[regConv(cur_opp&0x07)];
 					}
 				}
-				else if ((cur_opp & 0xF8) == 128) { //ADD r/m group
+				else if ((cur_opp & 0xF8) == 0x80) { //ADD r/m group
 					temp = regConv((cur_opp&0x07));
 					addACC( (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp]);
+				}
+				else if ((cur_opp & 0xF8) == 0x88) {// ADC r/m group
+					temp = regConv((cur_opp&0x07));
+					adcACC( (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp]);
+				}
+				else if ((cur_opp & 0xF8) == 0x90) { //SUB r/m group
+					temp = regConv((cur_opp&0x07));
+					subACC( (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp]);
+				}
+				else if ((cur_opp & 0xF8) == 0x91) { //SBB r/m group
+					temp = regConv((cur_opp&0x07));
+					sbbACC( (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp]);
 				}
 				incPC();
 				break;
