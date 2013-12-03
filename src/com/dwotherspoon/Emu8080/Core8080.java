@@ -10,7 +10,7 @@ public class Core8080 {
 	private boolean halt; //halt flag
 	private int pc; //program counter
 	private byte[] regs; //A-E,H,L
-	private byte flags = 2;
+	private byte flags = 0x02; //harcoded 1
 	private byte bytes_left = 0;
 	private short cur_opp = 0;
 	private int sp = 65535;
@@ -94,6 +94,17 @@ public class Core8080 {
 	private boolean getPFlag() {
 		return ((flags & 0x04) != 0);
 	}
+	
+	private void genPFlag() { //parity
+		int count = 0;
+		int temp = 0xFF&regs[0];
+		for (int bit  = 0; bit < 8; bit++) {
+			if (((temp>>1) & 0x01) == 1) {
+				count++;
+			}
+		}
+		setPFlag((count % 2) == 0);	
+	}
 	//Carry
 	private void setCYFlag(boolean value) {
 		if (value) {
@@ -132,6 +143,24 @@ public class Core8080 {
 	
 	private int bytesToInt(byte high, byte low) {
 		return ((high & 0xFF) << 8) + (low & 0xFF);
+	}
+	
+	private void addACC(byte in) { //add a single byte to the acc and generate flags
+		int res = (int)(0xFF&regs[0]) + (int)(0xFF&in);
+		setCYFlag(res > 255); //More than 255? CARRY YO 
+		setACFlag(((regs[0]&0x0F) + (in&0x0F)) > 0x0F); //First 4 bits summed result in half carry?
+		setZFlag((0xFF&res) == 0);
+		setSFlag((res&0x80) > 0);
+		regs[0] = (byte) (0xFF&res);
+	}
+	
+	private void adcACC (byte in) { //add + in + carry and gen flags
+		int res = (int)(0xFF&regs[0]) + (int)(0xFF&in) + (getCYFlag() ? 1 : 0);
+		setCYFlag(res > 255); //More than 255? CARRY YO 
+		setACFlag(((regs[0]&0x0F) + (in&0x0F)) > 0x0F); //First 4 bits summed result in half carry? (GNUSim 8085 doesn't include carry in half carry gen so I don't)
+		setZFlag((0xFF&res) == 0);
+		setSFlag((res&0x80) > 0);
+		regs[0] = (byte) (0xFF&res);
 	}
 	
 	private void execute() { //execute loop
@@ -357,37 +386,7 @@ public class Core8080 {
 			case 0xC6: //ADI
 				if (bytes_left == 1) {
 					bytes_left--;
-					res = (int)(0xFF&regs[0]) + (int)(0xFF&memory[pc]);
-					//TODO: Compress to ternary
-					if (res > 256) { //CY
-						setCYFlag(true);
-					}
-					else {
-						setCYFlag(false);
-					}
-					
-					if (((regs[0]&0x0F) + (memory[pc]&0x0F)) > 0x0F) { //half carry (AC)
-						setACFlag(true);
-					}
-					else {
-						setACFlag(false);
-					}
-					
-					if (temp == 0) { //Z Flag
-						setZFlag(true);
-					}
-					else {
-						setZFlag(false);
-					}
-					
-					if ((temp&0x80) > 0) { //S Flag
-						setSFlag(true);
-					}
-					else {
-						setSFlag(false);
-					}
-					//P Flag
-					regs[0] = (byte)(temp);
+					addACC(memory[pc]);
 				}
 				else {
 					bytes_left = 1;
@@ -395,6 +394,13 @@ public class Core8080 {
 				incPC();
 				break;
 			case 0xCE: //ACI
+				if (bytes_left == 1) {
+					bytes_left--;
+					adcACC(memory[pc]);
+				}
+				else {
+					bytes_left = 1;
+				}
 				incPC();
 				break;
 			default: //instructions with operand in opcode
@@ -421,6 +427,10 @@ public class Core8080 {
 					else {
 						regs[temp] = (regConv(cur_opp&0x07) == 7)  ?  memory[bytesToInt(regs[5],regs[6])] : regs[regConv(cur_opp&0x07)];
 					}
+				}
+				else if ((cur_opp & 0xF8) == 128) { //ADD r/m group
+					temp = regConv((cur_opp&0x07));
+					addACC( (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp]);
 				}
 				incPC();
 				break;
