@@ -1,6 +1,6 @@
 package com.dwotherspoon.Emu8080;
 
-public class Core8080 {
+public class Core8080 extends Thread {
 	/*----------------------------------------------------
 	 * 8080 instruction interpreter. No warranty given.
 	 * (C) David Wotherspoon 2013
@@ -19,14 +19,18 @@ public class Core8080 {
 	private int res;
 	
 	
-	public Core8080(byte[] memory) {	
+	public Core8080() {	
 		devices = new IODevice[256];
 		halt = false;
 		pc = 0;
 		regs = new byte[7];
-		this.memory = memory;
 	}
 	
+	public void setMem(byte[] mem) {
+		memory = mem;
+	}
+	
+	@Override
 	public void run() {
 		/*
 		for (int i = 0; i < 65535; i++) {
@@ -383,7 +387,7 @@ public class Core8080 {
 					if (devices[memory[pc]] == null) {
 					}
 					else {	
-					devices[memory[pc]].in(regs[0]);
+					devices[memory[pc]].in(memory[pc], regs[0]);
 					}
 				}
 				else {
@@ -398,7 +402,7 @@ public class Core8080 {
 						regs[0] = 0x00;
 					}
 					else {
-					regs[0] = devices[memory[pc]].out();
+					regs[0] = devices[memory[pc]].out(memory[pc]);
 					}
 				}
 				else {

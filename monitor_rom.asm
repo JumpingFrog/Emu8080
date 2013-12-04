@@ -1,10 +1,10 @@
-tty0tx equ 0x00
-tty0rx equ 0x01
+tty0d equ 0x00
+tty0c equ 0x01
 cr equ 0x0D
 lf equ 0x0A
 
 .org 0
-start:
+start: ;do some init
 	lxi h, msg1
 	call prints
 	jmp ccp
@@ -33,9 +33,9 @@ dump: call gethex
 dump_loop:
 	call printhl
 	mvi a, ':'
-	out tty0tx
+	out tty0d
 	mvi a, ' '
-	out tty0tx
+	out tty0d
 	mov a, m ;load from HL
 	rrc ;upper 4 down
 	rrc
@@ -43,17 +43,17 @@ dump_loop:
     rrc
 	ani 0x0F ;upper 4
 	call hex_makecha
-	out tty0tx
+	out tty0d
 	mov a, m ;reload HL [inefficent]
 	ani 0x0F
 	call hex_makecha
-	out tty0tx
+	out tty0d
 	mvi a, lf
-	out tty0tx
+	out tty0d
 	inx h
 	inr c ;will gen a zero flag on overflow
 	jnz dump_loop
-	hlt
+	jmp ccp
 
 gethex: ;read hex address from console
 	call getchar
@@ -90,10 +90,11 @@ endhex:
 	
 
 getchar: ;reads in a char
-	in tty0rx
+	in tty0c
 	ori 0x00 ;get flags
 	jz getchar ;loop if null
-	out tty0tx
+	in tty0d ;not null, read data	
+	out tty0d ;print back out
 	ret
 
 printhl: ;procedure to print HL (in hex) to tty0
@@ -104,11 +105,11 @@ printhl: ;procedure to print HL (in hex) to tty0
 	rrc
 	ani 0x0F
 	call hex_makecha
-	out tty0tx
+	out tty0d
 	mov a, h
 	ani 0x0F
 	call hex_makecha
-	out tty0tx
+	out tty0d
 	mov a, l ;do l
 	rrc
 	rrc
@@ -116,11 +117,11 @@ printhl: ;procedure to print HL (in hex) to tty0
 	rrc
 	ani 0x0F
 	call hex_makecha
-	out tty0tx
+	out tty0d
 	mov a, l
 	ani 0x0F
 	call hex_makecha
-	out tty0tx
+	out tty0d
 	ret
 
 hex_makecha: ;makes the lower 4 bits of acc a char
@@ -137,12 +138,12 @@ prints: ;Procedure to print a string to tty0
 	mov a, m
 	ori 0x00 ;get flags
 	rz
-	out tty0tx
+	out tty0d
 	inx h
 	jmp prints ;go round again
 
 msg1: db '8080 Monitor ROM:',cr,lf,0x00
 msg2: db 'Invalid choice (dnnnn or b)', cr, lf, 0x00
-msg3: db cr, lf, 'Dumping 256:', cr, lf , 0x00
+msg3: db cr, lf, 'Dumping 256 bytes:', cr, lf , 0x00
 
 crlf: db cr, lf, 0x00
