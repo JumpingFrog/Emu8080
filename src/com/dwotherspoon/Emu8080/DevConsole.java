@@ -1,12 +1,15 @@
 package com.dwotherspoon.Emu8080;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 public class DevConsole implements IODevice {
 	/*----------------------------------------------------
 	 * Example console device. No warranty given.
 	 * (C) David Wotherspoon 2013
 	 -----------------------------------------------------*/
 	private byte[] ports;
-	
+	private Queue<Character> inQ = new LinkedList<Character>();
 	
 	public DevConsole(byte rx, byte tx) {
 		ports = new byte[2];
@@ -21,8 +24,17 @@ public class DevConsole implements IODevice {
 
 	@Override
 	public byte out() {
-		// TODO Auto-generated method stub
-		return 0;
+		Character tmp = inQ.poll();
+		if (tmp == null) {
+			return 0x00;
+		}
+		else {
+			return (byte) tmp.charValue();
+		}
+	}
+	
+	public void addChar(char in) {
+		inQ.add(in);
 	}
 
 	@Override

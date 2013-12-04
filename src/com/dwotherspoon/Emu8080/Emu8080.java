@@ -33,9 +33,15 @@ public class Emu8080 {
 				e.printStackTrace();
 			} 
 			Core8080 cpu = new Core8080(mem);
-			
+			DevConsole console = new DevConsole((byte)0,(byte)1);
+			console.addChar('v');
+			console.addChar('d');
+			console.addChar('0');
+			console.addChar('0');
+			console.addChar('0');
+			console.addChar('0');
 			try {
-				cpu.addDevice(new DevConsole((byte)0,(byte)1));
+				cpu.addDevice(console);
 			} catch (PortAlreadyUsedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

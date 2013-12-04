@@ -28,15 +28,17 @@ public class Core8080 {
 	}
 	
 	public void run() {
+		/*
 		for (int i = 0; i < 65535; i++) {
 			System.out.printf("%d - 0x%02x\n", i, memory[i]);
-		}
+		}*/
 		while (!halt) {
-			printDebug();
+			//printDebug();
 			execute();	
 			//System.out.println(Integer.toHexString(pc));
 		}
 		System.out.println("\nSystem was halted!");
+		printDebug();
 	}
 	
 	private void printDebug() {
@@ -701,9 +703,10 @@ public class Core8080 {
 				if (bytes_left == 1) {
 					bytes_left--;
 					if (getZFlag()) {
-						pc = bytesToInt(memory[pc], temp);
+						res = bytesToInt(memory[pc], temp);
 						incPC(); //increment so return will be following instruction
 						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+						pc = res;
 					}
 					else {
 						incPC();
@@ -726,9 +729,10 @@ public class Core8080 {
 						incPC();
 					}
 					else {
-						pc = bytesToInt(memory[pc], temp);
+						res = bytesToInt(memory[pc], temp);
 						incPC(); //increment so return will be following instruction
 						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+						pc = res;
 					}
 				}
 				else if (bytes_left == 2) {
@@ -744,9 +748,10 @@ public class Core8080 {
 			case 0xCD: //CALL
 				if (bytes_left == 1) {
 					bytes_left--;
-					pc = bytesToInt(memory[pc], temp);
+					res = bytesToInt(memory[pc], temp);
 					incPC(); //increment so return will be following instruction
 					push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+					pc = res;
 				}
 				else if (bytes_left == 2) {
 					bytes_left--;
@@ -762,9 +767,10 @@ public class Core8080 {
 				if (bytes_left == 1) {
 					bytes_left--;
 					if (getCYFlag()) {
-						pc = bytesToInt(memory[pc], temp);
+						res = bytesToInt(memory[pc], temp);
 						incPC(); //increment so return will be following instruction
 						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+						pc = res;
 					}
 					else {
 						incPC();
@@ -787,9 +793,10 @@ public class Core8080 {
 						incPC();
 					}
 					else {
-						pc = bytesToInt(memory[pc], temp);
+						res = bytesToInt(memory[pc], temp);
 						incPC(); //increment so return will be following instruction
 						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+						pc = res;
 					}
 				}
 				else if (bytes_left == 2) {
@@ -809,9 +816,10 @@ public class Core8080 {
 						incPC();
 					}
 					else {
-						pc = bytesToInt(memory[pc], temp);
+						res = bytesToInt(memory[pc], temp);
 						incPC(); //increment so return will be following instruction
 						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+						pc = res;
 					}
 				}
 				else if (bytes_left == 2) {
@@ -828,9 +836,10 @@ public class Core8080 {
 				if (bytes_left == 1) {
 					bytes_left--;
 					if (getPFlag()) {
-						pc = bytesToInt(memory[pc], temp);
+						res = bytesToInt(memory[pc], temp);
 						incPC(); //increment so return will be following instruction
 						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+						pc = res;
 					}
 					else {
 						incPC();
@@ -853,9 +862,10 @@ public class Core8080 {
 						incPC();
 					}
 					else {
-						pc = bytesToInt(memory[pc], temp);
+						res = bytesToInt(memory[pc], temp);
 						incPC(); //increment so return will be following instruction
 						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+						pc = res;
 					}
 				}
 				else if (bytes_left == 2) {
@@ -872,9 +882,10 @@ public class Core8080 {
 				if (bytes_left == 1) {
 					bytes_left--;
 					if (getSFlag()) {
-						pc = bytesToInt(memory[pc], temp);
+						res = bytesToInt(memory[pc], temp);
 						incPC(); //increment so return will be following instruction
 						push((byte) ((pc>>8)&0xFF), (byte) (pc & 0xFF));
+						pc = res;
 					}
 					else {
 						incPC();
@@ -1174,7 +1185,7 @@ public class Core8080 {
 					sbbACC( (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp]);
 				}
 				else if ((cur_opp & 0xF8) == 0xA0) { //ANA r/m group
-					temp = regConv(cur_opp * 0x07);
+					temp = regConv(cur_opp & 0x07);
 					regs[0] &= (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp];
 					setCYFlag(false);
 					setACFlag(false);
@@ -1183,7 +1194,7 @@ public class Core8080 {
 					setSFlag((regs[0] & 0x80) > 0);
 				}
 				else if ((cur_opp &  0xF8) == 0xA1) { //XRA r/m group
-					temp = regConv(cur_opp * 0x07);
+					temp = regConv(cur_opp & 0x07);
 					regs[0] ^= (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp];
 					setCYFlag(false);
 					setACFlag(false);
@@ -1192,7 +1203,7 @@ public class Core8080 {
 					setSFlag((regs[0] & 0x80) > 0);					
 				}
 				else if ((cur_opp & 0xF8) == 0xB0) { //ORA r/m group
-					temp = regConv(cur_opp * 0x07);
+					temp = regConv(cur_opp & 0x07);
 					regs[0] |= (temp == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[temp];
 					setCYFlag(false);
 					setACFlag(false);
@@ -1202,20 +1213,20 @@ public class Core8080 {
 				}
 				else if ((cur_opp & 0xF8) == 0xB1) { //CMP r/m group
 					temp = regs[0];
-					subACC((regConv(cur_opp * 0x07) == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[regConv(cur_opp * 0x07)]);
+					subACC((regConv(cur_opp & 0x07) == 7) ? memory[bytesToInt(regs[5],regs[6])] : regs[regConv(cur_opp * 0x07)]);
 					regs[0] = temp;
 				}
-				else if ((cur_opp & 0xC7) == 0xC4) { //INR r/m group
+				else if ((cur_opp & 0xC7) == 0x04) { //INR r/m group
 					temp = regConv((cur_opp & 0x38)>>3);
 					if (temp == 7) {
-						memory[getHL()]++;
+						memory[getHL()] = (byte) ((memory[getHL()] & 0xFF) + 1);
 						setZFlag(memory[getHL()] == 0);
 						genPFlag(memory[getHL()]);
 						setSFlag((memory[getHL()]&0x80) > 0);
 						setACFlag((memory[getHL()] & 0x0F) == 0x00); //only condition for CY up 0x0F->0xA0
 					}
 					else {
-						regs[temp]++;
+						regs[temp] = (byte) ((regs[temp] & 0xFF) + 1);
 						setZFlag(regs[temp] == 0);
 						genPFlag(regs[temp]);
 						setSFlag((regs[temp]&0x80) > 0);
@@ -1223,15 +1234,16 @@ public class Core8080 {
 					}
 				}
 				else if ((cur_opp & 0xC7) == 0x05) { //DCR r/m group
+					temp = regConv((cur_opp & 0x38)>>3);
 					if (temp == 7) {
-						memory[getHL()] += 0xFE;
+						memory[getHL()]--;
 						setZFlag(memory[getHL()] == 0);
 						genPFlag(memory[getHL()]);
 						setSFlag((memory[getHL()]&0x80) > 0);
 						//setACFlag((memory[getHL()] & 0x0F) == 0x00); //only condition for CY up 0x0F->0xA0
 					}
 					else {
-						regs[temp] += 0xFE;
+						regs[temp]--;
 						setZFlag(regs[temp] == 0);
 						genPFlag(regs[temp]);
 						setSFlag((regs[temp]&0x80) > 0);
