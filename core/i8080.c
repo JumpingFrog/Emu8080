@@ -1,10 +1,15 @@
 #include "i8080.h"
 #include "stdio.h"
 #include "stdlib.h"
-
-void instr_nop(I8080_State * s) {
-	s->pc++;
-}
+/* Instruction groups */
+#include "groups/arithmetic_group.h"
+#include "groups/call_group.h"
+#include "groups/data_group.h"
+#include "groups/jump_group.h"
+#include "groups/logical_group.h"
+#include "groups/return_group.h"
+#include "groups/special_group.h"
+#include "groups/stack_group.h"
 
 /* Instruction decode table */
 

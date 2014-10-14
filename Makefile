@@ -1,5 +1,5 @@
 CFLAGS=-Wall -Wextra -Wpedantic -O0
-OBJ=core/i8080.o
+OBJ=core/groups/special_group.o core/i8080.o
 CC=gcc
 EXECNAME=bin/myapp
 
@@ -13,4 +13,5 @@ clean:
 	rm -f *.out
 	rm -f *.o
 	rm -f $(EXECNAME)
-	rm -r core/*.o
+	rm -f core/*.o
+	rm -f core/group/*.o
