@@ -1,11 +1,20 @@
 #include "stdint.h"
 
+#define A 7
+#define B 0
+#define C 1
+#define D 2
+#define E 3
+#define H 4
+#define L 5
+#define M 6
+
 /* Data for 8080 */
 typedef struct {
 	/* Halt flag */
 	uint8_t hlt;
 	/* Registers */
-	uint8_t regs[7];
+	uint8_t regs[8];
 	/* Program Counter */
 	uint16_t pc;
 	/* Flags Register */

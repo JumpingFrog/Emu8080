@@ -17,77 +17,80 @@ const Instruction decode[] =
 	{
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x03*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x07*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x0A*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x0E*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x0B*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x0F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x13*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x17*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x1A*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x1E*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x1B*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x1F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x23*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x27*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x2A*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x2E*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x2B*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x2F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x33*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x37*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x3A*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x3E*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x3B*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x3F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x43*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x47*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x4A*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x4E*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x4B*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x4F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x53*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x57*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x5A*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x5E*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x5B*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x5F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x63*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x67*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x6A*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x6E*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x6B*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x6F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x73*/
 		&instr_nop, &instr_nop, &instr_hlt, &instr_nop, /*0x77*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x7A*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x7B*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x7F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x83*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x87*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x8A*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop,
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x8B*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x8F*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x93*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x97*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x9B*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x9F*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xA3*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xA7*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xAB*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xAF*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xB3*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xB7*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xBB*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xBF*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_jmp, /*0xC3*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xC7*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xCB*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xCF*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xD3*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xD7*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xDB*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xDF*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xE3*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xE7*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xEB*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xEF*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xF3*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xF7*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xFB*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop  /*0xFF*/
 	};
 
 I8080_State * init_8080() {
-	I8080_State * ret = ret = malloc(sizeof(I8080_State));
+	I8080_State * ret = malloc(sizeof(I8080_State));
 	ret->pc = 0x0000;
 	ret->flags = 0x02;
 	ret->sp = 0xFFFF;
 	ret->hlt = 0;
-
+	
+	ret->mem[0xFFF0] = 0xC3;
+	ret->mem[0xFFF1] = 0xA0;
+	ret->mem[0xFFF2] = 0xFF;
 	ret->mem[0xFFFD] = 0x76;
 	return ret;
 }
