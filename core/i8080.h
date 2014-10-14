@@ -2,6 +2,8 @@
 
 /* Data for 8080 */
 typedef struct {
+	/* Halt flag */
+	uint8_t hlt;
 	/* Registers */
 	uint8_t regs[7];
 	/* Program Counter */
