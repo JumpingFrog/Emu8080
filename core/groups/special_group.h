@@ -1,16 +1,16 @@
 /* SPECIAL, I/O, CONTROL, RESTART */
 
-Instruction instr_rst;
+void instr_rst(I8080_State *);
 
-Instruction instr_cma;
-Instruction instr_stc;
-Instruction instr_cmc;
-Instruction instr_daa;
+void instr_cma(I8080_State *);
+void instr_stc(I8080_State *);
+void instr_cmc(I8080_State *);
+void instr_daa(I8080_State *);
 
-Instruction instr_in;
-Instruction instr_out;
+void instr_in(I8080_State *);
+void instr_out(I8080_State *);
 
-Instruction instr_ei;
-Instruction instr_di;
+void instr_ei(I8080_State *);
+void instr_di(I8080_State *);
 void instr_nop(I8080_State *);
 void instr_hlt(I8080_State *);

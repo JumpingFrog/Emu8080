@@ -1,5 +1,6 @@
 #include "stdint.h"
 
+/* Macros for Register functionality */
 #define REG_A 7
 #define REG_B 0
 #define REG_C 1
@@ -9,7 +10,16 @@
 #define REG_L 5
 #define REG_M 6
 
-#define REG(X) (X==M) ? (regs[H] << 8) | regs[L] : regs[X];
+#define REG(S, X) (X==M) ? (S->regs[H] << 8) | S->regs[L] : S->regs[X];
+
+/* Macros for Flag functionality */
+#define FLG_C = 0x01
+#define FLG_P = 0x04
+#define FLG_A = 0x10
+#define FLG_Z = 0x40
+#define FLG_S = 0x80
+
+#define FLAG(S, X) (S->flags & X) ? 1 : 0;
 
 /* Data for 8080 */
 typedef struct {

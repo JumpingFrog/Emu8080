@@ -11,7 +11,9 @@
 #include "groups/special_group.h"
 #include "groups/stack_group.h"
 
-/* Instruction decode table */
+/* Instruction decode table 
+http://pastraiser.com/cpu/i8080/i8080_opcodes.html
+*/
 
 const Instruction decode[] = 
 	{
