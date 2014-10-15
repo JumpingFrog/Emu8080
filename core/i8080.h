@@ -36,7 +36,7 @@ typedef struct {
 	/* Memory */
 	uint8_t mem[0xFFFF];
 	/* IO Devices */
-	struct IODevice * devices[256];
+	struct _IODevice * devices[256];
 } I8080_State; 
 
 
@@ -47,7 +47,7 @@ typedef uint8_t (*IO_in)(I8080_State *);
 typedef void (*IO_out)(I8080_State *);
 
 /* Typedef fdr IO Devices, implement in and out methods. */
-typedef struct {
+typedef struct _IODevice {
 	IO_in in;
 	IO_out out;
 } IODevice;

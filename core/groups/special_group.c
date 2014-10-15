@@ -9,7 +9,7 @@ void instr_rst(I8080_State * s) {
 /* I/O */
 void instr_in(I8080_State * s) {
 	uint8_t p = s->mem[++s->pc];
-	s->regs[REGS_A] = (*s->devices[p]->in)(s);
+	s->regs[REG_A] = (*s->devices[p]->in)(s);
 }
 
 void instr_out(I8080_State * s) {
