@@ -1,13 +1,15 @@
 #include "stdint.h"
 
-#define A 7
-#define B 0
-#define C 1
-#define D 2
-#define E 3
-#define H 4
-#define L 5
-#define M 6
+#define REG_A 7
+#define REG_B 0
+#define REG_C 1
+#define REG_D 2
+#define REG_E 3
+#define REG_H 4
+#define REG_L 5
+#define REG_M 6
+
+#define REG(X) (X==M) ? (regs[H] << 8) | regs[L] : regs[X];
 
 /* Data for 8080 */
 typedef struct {

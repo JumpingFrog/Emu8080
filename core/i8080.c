@@ -16,21 +16,21 @@
 const Instruction decode[] = 
 	{
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x03*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x07*/
+		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x07*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x0B*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x0F*/
+		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x0F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x13*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x17*/
+		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x17*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x1B*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x1F*/
+		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x1F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x23*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x27*/
+		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x27*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x2B*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x2F*/
+		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x2F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x33*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x37*/
+		&instr_nop, &instr_nop, &instr_mvim, &instr_nop, /*0x37*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x3B*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x3F*/
+		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x3F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x43*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x47*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x4B*/
@@ -95,12 +95,20 @@ I8080_State * init_8080() {
 	return ret;
 }
 
+void gen_flags(I8080_State * s) {
+	/* ... */
+}
+
+void dbg(I8080_State * s) {
+	printf("PC 0x%x\n\r", s->pc);
+}
+
 /* Run... */
 void run(I8080_State * s) {
 	while (!s->hlt) {
 		/* Execute current opcode */
 		(*decode[s->mem[s->pc]])(s);
-		printf("PC value: %d\n\r", s->pc);
+		dbg(s);
 	}	
 }
 
