@@ -1,5 +1,4 @@
 #include "i8080.h"
-#include "stdio.h"
 #include "stdlib.h"
 /* Instruction groups */
 #include "groups/arithmetic_group.h"
@@ -74,12 +73,12 @@ const Instruction decode[] =
 		&instr_nop, &instr_pushd, &instr_nop, &instr_nop, /*0xD7*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xDB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xDF*/
-		&instr_nop, &instr_pushh, &instr_nop, &instr_nop, /*0xE3*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xE7*/
+		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xE3*/
+		&instr_nop, &instr_pushh, &instr_nop, &instr_nop, /*0xE7*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xEB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xEF*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xF3*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xF7*/
+		&instr_nop, &instr_pushp, &instr_nop, &instr_nop, /*0xF7*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xFB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop  /*0xFF*/
 	};
@@ -90,16 +89,6 @@ I8080_State * init_8080() {
 	ret->flags = 0x02;
 	ret->sp = 0xFFFF;
 	ret->hlt = 0;
-	ret->mem[0x0EF0] = 0x06; /*MVI B */
-	ret->mem[0x0EF1] = 0xAB;
-	ret->mem[0x0EF2] = 0x0E; /* MVI C */
-	ret->mem[0x0EF3] = 0xCD;
-	ret->mem[0x0F00] = 0xC5; /* Push B */
-	ret->mem[0x0F01] = 0x76; /* HLT */
-	ret->mem[0xFFF0] = 0xC3;
-	ret->mem[0xFFF1] = 0xA0;
-	ret->mem[0xFFF2] = 0xFF;
-	ret->mem[0xFFFD] = 0x76;
 	return ret;
 }
 
@@ -107,7 +96,7 @@ void gen_flags(I8080_State * s) {
 	/* ... */
 }
 
-void dbg(I8080_State * s) {
+void dbg_8080(I8080_State * s) {
 	puts("-------------------------------------------------");
 	printf("PC: 0x%04x \t [PC]: 0x%02x \n\r", s->pc, s->mem[s->pc]);
 	printf("A: 0x%02x \t F: 0x%02x \n\r", s->regs[REG_A], s->flags);
@@ -118,18 +107,10 @@ void dbg(I8080_State * s) {
 }
 
 /* Run... */
-void run(I8080_State * s) {
+void run_8080(I8080_State * s) {
 	while (!s->hlt) {
 		/* Execute current opcode */
 		(*decode[s->mem[s->pc]])(s);
-		dbg(s);
+		dbg_8080(s);
 	}	
-}
-
-int main(int argc, char * argv[]) {
-	I8080_State * r = init_8080();
-	printf("Decode: %lu instructions.\n\r", (sizeof(decode)/sizeof(Instruction)));
-	printf("SP: 0x%x.\n\r", r->sp);
-	run(r);
-	return 0;
 }

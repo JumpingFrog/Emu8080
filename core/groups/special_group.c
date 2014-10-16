@@ -3,7 +3,10 @@
 
 /*RESET*/
 void instr_rst(I8080_State * s) {
-	uint8_t v = (s->mem[s->pc++] & 0x38) >> 3;
+	uint8_t v = (s->mem[s->pc++] & 0x38);
+	s->mem[--s->sp] = (s->pc & 0xFF00) >> 8;
+	s->mem[--s->sp] = (s->pc & 0x00FF) >> 8; 
+	s->pc = 0x0000 | v;
 }
 
 /* I/O */

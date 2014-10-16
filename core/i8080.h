@@ -54,3 +54,7 @@ typedef struct _IODevice {
 
 /* Typedef for instructions */
 typedef void (*Instruction)(I8080_State *);
+
+/* Prototypes */
+void run_8080(I8080_State *);
+I8080_State * init_8080();

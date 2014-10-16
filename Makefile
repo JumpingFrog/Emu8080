@@ -1,5 +1,5 @@
 CFLAGS=-Wall -Wextra -Wpedantic -O0
-OBJ=core/groups/jump_group.o core/groups/special_group.o core/groups/logical_group.o core/groups/data_group.o core/groups/stack_group.o core/i8080.o
+OBJ=main.o core/groups/jump_group.o core/groups/special_group.o core/groups/logical_group.o core/groups/data_group.o core/groups/stack_group.o core/i8080.o
 CC=gcc
 EXECNAME=bin/myapp
 
