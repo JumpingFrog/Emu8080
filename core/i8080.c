@@ -67,14 +67,14 @@ const Instruction decode[] =
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xBB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xBF*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_jmp, /*0xC3*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xC7*/
+		&instr_nop, &instr_pushb, &instr_nop, &instr_nop, /*0xC7*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xCB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xCF*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xD3*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xD7*/
+		&instr_nop, &instr_pushd, &instr_nop, &instr_nop, /*0xD7*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xDB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xDF*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xE3*/
+		&instr_nop, &instr_pushh, &instr_nop, &instr_nop, /*0xE3*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xE7*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xEB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xEF*/
@@ -90,7 +90,12 @@ I8080_State * init_8080() {
 	ret->flags = 0x02;
 	ret->sp = 0xFFFF;
 	ret->hlt = 0;
-	
+	ret->mem[0x0EF0] = 0x06; /*MVI B */
+	ret->mem[0x0EF1] = 0xAB;
+	ret->mem[0x0EF2] = 0x0E; /* MVI C */
+	ret->mem[0x0EF3] = 0xCD;
+	ret->mem[0x0F00] = 0xC5; /* Push B */
+	ret->mem[0x0F01] = 0x76; /* HLT */
 	ret->mem[0xFFF0] = 0xC3;
 	ret->mem[0xFFF1] = 0xA0;
 	ret->mem[0xFFF2] = 0xFF;
@@ -103,7 +108,13 @@ void gen_flags(I8080_State * s) {
 }
 
 void dbg(I8080_State * s) {
-	printf("PC 0x%x\n\r", s->pc);
+	puts("-------------------------------------------------");
+	printf("PC: 0x%04x \t [PC]: 0x%02x \n\r", s->pc, s->mem[s->pc]);
+	printf("A: 0x%02x \t F: 0x%02x \n\r", s->regs[REG_A], s->flags);
+	printf("B: 0x%02x \t C: 0x%02x \n\r", s->regs[REG_B], s->regs[REG_C]);
+	printf("D: 0x%02x \t E: 0x%02x \n\r", s->regs[REG_D], s->regs[REG_E]);
+	printf("H: 0x%02x \t L: 0x%02x \n\r", s->regs[REG_H], s->regs[REG_L]);
+	printf("SP: 0x%04x \t [SP]: 0x%02x \t [SP+1] 0x%02x \n\r", s->sp, s->mem[s->sp], s->mem[s->sp + 1]);
 }
 
 /* Run... */
