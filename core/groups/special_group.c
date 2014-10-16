@@ -1,6 +1,24 @@
 #include "../i8080.h"
 #include "special_group.h"
 
+/* Complement Accumulator */
+void instr_cma(I8080_State * s) {
+	s->regs[REG_A] = ~(s->regs[REG_A]);
+	s->pc++;
+}
+
+/* Complement Carry */
+void instr_cmc(I8080_State * s) {
+	s->flags ^= FLG_C;
+	s->pc++;
+}
+
+/* Set Carry */
+void instr_stc(I8080_State * s) {
+	s->flags |= FLG_C;
+	s->pc++;
+}
+
 /*RESET*/
 void instr_rst(I8080_State * s) {
 	uint8_t v = (s->mem[s->pc++] & 0x38);
