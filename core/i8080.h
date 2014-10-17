@@ -13,11 +13,11 @@
 #define REG(S, X) (X==M) ? (S->regs[H] << 8) | S->regs[L] : S->regs[X];
 
 /* Macros for Flag functionality */
-#define FLG_C = 0x01
-#define FLG_P = 0x04
-#define FLG_A = 0x10
-#define FLG_Z = 0x40
-#define FLG_S = 0x80
+#define FLG_C 0x01
+#define FLG_P 0x04
+#define FLG_A 0x10
+#define FLG_Z 0x40
+#define FLG_S 0x80
 
 #define FLAG(S, X) (S->flags & X) ? 1 : 0;
 
