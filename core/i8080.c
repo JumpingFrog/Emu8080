@@ -98,12 +98,12 @@ void gen_flags(I8080_State * s) {
 
 void dbg_8080(I8080_State * s) {
 	puts("-------------------------------------------------");
-	printf("PC: 0x%04x \t [PC]: 0x%02x \n\r", s->pc, s->mem[s->pc]);
-	printf("A: 0x%02x \t F: 0x%02x \n\r", s->regs[REG_A], s->flags);
-	printf("B: 0x%02x \t C: 0x%02x \n\r", s->regs[REG_B], s->regs[REG_C]);
-	printf("D: 0x%02x \t E: 0x%02x \n\r", s->regs[REG_D], s->regs[REG_E]);
-	printf("H: 0x%02x \t L: 0x%02x \n\r", s->regs[REG_H], s->regs[REG_L]);
-	printf("SP: 0x%04x \t [SP]: 0x%02x \t [SP+1] 0x%02x \n\r", s->sp, s->mem[s->sp], s->mem[s->sp + 1]);
+	printf("PC: 0x%04x \t [PC]: 0x%02x \r\n", s->pc, s->mem[s->pc]);
+	printf("A: 0x%02x \t F: 0x%02x \r\n", s->regs[REG_A], s->flags);
+	printf("B: 0x%02x \t C: 0x%02x \r\n", s->regs[REG_B], s->regs[REG_C]);
+	printf("D: 0x%02x \t E: 0x%02x \r\n", s->regs[REG_D], s->regs[REG_E]);
+	printf("H: 0x%02x \t L: 0x%02x \r\n", s->regs[REG_H], s->regs[REG_L]);
+	printf("SP: 0x%04x \t [SP]: 0x%02x \t [SP+1] 0x%02x \r\n", s->sp, s->mem[s->sp], s->mem[s->sp + 1]);
 }
 
 /* Run... */
