@@ -1,2 +1,17 @@
 void instr_mvir(I8080_State *);
 void instr_mvim(I8080_State *);
+void instr_movrr(I8080_State *);
+void instr_movmr(I8080_State *);
+void instr_movrm(I8080_State *);
+void instr_lxib(I8080_State *);
+void instr_lxid(I8080_State *);
+void instr_lxih(I8080_State *);
+void instr_staxb(I8080_State *);
+void instr_staxd(I8080_State *);
+void instr_ldaxb(I8080_State *);
+void instr_ldaxd(I8080_State *);
+void instr_sta(I8080_State *);
+void instr_lda(I8080_State *);
+void instr_shld(I8080_State *);
+void instr_lhld(I8080_State *);
+void instr_xchg(I8080_State *);

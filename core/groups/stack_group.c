@@ -25,3 +25,10 @@ void instr_pushp(I8080_State * s) {
 	PUSH(s->pc, s->flags, s);
 	s->pc++;
 }
+
+/* Load immediate register pair S, P */
+void instr_lxisp(I8080_State * s) {
+	s->pc++;
+	s->sp = s->mem[s->pc++];
+	s->sp |= s->mem[s->pc++] << 0x08;
+}

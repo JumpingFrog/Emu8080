@@ -47,10 +47,12 @@ void instr_di(I8080_State * s) {
 	s->pc++;
 }
 
+/* No operation */
 void instr_nop(I8080_State * s) {
 	s->pc++;
 }
 
+/* Halt */
 void instr_hlt(I8080_State * s) {
 	s->hlt = 1;
 }
