@@ -28,12 +28,12 @@ const Instruction decode[] =
 		&instr_nop, &instr_nop, &instr_ldaxd, &instr_nop, /*0x1B*/
 		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x1F*/
 		&instr_nop, &instr_lxih, &instr_shld, &instr_nop, /*0x23*/
-		&instr_nop, &instr_nop, &instr_mvir, &instr_stc, /*0x27*/
+		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x27*/
 		&instr_nop, &instr_nop, &instr_lhld, &instr_nop, /*0x2B*/
 		&instr_nop, &instr_nop, &instr_mvir, &instr_cma, /*0x2F*/
-		&instr_nop, &instr_lxisp, &instr_sta, &instr_nop, /*0x33*/
-		&instr_nop, &instr_nop, &instr_mvim, &instr_nop, /*0x37*/
-		&instr_nop, &instr_nop, &instr_lda, &instr_nop, /*0x3B*/
+		&instr_nop, &instr_lxisp, &instr_sta, &instr_inxsp, /*0x33*/
+		&instr_nop, &instr_nop, &instr_mvim, &instr_stc, /*0x37*/
+		&instr_nop, &instr_nop, &instr_lda, &instr_dcxsp, /*0x3B*/
 		&instr_nop, &instr_nop, &instr_mvir, &instr_cmc, /*0x3F*/
 		&instr_movrr, &instr_movrr, &instr_movrr, &instr_movrr, /*0x43*/
 		&instr_movrr, &instr_movrr, &instr_movrm, &instr_movrr, /*0x47*/
@@ -67,21 +67,21 @@ const Instruction decode[] =
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xB7*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xBB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xBF*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_jmp, /*0xC3*/
+		&instr_nop, &instr_popb, &instr_nop, &instr_jmp, /*0xC3*/
 		&instr_nop, &instr_pushb, &instr_nop, &instr_nop, /*0xC7*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xCB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xCF*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xD3*/
+		&instr_nop, &instr_popd, &instr_nop, &instr_nop, /*0xD3*/
 		&instr_nop, &instr_pushd, &instr_nop, &instr_nop, /*0xD7*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xDB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xDF*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xE3*/
+		&instr_nop, &instr_poph, &instr_nop, &instr_xthl, /*0xE3*/
 		&instr_nop, &instr_pushh, &instr_nop, &instr_nop, /*0xE7*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_xchg, /*0xEB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xEF*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xF3*/
+		&instr_nop, &instr_popp, &instr_nop, &instr_nop, /*0xF3*/
 		&instr_nop, &instr_pushp, &instr_nop, &instr_nop, /*0xF7*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xFB*/
+		&instr_nop, &instr_sphl, &instr_nop, &instr_nop, /*0xFB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop  /*0xFF*/
 	};
 
