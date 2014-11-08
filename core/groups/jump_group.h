@@ -1,1 +1,10 @@
 void instr_jmp(I8080_State *);
+void instr_jc(I8080_State *);
+void instr_jnc(I8080_State *);
+void instr_jz(I8080_State *);
+void instr_jnz(I8080_State *);
+void instr_jp(I8080_State *);
+void instr_jm(I8080_State *);
+void instr_jpe(I8080_State *);
+void instr_jpo(I8080_State *);
+void instr_pchl(I8080_State *);

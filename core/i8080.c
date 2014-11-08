@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "i8080.h"
 /* Instruction groups */
 #include "groups/arithmetic_group.h"
@@ -11,13 +12,79 @@
 #include "groups/special_group.h"
 #include "groups/stack_group.h"
 
-/* 
-Instruction decode table.
-Based on:
+/* Lookup instructions for disassemble.
 http://pastraiser.com/cpu/i8080/i8080_opcodes.html
 */
+const char * lookup[] =
+	{
+		"nop", "lxi b, +2", "stax b", "inx b",
+		"inr b", "dcr b", "mvi b, +1", "rlc",
+		"nop", "dad b", "ldax b", "dcx b",
+		"inr c", "dcr c", "mvi c, +1", "rrc",
+		"nop", "lxi d, +2", "stax d", "inx d",
+		"inr d", "dcr d", "mvi d, +1", "ral",
+		"nop", "dad d", "ldax d", "dcx d",
+		"inr e", "dcr e", "mvi e, +1", "rar",
+		"nop", "lxi h, +2", "shld", "inx h",
+		"inr h", "dcr h", "mvi h, +1", "daa",
+		"nop", "dad h", "lhld +2", "dcx h",
+		"inr l", "dcr l", "mvi l, +1", "cma",
+		"nop", "lxi sp, +2", "sta +2", "inx sp",
+		"inr m", "dcr m", "mvi m, +1", "stc",
+		"nop", "dad sp", "lda +2", "dcx sp",
+		"inr a", "dcr a", "mvi a, +1", "cmc",
+		"mov b, b", "mov b, c", "mov b, d", "mov b, e",
+		"mov b, h", "mov b, l", "mov b, m", "mov b, a",
+		"mov c, b", "mov c, c", "mov c, d", "mov c, e",
+		"mov c, h", "mov c, l", "mov c, m", "mov c, a",
+		"mov d, b", "mov d, c", "mov d, d", "mov d, e",
+		"mov d, h", "mov d, l", "mov d, m", "mov d, a",
+		"mov e, b", "mov e, c", "mov e, d", "mov e, e",
+		"mov e, h", "mov e, l", "mov e, m", "mov e, a",
+		"mov h, b", "mov h, c", "mov h, d", "mov h, e",
+		"mov h, h", "mov h, l", "mov h, m", "mov h, a",
+		"mov l, b", "mov l, c", "mov l, d", "mov l, e",
+		"mov l, h", "mov l, l", "mov l, m", "mov l, a",
+		"mov m, b", "mov m, c", "mov m, d", "mov m, e",
+		"mov m, h", "mov m, l", "hlt", "mov m, a",
+		"mov a, b", "mov a, c", "mov a, d", "mov a, e",
+		"mov a, h", "mov a, l", "mov a, m", "mov a, a",
+		"add b", "add c", "add d", "add e",
+		"add h", "add l", "add m", "add a",
+		"adc b", "adc c", "adc d", "adc e",
+		"adc h", "adc l", "adc m", "adc a",
+		"sub b", "sub c", "sub d", "sub e",
+		"sub h", "sub l", "sub m", "sub a",
+		"sbb b", "sbb c", "sbb d", "sbb e",
+		"sbb h", "sbb l", "sbb m", "sbb a",
+		"ana b", "ana c", "ana d", "ana e",
+		"ana h", "ana l", "ana m", "ana a",
+		"xra b", "xra c", "xra d", "xra e",
+		"xra h", "xra l", "xra m", "xra a",
+		"ora b", "ora c", "ora d", "ora e",
+		"ora h", "ora l", "ora m", "ora a",
+		"cmp b", "cmp c", "cmp d", "cmp e",
+		"cmp h", "cmp l", "cmp m", "cmp a",
+		"rnz", "pop b", "jnz +2", "jmp +2",
+		"cnz +2", "push b", "adi +1", "rst 0",
+		"rz", "ret", "jz +2", "jmp +2",
+		"cz +2", "call +2", "aci +1", "rst 1",
+		"rnc", "pop d", "jnc +2", "out +1",
+		"cnc +2", "push d", "sui +1", "rst 2",
+		"rc", "ret", "jc +2", "in +1",
+		"cc +2", "call +2", "sbi +1", "rst 3",
+		"rpo", "pop h", "jpo +2", "xthl",
+		"cpo +2", "push h", "ani +1", "rst 4",
+		"rpe", "pchl", "jpe +2", "xchg",
+		"cpe +2", "call +2", "xri +1", "rst 5",
+		"rp", "pop psw", "jp +2", "di",
+		"cp +2", "push psw", "ori +1", "rst 6",
+		"rm", "sphl", "jm +2", "ei",
+		"cm +2", "call +2", "cpi +1", "rst 7"
+	};
 
-const Instruction decode[] = 
+/* Instruction decode table. */
+const Instruction decode[] =
 	{
 		&instr_nop, &instr_lxib, &instr_staxb, &instr_nop, /*0x03*/
 		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x07*/
@@ -67,21 +134,21 @@ const Instruction decode[] =
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xB7*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xBB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xBF*/
-		&instr_nop, &instr_popb, &instr_nop, &instr_jmp, /*0xC3*/
+		&instr_nop, &instr_popb, &instr_jnz, &instr_jmp, /*0xC3*/
 		&instr_nop, &instr_pushb, &instr_nop, &instr_nop, /*0xC7*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xCB*/
+		&instr_nop, &instr_nop, &instr_jz, &instr_jmp, /*0xCB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xCF*/
-		&instr_nop, &instr_popd, &instr_nop, &instr_nop, /*0xD3*/
+		&instr_nop, &instr_popd, &instr_jnc, &instr_nop, /*0xD3*/
 		&instr_nop, &instr_pushd, &instr_nop, &instr_nop, /*0xD7*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xDB*/
+		&instr_nop, &instr_nop, &instr_jc, &instr_nop, /*0xDB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xDF*/
-		&instr_nop, &instr_poph, &instr_nop, &instr_xthl, /*0xE3*/
+		&instr_nop, &instr_poph, &instr_jpo, &instr_xthl, /*0xE3*/
 		&instr_nop, &instr_pushh, &instr_nop, &instr_nop, /*0xE7*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_xchg, /*0xEB*/
+		&instr_nop, &instr_pchl, &instr_jpe, &instr_xchg, /*0xEB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xEF*/
-		&instr_nop, &instr_popp, &instr_nop, &instr_nop, /*0xF3*/
+		&instr_nop, &instr_popp, &instr_jp, &instr_nop, /*0xF3*/
 		&instr_nop, &instr_pushp, &instr_nop, &instr_nop, /*0xF7*/
-		&instr_nop, &instr_sphl, &instr_nop, &instr_nop, /*0xFB*/
+		&instr_nop, &instr_sphl, &instr_jm, &instr_nop, /*0xFB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop  /*0xFF*/
 	};
 
@@ -98,9 +165,27 @@ void gen_flags(I8080_State * s) {
 	/* ... */
 }
 
+void process_opcode(uint8_t opcode, I8080_State * s) {
+	char * idx = strchr(lookup[opcode], '+'), * opstr;
+	if (idx) {
+		opstr = malloc((idx - lookup[opcode]) * sizeof(char));
+		strncpy(opstr, lookup[opcode], idx - lookup[opcode]);
+		/* Detect operand count */
+		if (idx[1] == '1') {
+			printf("%s0x%02x \r\n", opstr, s->mem[s->pc + 1]);
+		} else {
+			/* N.B. LE */
+			printf("%s0x%02x%02x \r\n", opstr, s->mem[s->pc + 2], s->mem[s->pc + 1]);
+		}
+	} else { /* Opcode only, no extra bytes */
+		printf("%s \r\n", lookup[opcode]);
+	}
+}
+
 void dbg_8080(I8080_State * s) {
 	puts("-------------------------------------------------");
-	printf("PC: 0x%04x \t [PC]: 0x%02x \r\n", s->pc, s->mem[s->pc]);
+	printf("PC: 0x%04x \t [PC]: 0x%02x \t", s->pc, s->mem[s->pc]);
+	process_opcode(s->mem[s->pc], s);
 	printf("A: 0x%02x \t F: 0x%02x \r\n", s->regs[REG_A], s->flags);
 	printf("B: 0x%02x \t C: 0x%02x \r\n", s->regs[REG_B], s->regs[REG_C]);
 	printf("D: 0x%02x \t E: 0x%02x \r\n", s->regs[REG_D], s->regs[REG_E]);
@@ -114,5 +199,5 @@ void run_8080(I8080_State * s) {
 		/* Execute current opcode */
 		(*decode[s->mem[s->pc]])(s);
 		dbg_8080(s);
-	}	
+	}
 }
