@@ -118,8 +118,8 @@ const Instruction decode[] =
 		&instr_movmr, &instr_movmr, &instr_hlt, &instr_movmr, /*0x77*/
 		&instr_movrr, &instr_movrr, &instr_movrr, &instr_movrr, /*0x7B*/
 		&instr_movrr, &instr_movrr, &instr_movrm, &instr_movrr, /*0x7F*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x83*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x87*/
+		&instr_addr, &instr_addr, &instr_addr, &instr_addr, /*0x83*/
+		&instr_addr, &instr_addr, &instr_addr, &instr_addr, /*0x87*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x8B*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x8F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x93*/
@@ -161,36 +161,54 @@ I8080_State * init_8080() {
 	return ret;
 }
 
-void gen_flags(I8080_State * s) {
-	/* ... */
+/* Generate PZS flags from Reg A */
+void gen_pzs(I8080_State * s) {
+	uint8_t count, bit, temp;
+	/* Zero */
+	if (s->regs[REG_A]) s->flags &= ~FLG_Z;
+	else s->flags |= FLG_Z;
+	/* Sign */
+	if (s->regs[REG_A] & 0x80) s->flags |= FLG_S;
+	else s->flags &= ~FLG_S;
+	/* Parity */
+	temp = s->regs[REG_A];
+	count = 0;
+	for (bit = 0; bit < 8; bit++) {
+		if (temp & 0x01) count++;
+		temp >>= 1;
+	}
+	if (count % 2) s->flags &= ~FLG_P;
+	else s->flags |= FLG_P;
 }
 
-void process_opcode(uint8_t opcode, I8080_State * s) {
+void disassemble_opcode(uint8_t opcode, I8080_State * s) {
 	char * idx = strchr(lookup[opcode], '+'), * opstr;
 	if (idx) {
 		opstr = malloc((idx - lookup[opcode]) * sizeof(char));
 		strncpy(opstr, lookup[opcode], idx - lookup[opcode]);
 		/* Detect operand count */
 		if (idx[1] == '1') {
-			printf("%s0x%02x \r\n", opstr, s->mem[s->pc + 1]);
+			printf("OP: %s0x%02x \r\n", opstr, s->mem[s->pc + 1]);
 		} else {
 			/* N.B. LE */
-			printf("%s0x%02x%02x \r\n", opstr, s->mem[s->pc + 2], s->mem[s->pc + 1]);
+			printf("OP: %s0x%02x%02x \r\n", opstr, s->mem[s->pc + 2], s->mem[s->pc + 1]);
 		}
-	} else { /* Opcode only, no extra bytes */
-		printf("%s \r\n", lookup[opcode]);
+	} else { /* Opcode only,no operand */
+		printf("OP: %s \r\n", lookup[opcode]);
 	}
 }
 
 void dbg_8080(I8080_State * s) {
 	puts("-------------------------------------------------");
 	printf("PC: 0x%04x \t [PC]: 0x%02x \t", s->pc, s->mem[s->pc]);
-	process_opcode(s->mem[s->pc], s);
-	printf("A: 0x%02x \t F: 0x%02x \r\n", s->regs[REG_A], s->flags);
-	printf("B: 0x%02x \t C: 0x%02x \r\n", s->regs[REG_B], s->regs[REG_C]);
-	printf("D: 0x%02x \t E: 0x%02x \r\n", s->regs[REG_D], s->regs[REG_E]);
-	printf("H: 0x%02x \t L: 0x%02x \r\n", s->regs[REG_H], s->regs[REG_L]);
-	printf("SP: 0x%04x \t [SP]: 0x%02x \t [SP+1] 0x%02x \r\n", s->sp, s->mem[s->sp], s->mem[s->sp + 1]);
+	disassemble_opcode(s->mem[s->pc], s);
+	printf("A:  0x%02x \t F: 0x%02x \r\n", s->regs[REG_A], s->flags);
+	printf("B:  0x%02x \t C: 0x%02x \r\n", s->regs[REG_B], s->regs[REG_C]);
+	printf("D:  0x%02x \t E: 0x%02x \r\n", s->regs[REG_D], s->regs[REG_E]);
+	printf("H:  0x%02x \t L: 0x%02x \r\n", s->regs[REG_H], s->regs[REG_L]);
+	printf("SP: 0x%04x \t [SP]: 0x%02x \t [SP+1]: 0x%02x \r\n", s->sp, s->mem[s->sp], s->mem[s->sp + 1]);
+	printf("S: %x Z: %x \t A: %x P: %x \t C: %x \r\n", (s->flags & FLG_S) >> 7,
+		(s->flags & FLG_Z) >> 6, (s->flags & FLG_A) >> 4, (s->flags & FLG_P) >> 2, (s->flags & FLG_C));
 }
 
 /* Run... */

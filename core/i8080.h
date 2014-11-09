@@ -37,7 +37,7 @@ typedef struct {
 	uint8_t mem[0xFFFF];
 	/* IO Devices */
 	struct _IODevice * devices[256];
-} I8080_State; 
+} I8080_State;
 
 
 /* Typedefs for IO device functionality.
@@ -58,3 +58,4 @@ typedef void (*Instruction)(I8080_State *);
 /* Prototypes */
 void run_8080(I8080_State *);
 I8080_State * init_8080();
+void gen_pzs(I8080_State * s);

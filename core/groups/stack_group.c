@@ -50,6 +50,10 @@ void instr_poph(I8080_State * s) {
 /* Pop PSW */
 void instr_popp(I8080_State * s) {
 	POP(s->regs[REG_A], s->flags, s);
+	/* Maintain constant 2 */
+	s->flags |= 0x02;
+	/* Maintain 0 constants */
+	s->flags &= 0xd7;
 	s->pc++;
 }
 
