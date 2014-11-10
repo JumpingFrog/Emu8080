@@ -193,6 +193,7 @@ void disassemble_opcode(uint8_t opcode, I8080_State * s) {
 			/* N.B. LE */
 			printf("OP: %s0x%02x%02x \r\n", opstr, s->mem[s->pc + 2], s->mem[s->pc + 1]);
 		}
+		free(opstr);
 	} else { /* Opcode only,no operand */
 		printf("OP: %s \r\n", lookup[opcode]);
 	}
