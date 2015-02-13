@@ -88,19 +88,19 @@ const Instruction decode[] =
 	{
 		&instr_nop, &instr_lxib, &instr_staxb, &instr_nop, /*0x03*/
 		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x07*/
-		&instr_nop, &instr_nop, &instr_ldaxb, &instr_nop, /*0x0B*/
+		&instr_nop, &instr_dadb, &instr_ldaxb, &instr_nop, /*0x0B*/
 		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x0F*/
 		&instr_nop, &instr_lxid, &instr_staxd, &instr_nop, /*0x13*/
 		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x17*/
-		&instr_nop, &instr_nop, &instr_ldaxd, &instr_nop, /*0x1B*/
+		&instr_nop, &instr_dadd, &instr_ldaxd, &instr_nop, /*0x1B*/
 		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x1F*/
 		&instr_nop, &instr_lxih, &instr_shld, &instr_nop, /*0x23*/
 		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x27*/
-		&instr_nop, &instr_nop, &instr_lhld, &instr_nop, /*0x2B*/
+		&instr_nop, &instr_dadh, &instr_lhld, &instr_nop, /*0x2B*/
 		&instr_nop, &instr_nop, &instr_mvir, &instr_cma, /*0x2F*/
 		&instr_nop, &instr_lxisp, &instr_sta, &instr_inxsp, /*0x33*/
 		&instr_nop, &instr_nop, &instr_mvim, &instr_stc, /*0x37*/
-		&instr_nop, &instr_nop, &instr_lda, &instr_dcxsp, /*0x3B*/
+		&instr_nop, &instr_dads, &instr_lda, &instr_dcxsp, /*0x3B*/
 		&instr_nop, &instr_nop, &instr_mvir, &instr_cmc, /*0x3F*/
 		&instr_movrr, &instr_movrr, &instr_movrr, &instr_movrr, /*0x43*/
 		&instr_movrr, &instr_movrr, &instr_movrm, &instr_movrr, /*0x47*/
@@ -119,9 +119,9 @@ const Instruction decode[] =
 		&instr_movrr, &instr_movrr, &instr_movrr, &instr_movrr, /*0x7B*/
 		&instr_movrr, &instr_movrr, &instr_movrm, &instr_movrr, /*0x7F*/
 		&instr_addr, &instr_addr, &instr_addr, &instr_addr, /*0x83*/
-		&instr_addr, &instr_addr, &instr_addr, &instr_addr, /*0x87*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x8B*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x8F*/
+		&instr_addr, &instr_addr, &instr_addm, &instr_addr, /*0x87*/
+		&instr_adcr, &instr_adcr, &instr_adcr, &instr_adcr, /*0x8B*/
+		&instr_adcr, &instr_adcr, &instr_adcm, &instr_adcr, /*0x8F*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x93*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x97*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x9B*/
@@ -135,9 +135,9 @@ const Instruction decode[] =
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xBB*/
 		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xBF*/
 		&instr_nop, &instr_popb, &instr_jnz, &instr_jmp, /*0xC3*/
-		&instr_nop, &instr_pushb, &instr_nop, &instr_nop, /*0xC7*/
+		&instr_nop, &instr_pushb, &instr_adi, &instr_nop, /*0xC7*/
 		&instr_nop, &instr_nop, &instr_jz, &instr_jmp, /*0xCB*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xCF*/
+		&instr_nop, &instr_nop, &instr_aci, &instr_nop, /*0xCF*/
 		&instr_nop, &instr_popd, &instr_jnc, &instr_nop, /*0xD3*/
 		&instr_nop, &instr_pushd, &instr_nop, &instr_nop, /*0xD7*/
 		&instr_nop, &instr_nop, &instr_jc, &instr_nop, /*0xDB*/

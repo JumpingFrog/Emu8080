@@ -1,1 +1,10 @@
 void instr_addr(I8080_State *);
+void instr_adcr(I8080_State *);
+void instr_addm(I8080_State *);
+void instr_adcm(I8080_State *);
+void instr_addi(I8080_State *);
+void instr_adci(I8080_State *);
+void instr_dadb(I8080_State *);
+void instr_dadd(I8080_State *);
+void instr_dadh(I8080_State *);
+void instr_dads(I8080_State *);

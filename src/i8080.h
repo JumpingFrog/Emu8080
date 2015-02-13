@@ -14,7 +14,7 @@
 
 #define MEM(S) ((S->regs[REG_H] << 8) | S->regs[REG_L])
 
-/* Macros for Flag functionality */
+/* Macros for flag functionality */
 #define FLG_C 0x01
 #define FLG_P 0x04
 #define FLG_A 0x10
@@ -22,6 +22,11 @@
 #define FLG_S 0x80
 
 #define FLAG(S, X) ((S->flags & X) ? 1 : 0)
+
+/* Macros for register pairs */
+#define RP_BC(S) ((S->regs[REG_B] << 8) | S->regs[REG_C])
+#define RP_DE(S) ((S->regs[REG_D] << 8) | S->regs[REG_E])
+#define RP_HL(S) ((S->regs[REG_H] << 8) | S->regs[REG_L])
 
 /* Macro to set a flag based on condition. Cleared if cond is false. */
 #define COND_FLAG(COND, S, F) if (COND) S->flags |= F; else S->flags &= ~F;

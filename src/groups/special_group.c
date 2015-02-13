@@ -19,7 +19,7 @@ void instr_stc(I8080_State * s) {
 	s->pc++;
 }
 
-/*RESET*/
+/* RESET */
 void instr_rst(I8080_State * s) {
 	uint8_t v = (s->mem[s->pc++] & 0x38);
 	s->mem[--s->sp] = (s->pc & 0xFF00) >> 8;
