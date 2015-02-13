@@ -10,7 +10,9 @@
 #define REG_L 5
 #define REG_M 6
 
-#define REG(S, X) (X==M) ? (S->regs[H] << 8) | S->regs[L] : S->regs[X];
+#define REG(S, X) (X==REG_M) ? (S->regs[REG_H] << 8) | S->regs[REG_L] : S->regs[X];
+
+#define MEM(S) ((S->regs[REG_H] << 8) | S->regs[REG_L])
 
 /* Macros for Flag functionality */
 #define FLG_C 0x01
@@ -19,7 +21,7 @@
 #define FLG_Z 0x40
 #define FLG_S 0x80
 
-#define FLAG(S, X) (S->flags & X) ? 1 : 0;
+#define FLAG(S, X) ((S->flags & X) ? 1 : 0)
 
 /* Macro to set a flag based on condition. Cleared if cond is false. */
 #define COND_FLAG(COND, S, F) if (COND) S->flags |= F; else S->flags &= ~F;

@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "core/i8080.h"
+#include "i8080.h"
 
 int main(int argc, char * argv[]) {
 	FILE * fp;

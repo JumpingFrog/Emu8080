@@ -1,10 +1,12 @@
 CFLAGS=-Wall -Wextra -Wpedantic -O0
-OBJ=main.o core/groups/jump_group.o core/groups/special_group.o\
-	core/groups/arithmetic_group.o\
-	core/groups/logical_group.o core/groups/data_group.o\
-	core/groups/stack_group.o core/i8080.o
+
+OBJ =	src/main.o src/groups/jump_group.o src/groups/special_group.o
+OBJ +=	src/groups/arithmetic_group.o src/groups/logical_group.o
+OBJ +=	src/groups/data_group.o src/groups/stack_group.o src/i8080.o
+
 CC=clang
-EXECNAME=bin/myapp
+
+EXECNAME=bin/emu
 
 all: main
 	@echo "Emu8080 built."
@@ -16,5 +18,5 @@ clean:
 	rm -f *.out
 	rm -f *.o
 	rm -f $(EXECNAME)
-	rm -f core/*.o
-	rm -f core/group/*.o
+	rm -f src/*.o
+	rm -f src/groups/*.o

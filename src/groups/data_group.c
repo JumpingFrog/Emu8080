@@ -10,7 +10,7 @@ void instr_mvir(I8080_State * s) {
 /* Move Immediate Memory (HL) */
 void instr_mvim(I8080_State * s) {
 	s->pc++;
-	s->mem[(s->regs[REG_H] << 8) | s->regs[REG_L]] = s->mem[s->pc++];
+	s->mem[MEM(s)] = s->mem[s->pc++];
 }
 
 /* Move register to register */
@@ -25,13 +25,13 @@ void instr_movrr(I8080_State * s) {
 /* Move register to memory */
 void instr_movmr(I8080_State * s) {
 	uint8_t r = (s->mem[s->pc++] & 0x07);
-	s->mem[(s->regs[REG_H] << 8) | s->regs[REG_L]] = s->regs[r];
+	s->mem[MEM(s)] = s->regs[r];
 }
 
 /* Move memory to register */
 void instr_movrm(I8080_State * s) {
 	uint8_t r = (s->mem[s->pc++] & 0x38) >> 3;
-	s->regs[r] = s->mem[(s->regs[REG_H] << 8) | s->regs[REG_L]];
+	s->regs[r] = s->mem[MEM(s)];
 }
 
 /* Load immediate register pair B, C */
@@ -97,8 +97,7 @@ void instr_lda(I8080_State * s) {
 
 /* Store H, L direct */
 void instr_shld(I8080_State * s) {
-	uint16_t addr = s->mem[++s->pc];
-	addr |= s->mem[++s->pc] << 8;
+	uint16_t addr = s->mem[++s->pc] | s->mem[++s->pc] << 8;
 	s->pc++;
 	s->mem[addr++] = s->regs[REG_L];
 	s->mem[addr] = s->regs[REG_H];
@@ -106,8 +105,7 @@ void instr_shld(I8080_State * s) {
 
 /* Load H, L direct */
 void instr_lhld(I8080_State * s) {
-	uint16_t addr = s->mem[++s->pc];
-	addr |= s->mem[++s->pc] << 8;
+	uint16_t addr = s->mem[++s->pc] | s->mem[++s->pc] << 8;
 	s->pc++;
 	s->regs[REG_L] = s->mem[addr++];
 	s->regs[REG_H] = s->mem[addr];
