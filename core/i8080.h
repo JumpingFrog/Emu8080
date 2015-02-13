@@ -21,6 +21,9 @@
 
 #define FLAG(S, X) (S->flags & X) ? 1 : 0;
 
+/* Macro to set a flag based on condition. Cleared if cond is false. */
+#define COND_FLAG(COND, S, F) if (COND) S->flags |= F; else S->flags &= ~F;
+
 /* Data for 8080 */
 typedef struct {
 	/* Halt flag */
@@ -38,7 +41,6 @@ typedef struct {
 	/* IO Devices */
 	struct _IODevice * devices[256];
 } I8080_State;
-
 
 /* Typedefs for IO device functionality.
 	Consider if passing state is neccesary...

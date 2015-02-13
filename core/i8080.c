@@ -15,7 +15,7 @@
 /* Lookup instructions for disassemble.
 http://pastraiser.com/cpu/i8080/i8080_opcodes.html
 */
-const char * lookup[] =
+static const char * lookup[] =
 	{
 		"nop", "lxi b, +2", "stax b", "inx b",
 		"inr b", "dcr b", "mvi b, +1", "rlc",
@@ -165,11 +165,9 @@ I8080_State * init_8080() {
 void gen_pzs(I8080_State * s) {
 	uint8_t count, bit, temp;
 	/* Zero */
-	if (s->regs[REG_A]) s->flags &= ~FLG_Z;
-	else s->flags |= FLG_Z;
+	COND_FLAG(!s->regs[REG_A], s, FLG_Z);
 	/* Sign */
-	if (s->regs[REG_A] & 0x80) s->flags |= FLG_S;
-	else s->flags &= ~FLG_S;
+	COND_FLAG(s->regs[REG_A] & 0x80, s, FLG_S);
 	/* Parity */
 	temp = s->regs[REG_A];
 	count = 0;
@@ -177,8 +175,7 @@ void gen_pzs(I8080_State * s) {
 		if (temp & 0x01) count++;
 		temp >>= 1;
 	}
-	if (count % 2) s->flags &= ~FLG_P;
-	else s->flags |= FLG_P;
+	COND_FLAG(!(count % 2), s, FLG_P);
 }
 
 void disassemble_opcode(uint8_t opcode, I8080_State * s) {

@@ -6,4 +6,4 @@ Currently implemented:
 - Data ops
 - Stack ops
 - Others here and there
-
+- Live disassembly/debugger.
