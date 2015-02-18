@@ -1,5 +1,5 @@
-#include "../i8080.h"
-#include "jump_group.h"
+#include <i8080.h>
+#include <jump_group.h>
 
 /* Macro for conditional jumps */
 #define JMPC(C, S) uint16_t addr; if (C) { addr = S->mem[++S->pc];\

@@ -1,5 +1,5 @@
-#include "../i8080.h"
-#include "special_group.h"
+#include <i8080.h>
+#include <special_group.h>
 
 /* Complement Accumulator */
 void instr_cma(I8080_State * s) {

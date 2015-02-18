@@ -1,4 +1,4 @@
-CFLAGS=-Wall -Wextra -Wpedantic -O0
+CFLAGS=-Wall -Wextra -Wpedantic -O0 -Isrc/groups/include -Isrc/
 
 OBJ =	src/main.o src/groups/jump_group.o src/groups/special_group.o
 OBJ +=	src/groups/arithmetic_group.o src/groups/logical_group.o
