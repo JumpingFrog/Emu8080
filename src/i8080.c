@@ -1,16 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "i8080.h"
+#include <i8080.h>
 /* Instruction groups */
-#include "groups/arithmetic_group.h"
-#include "groups/call_group.h"
-#include "groups/data_group.h"
-#include "groups/jump_group.h"
-#include "groups/logical_group.h"
-#include "groups/return_group.h"
-#include "groups/special_group.h"
-#include "groups/stack_group.h"
+#include <arithmetic_group.h>
+#include <call_group.h>
+#include <data_group.h>
+#include <jump_group.h>
+#include <logical_group.h>
+#include <return_group.h>
+#include <special_group.h>
+#include <stack_group.h>
 
 /* Lookup instructions for disassemble.
 http://pastraiser.com/cpu/i8080/i8080_opcodes.html
