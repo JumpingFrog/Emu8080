@@ -12,8 +12,6 @@
 
 #define REG(S, X) (X==REG_M) ? (S->regs[REG_H] << 8) | S->regs[REG_L] : S->regs[X];
 
-#define MEM(S) ((S->regs[REG_H] << 8) | S->regs[REG_L])
-
 /* Macros for flag functionality */
 #define FLG_C 0x01
 #define FLG_P 0x04

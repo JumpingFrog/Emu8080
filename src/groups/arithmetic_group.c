@@ -17,11 +17,11 @@ void instr_addr(I8080_State * s) {
 
 /* Add memory to A - Affects: S Z A P C */
 void instr_addm(I8080_State * s) {
-	uint16_t res = s->regs[REG_A] + s->mem[MEM(s)];
+	uint16_t res = s->regs[REG_A] + s->mem[RP_HL(s)];
 	/* Carry */
 	COND_FLAG(res > 0xFF, s, FLG_C);
 	/* Aux Carry */
-	COND_FLAG(((s->regs[REG_A] & 0x0F) + (s->mem[MEM(s)] & 0x0F)) > 0x0F, s, FLG_A);
+	COND_FLAG(((s->regs[REG_A] & 0x0F) + (s->mem[RP_HL(s)] & 0x0F)) > 0x0F, s, FLG_A);
 	/* Update result */
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */
@@ -46,11 +46,11 @@ void instr_adi(I8080_State * s) {
 
 /* Add memory to A with carry. - Affects: S Z A P C */
 void instr_adcm(I8080_State * s) {
-	uint16_t res = s->regs[REG_A] + s->mem[MEM(s)] + FLAG(s, FLG_C);
+	uint16_t res = s->regs[REG_A] + s->mem[RP_HL(s)] + FLAG(s, FLG_C);
 	/* Carry */
 	COND_FLAG(res > 0xFF, s, FLG_C);
 	/* Aux Carry */
-	COND_FLAG(((s->regs[REG_A] & 0x0F) + (s->mem[MEM(s)] & 0x0F) + FLAG(s, FLG_C)) > 0x0F, s, FLG_A);
+	COND_FLAG(((s->regs[REG_A] & 0x0F) + (s->mem[RP_HL(s)] & 0x0F) + FLAG(s, FLG_C)) > 0x0F, s, FLG_A);
 	/* Update result */
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */
@@ -219,7 +219,22 @@ void instr_dcxh(I8080_State * s) {
 /* Subtract register from A - Affects: S Z A P C */
 void instr_subr(I8080_State * s) {
 	/* Two's complement */
-	uint8_t r = (~s->regs[s->mem[s->pc++] & 0x07]) + 1;
+	uint8_t r = ~s->regs[s->mem[s->pc++] & 0x07] + 1;
+	uint16_t res = s->regs[REG_A] + r;
+	/* Carry */
+	COND_FLAG(!(res > 0xFF), s, FLG_C);
+	/* Aux Carry */
+	COND_FLAG(((s->regs[REG_A] & 0x0F) + (r & 0x0F)) > 0x0F, s, FLG_A);
+	/* Update result */
+	s->regs[REG_A] = res & 0xFF;
+	/* PZS Flags */
+	gen_pzs(s);
+}
+
+/* Subtract memory from A - Affects: S Z A P C */
+void instr_subm(I8080_State * s) {
+	/* Two's complement */
+	uint8_t r = ~s->mem[RP_HL(s)] + 1;
 	uint16_t res = s->regs[REG_A] + r;
 	/* Carry */
 	COND_FLAG(!(res > 0xFF), s, FLG_C);
@@ -229,11 +244,7 @@ void instr_subr(I8080_State * s) {
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */
 	gen_pzs(s);
-}
-
-/* Subtract memory from A - Affects: S Z A P C */
-void instr_subm(I8080_State * s) {
-
+	s->pc++;
 }
 
 /* Subtract immediate from A - Affects: S Z A P C */

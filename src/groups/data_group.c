@@ -10,7 +10,7 @@ void instr_mvir(I8080_State * s) {
 /* Move Immediate Memory (HL) */
 void instr_mvim(I8080_State * s) {
 	s->pc++;
-	s->mem[MEM(s)] = s->mem[s->pc++];
+	s->mem[RP_HL(s)] = s->mem[s->pc++];
 }
 
 /* Move register to register */
@@ -25,13 +25,13 @@ void instr_movrr(I8080_State * s) {
 /* Move register to memory */
 void instr_movmr(I8080_State * s) {
 	uint8_t r = (s->mem[s->pc++] & 0x07);
-	s->mem[MEM(s)] = s->regs[r];
+	s->mem[RP_HL(s)] = s->regs[r];
 }
 
 /* Move memory to register */
 void instr_movrm(I8080_State * s) {
 	uint8_t r = (s->mem[s->pc++] & 0x38) >> 3;
-	s->regs[r] = s->mem[MEM(s)];
+	s->regs[r] = s->mem[RP_HL(s)];
 }
 
 /* Load immediate register pair B, C */

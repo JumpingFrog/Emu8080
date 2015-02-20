@@ -84,72 +84,72 @@ static const char * lookup[] =
 	};
 
 /* Instruction decode table. */
-const Instruction decode[] =
+static const Instruction decode[] =
 	{
-		&instr_nop, &instr_lxib, &instr_staxb, &instr_nop, /*0x03*/
-		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x07*/
-		&instr_nop, &instr_dadb, &instr_ldaxb, &instr_nop, /*0x0B*/
-		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x0F*/
-		&instr_nop, &instr_lxid, &instr_staxd, &instr_nop, /*0x13*/
-		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x17*/
-		&instr_nop, &instr_dadd, &instr_ldaxd, &instr_nop, /*0x1B*/
-		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x1F*/
-		&instr_nop, &instr_lxih, &instr_shld, &instr_nop, /*0x23*/
-		&instr_nop, &instr_nop, &instr_mvir, &instr_nop, /*0x27*/
-		&instr_nop, &instr_dadh, &instr_lhld, &instr_nop, /*0x2B*/
-		&instr_nop, &instr_nop, &instr_mvir, &instr_cma, /*0x2F*/
-		&instr_nop, &instr_lxisp, &instr_sta, &instr_inxsp, /*0x33*/
-		&instr_nop, &instr_nop, &instr_mvim, &instr_stc, /*0x37*/
-		&instr_nop, &instr_dads, &instr_lda, &instr_dcxsp, /*0x3B*/
-		&instr_nop, &instr_nop, &instr_mvir, &instr_cmc, /*0x3F*/
-		&instr_movrr, &instr_movrr, &instr_movrr, &instr_movrr, /*0x43*/
-		&instr_movrr, &instr_movrr, &instr_movrm, &instr_movrr, /*0x47*/
-		&instr_movrr, &instr_movrr, &instr_movrr, &instr_movrr, /*0x4B*/
-		&instr_movrr, &instr_movrr, &instr_movrm, &instr_movrr, /*0x4F*/
-		&instr_movrr, &instr_movrr, &instr_movrr, &instr_movrr, /*0x53*/
-		&instr_movrr, &instr_movrr, &instr_movrm, &instr_movrr, /*0x57*/
-		&instr_movrr, &instr_movrr, &instr_movrr, &instr_movrr, /*0x5B*/
-		&instr_movrr, &instr_movrr, &instr_movrm, &instr_movrr, /*0x5F*/
-		&instr_movrr, &instr_movrr, &instr_movrr, &instr_movrr, /*0x63*/
-		&instr_movrr, &instr_movrr, &instr_movrm, &instr_movrr, /*0x67*/
-		&instr_movrr, &instr_movrr, &instr_movrr, &instr_movrr, /*0x6B*/
-		&instr_movrr, &instr_movrr, &instr_movrm, &instr_movrr, /*0x6F*/
-		&instr_movmr, &instr_movmr, &instr_movmr, &instr_movmr, /*0x73*/
-		&instr_movmr, &instr_movmr, &instr_hlt, &instr_movmr, /*0x77*/
-		&instr_movrr, &instr_movrr, &instr_movrr, &instr_movrr, /*0x7B*/
-		&instr_movrr, &instr_movrr, &instr_movrm, &instr_movrr, /*0x7F*/
-		&instr_addr, &instr_addr, &instr_addr, &instr_addr, /*0x83*/
-		&instr_addr, &instr_addr, &instr_addm, &instr_addr, /*0x87*/
-		&instr_adcr, &instr_adcr, &instr_adcr, &instr_adcr, /*0x8B*/
-		&instr_adcr, &instr_adcr, &instr_adcm, &instr_adcr, /*0x8F*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x93*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x97*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x9B*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0x9F*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xA3*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xA7*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xAB*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xAF*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xB3*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xB7*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xBB*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xBF*/
-		&instr_nop, &instr_popb, &instr_jnz, &instr_jmp, /*0xC3*/
-		&instr_nop, &instr_pushb, &instr_adi, &instr_nop, /*0xC7*/
-		&instr_nop, &instr_nop, &instr_jz, &instr_jmp, /*0xCB*/
-		&instr_nop, &instr_nop, &instr_aci, &instr_nop, /*0xCF*/
-		&instr_nop, &instr_popd, &instr_jnc, &instr_nop, /*0xD3*/
-		&instr_nop, &instr_pushd, &instr_nop, &instr_nop, /*0xD7*/
-		&instr_nop, &instr_nop, &instr_jc, &instr_nop, /*0xDB*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xDF*/
-		&instr_nop, &instr_poph, &instr_jpo, &instr_xthl, /*0xE3*/
-		&instr_nop, &instr_pushh, &instr_nop, &instr_nop, /*0xE7*/
-		&instr_nop, &instr_pchl, &instr_jpe, &instr_xchg, /*0xEB*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop, /*0xEF*/
-		&instr_nop, &instr_popp, &instr_jp, &instr_nop, /*0xF3*/
-		&instr_nop, &instr_pushp, &instr_nop, &instr_nop, /*0xF7*/
-		&instr_nop, &instr_sphl, &instr_jm, &instr_nop, /*0xFB*/
-		&instr_nop, &instr_nop, &instr_nop, &instr_nop  /*0xFF*/
+		instr_nop, instr_lxib, instr_staxb, instr_nop, /*0x03*/
+		instr_nop, instr_nop, instr_mvir, instr_nop, /*0x07*/
+		instr_nop, instr_dadb, instr_ldaxb, instr_nop, /*0x0B*/
+		instr_nop, instr_nop, instr_mvir, instr_nop, /*0x0F*/
+		instr_nop, instr_lxid, instr_staxd, instr_nop, /*0x13*/
+		instr_nop, instr_nop, instr_mvir, instr_nop, /*0x17*/
+		instr_nop, instr_dadd, instr_ldaxd, instr_nop, /*0x1B*/
+		instr_nop, instr_nop, instr_mvir, instr_nop, /*0x1F*/
+		instr_nop, instr_lxih, instr_shld, instr_nop, /*0x23*/
+		instr_nop, instr_nop, instr_mvir, instr_nop, /*0x27*/
+		instr_nop, instr_dadh, instr_lhld, instr_nop, /*0x2B*/
+		instr_nop, instr_nop, instr_mvir, instr_cma, /*0x2F*/
+		instr_nop, instr_lxisp, instr_sta, instr_inxsp, /*0x33*/
+		instr_nop, instr_nop, instr_mvim, instr_stc, /*0x37*/
+		instr_nop, instr_dads, instr_lda, instr_dcxsp, /*0x3B*/
+		instr_nop, instr_nop, instr_mvir, instr_cmc, /*0x3F*/
+		instr_movrr, instr_movrr, instr_movrr, instr_movrr, /*0x43*/
+		instr_movrr, instr_movrr, instr_movrm, instr_movrr, /*0x47*/
+		instr_movrr, instr_movrr, instr_movrr, instr_movrr, /*0x4B*/
+		instr_movrr, instr_movrr, instr_movrm, instr_movrr, /*0x4F*/
+		instr_movrr, instr_movrr, instr_movrr, instr_movrr, /*0x53*/
+		instr_movrr, instr_movrr, instr_movrm, instr_movrr, /*0x57*/
+		instr_movrr, instr_movrr, instr_movrr, instr_movrr, /*0x5B*/
+		instr_movrr, instr_movrr, instr_movrm, instr_movrr, /*0x5F*/
+		instr_movrr, instr_movrr, instr_movrr, instr_movrr, /*0x63*/
+		instr_movrr, instr_movrr, instr_movrm, instr_movrr, /*0x67*/
+		instr_movrr, instr_movrr, instr_movrr, instr_movrr, /*0x6B*/
+		instr_movrr, instr_movrr, instr_movrm, instr_movrr, /*0x6F*/
+		instr_movmr, instr_movmr, instr_movmr, instr_movmr, /*0x73*/
+		instr_movmr, instr_movmr, instr_hlt, instr_movmr, /*0x77*/
+		instr_movrr, instr_movrr, instr_movrr, instr_movrr, /*0x7B*/
+		instr_movrr, instr_movrr, instr_movrm, instr_movrr, /*0x7F*/
+		instr_addr, instr_addr, instr_addr, instr_addr, /*0x83*/
+		instr_addr, instr_addr, instr_addm, instr_addr, /*0x87*/
+		instr_adcr, instr_adcr, instr_adcr, instr_adcr, /*0x8B*/
+		instr_adcr, instr_adcr, instr_adcm, instr_adcr, /*0x8F*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0x93*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0x97*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0x9B*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0x9F*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0xA3*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0xA7*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0xAB*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0xAF*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0xB3*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0xB7*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0xBB*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0xBF*/
+		instr_nop, instr_popb, instr_jnz, instr_jmp, /*0xC3*/
+		instr_nop, instr_pushb, instr_adi, instr_nop, /*0xC7*/
+		instr_nop, instr_nop, instr_jz, instr_jmp, /*0xCB*/
+		instr_nop, instr_nop, instr_aci, instr_nop, /*0xCF*/
+		instr_nop, instr_popd, instr_jnc, instr_nop, /*0xD3*/
+		instr_nop, instr_pushd, instr_nop, instr_nop, /*0xD7*/
+		instr_nop, instr_nop, instr_jc, instr_nop, /*0xDB*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0xDF*/
+		instr_nop, instr_poph, instr_jpo, instr_xthl, /*0xE3*/
+		instr_nop, instr_pushh, instr_nop, instr_nop, /*0xE7*/
+		instr_nop, instr_pchl, instr_jpe, instr_xchg, /*0xEB*/
+		instr_nop, instr_nop, instr_nop, instr_nop, /*0xEF*/
+		instr_nop, instr_popp, instr_jp, instr_nop, /*0xF3*/
+		instr_nop, instr_pushp, instr_nop, instr_nop, /*0xF7*/
+		instr_nop, instr_sphl, instr_jm, instr_nop, /*0xFB*/
+		instr_nop, instr_nop, instr_nop, instr_nop  /*0xFF*/
 	};
 
 I8080_State * init_8080() {
@@ -205,8 +205,8 @@ void dbg_8080(I8080_State * s) {
 	printf("D:  0x%02x \t E: 0x%02x \r\n", s->regs[REG_D], s->regs[REG_E]);
 	printf("H:  0x%02x \t L: 0x%02x \r\n", s->regs[REG_H], s->regs[REG_L]);
 	printf("SP: 0x%04x \t [SP]: 0x%02x \t [SP+1]: 0x%02x \r\n", s->sp, s->mem[s->sp], s->mem[s->sp + 1]);
-	printf("S: %x Z: %x \t A: %x P: %x \t C: %x \r\n", (s->flags & FLG_S) >> 7,
-		(s->flags & FLG_Z) >> 6, (s->flags & FLG_A) >> 4, (s->flags & FLG_P) >> 2, (s->flags & FLG_C));
+	printf("S: %x Z: %x \t A: %x P: %x \t C: %x \r\n", FLAG(s, FLG_S), 
+		FLAG(s, FLG_Z), FLAG(s, FLG_A), FLAG(s, FLG_P), FLAG(s, FLG_C));
 }
 
 /* Run... */
