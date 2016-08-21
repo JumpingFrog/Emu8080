@@ -138,7 +138,7 @@ static const Instruction decode[] =
 		instr_nop, instr_pushb, instr_adi, instr_nop, /*0xC7*/
 		instr_nop, instr_nop, instr_jz, instr_jmp, /*0xCB*/
 		instr_nop, instr_nop, instr_aci, instr_nop, /*0xCF*/
-		instr_nop, instr_popd, instr_jnc, instr_nop, /*0xD3*/
+		instr_nop, instr_popd, instr_jnc, instr_out, /*0xD3*/
 		instr_nop, instr_pushd, instr_nop, instr_nop, /*0xD7*/
 		instr_nop, instr_nop, instr_jc, instr_nop, /*0xDB*/
 		instr_nop, instr_nop, instr_nop, instr_nop, /*0xDF*/
@@ -152,7 +152,7 @@ static const Instruction decode[] =
 		instr_nop, instr_nop, instr_nop, instr_nop  /*0xFF*/
 	};
 
-I8080_State * init_8080() {
+I8080_State *init_8080() {
 	I8080_State * ret = malloc(sizeof(I8080_State));
 	ret->pc = 0x0000;
 	ret->flags = 0x02;
@@ -162,7 +162,7 @@ I8080_State * init_8080() {
 }
 
 /* Generate PZS flags from Reg A */
-void gen_pzs(I8080_State * s) {
+void gen_pzs(I8080_State *s) {
 	uint8_t count, bit, temp;
 	/* Zero */
 	COND_FLAG(!s->regs[REG_A], s, FLG_Z);
@@ -178,10 +178,10 @@ void gen_pzs(I8080_State * s) {
 	COND_FLAG(!(count % 2), s, FLG_P);
 }
 
-void disassemble_opcode(uint8_t opcode, I8080_State * s) {
-	char * idx = strchr(lookup[opcode], '+'), * opstr;
+void disassemble_opcode(uint8_t opcode, I8080_State *s) {
+	char *idx = strchr(lookup[opcode], '+');
+	char opstr[10];
 	if (idx) {
-		opstr = malloc((idx - lookup[opcode]) * sizeof(char));
 		strncpy(opstr, lookup[opcode], idx - lookup[opcode]);
 		/* Detect operand count */
 		if (idx[1] == '1') {
@@ -190,13 +190,12 @@ void disassemble_opcode(uint8_t opcode, I8080_State * s) {
 			/* N.B. LE */
 			printf("OP: %s0x%02x%02x \r\n", opstr, s->mem[s->pc + 2], s->mem[s->pc + 1]);
 		}
-		free(opstr);
 	} else { /* Opcode only,no operand */
 		printf("OP: %s \r\n", lookup[opcode]);
 	}
 }
 
-void dbg_8080(I8080_State * s) {
+void dbg_8080(I8080_State *s) {
 	puts("-------------------------------------------------");
 	printf("PC: 0x%04x \t [PC]: 0x%02x \t", s->pc, s->mem[s->pc]);
 	disassemble_opcode(s->mem[s->pc], s);
@@ -209,11 +208,15 @@ void dbg_8080(I8080_State * s) {
 		FLAG(s, FLG_Z), FLAG(s, FLG_A), FLAG(s, FLG_P), FLAG(s, FLG_C));
 }
 
+void add_dev_8080(I8080_State *s, uint8_t addr, IODevice *dev) {
+	s->devices[addr] = dev;
+}
+
 /* Run... */
-void run_8080(I8080_State * s) {
+void run_8080(I8080_State *s) {
 	while (!s->hlt) {
+		//dbg_8080(s);
 		/* Execute current opcode */
 		(*decode[s->mem[s->pc]])(s);
-		dbg_8080(s);
 	}
 }

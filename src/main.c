@@ -1,20 +1,24 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include "i8080.h"
+#include <i8080.h>
+#include <devices/serial.h>
 
 int main(int argc, char * argv[]) {
-	FILE * fp;
-	I8080_State * r = init_8080();
-	/* Init stuff */
-	if ((fp = fopen("test.bin", "rb"))) {
-		printf("Read in %lu bytes from test.bin\n\r", fread(r->mem, sizeof(uint8_t), 0xFFFF, fp));
-		fclose(fp);
+	FILE *fp;
+	I8080_State *r = init_8080();
+	IODevice *serial = init_serial();
+	/* Add serial device to IO port 0x02. */
+	add_dev_8080(r, 0x02, serial);
 
+	/* Init stuff */
+	if ((fp = fopen("rom.bin", "rb"))) {
+		printf("Read in %lu bytes from rom.bin\n\r", fread(r->mem, sizeof(uint8_t), 0xFFFF, fp));
+		fclose(fp);
 		/* Go */
 		run_8080(r);
 	}
 	else {
-		puts("No file; test.bin. Exiting.");
+		puts("No file; rom.bin. Exiting.");
 	}
 
 	free(r);
