@@ -3,14 +3,14 @@
 #include <string.h>
 #include <i8080.h>
 /* Instruction groups */
-#include <arithmetic_group.h>
-#include <call_group.h>
-#include <data_group.h>
-#include <jump_group.h>
-#include <logical_group.h>
-#include <return_group.h>
-#include <special_group.h>
-#include <stack_group.h>
+#include <groups/arithmetic.h>
+#include <groups/call.h>
+#include <groups/data.h>
+#include <groups/jump.h>
+#include <groups/logical.h>
+#include <groups/return.h>
+#include <groups/special.h>
+#include <groups/stack.h>
 
 /* Lookup instructions for disassemble.
 http://pastraiser.com/cpu/i8080/i8080_opcodes.html

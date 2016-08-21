@@ -1,5 +1,5 @@
 #include <i8080.h>
-#include <stack_group.h>
+#include <groups/stack.h>
 
 #define PUSH(H, L, S) S->mem[--S->sp] = H; S->mem[--S->sp] = L;
 

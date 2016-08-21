@@ -1,12 +1,12 @@
-CFLAGS=-Wall -Wextra -Wpedantic -O0 -Isrc/groups/include -Isrc/
+CFLAGS=-Wall -Wextra -Wpedantic -O0 -Isrc/include
 
-OBJ =	src/main.o src/groups/jump_group.o src/groups/special_group.o
-OBJ +=	src/groups/arithmetic_group.o src/groups/logical_group.o
-OBJ +=	src/groups/data_group.o src/groups/stack_group.o src/i8080.o
+OBJ =	src/main.o src/groups/jump.o src/groups/special.o
+OBJ +=	src/groups/arithmetic.o src/groups/logical.o
+OBJ +=	src/groups/data.o src/groups/stack.o src/i8080.o
 
 CC=clang
 
-EXECNAME=bin/emu
+EXECNAME=emu
 
 all: main
 	@echo "Emu8080 built."

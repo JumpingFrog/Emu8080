@@ -1,5 +1,5 @@
 #include <i8080.h>
-#include <data_group.h>
+#include <groups/data.h>
 
 /* Move Immediate Register */
 void instr_mvir(I8080_State * s) {

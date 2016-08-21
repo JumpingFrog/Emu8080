@@ -1,5 +1,5 @@
 #include <i8080.h>
-#include <logical_group.h>
+#include <groups/logical.h>
 
 /* Register AND */
 void instr_anar(I8080_State * s) {

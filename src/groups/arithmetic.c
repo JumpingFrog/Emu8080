@@ -1,5 +1,5 @@
 #include <i8080.h>
-#include <arithmetic_group.h>
+#include <groups/arithmetic.h>
 
 /* Add register to A - Affects: S Z A P C */
 void instr_addr(I8080_State * s) {
