@@ -15,73 +15,73 @@
 /* Lookup instructions for disassemble.
 http://pastraiser.com/cpu/i8080/i8080_opcodes.html
 */
-static const char * lookup[] =
+static const char *opcodes[] =
 	{
-		"nop", "lxi b, +2", "stax b", "inx b",
-		"inr b", "dcr b", "mvi b, +1", "rlc",
-		"nop", "dad b", "ldax b", "dcx b",
-		"inr c", "dcr c", "mvi c, +1", "rrc",
-		"nop", "lxi d, +2", "stax d", "inx d",
-		"inr d", "dcr d", "mvi d, +1", "ral",
-		"nop", "dad d", "ldax d", "dcx d",
-		"inr e", "dcr e", "mvi e, +1", "rar",
-		"nop", "lxi h, +2", "shld", "inx h",
-		"inr h", "dcr h", "mvi h, +1", "daa",
-		"nop", "dad h", "lhld +2", "dcx h",
-		"inr l", "dcr l", "mvi l, +1", "cma",
-		"nop", "lxi sp, +2", "sta +2", "inx sp",
-		"inr m", "dcr m", "mvi m, +1", "stc",
-		"nop", "dad sp", "lda +2", "dcx sp",
-		"inr a", "dcr a", "mvi a, +1", "cmc",
-		"mov b, b", "mov b, c", "mov b, d", "mov b, e",
-		"mov b, h", "mov b, l", "mov b, m", "mov b, a",
-		"mov c, b", "mov c, c", "mov c, d", "mov c, e",
-		"mov c, h", "mov c, l", "mov c, m", "mov c, a",
-		"mov d, b", "mov d, c", "mov d, d", "mov d, e",
-		"mov d, h", "mov d, l", "mov d, m", "mov d, a",
-		"mov e, b", "mov e, c", "mov e, d", "mov e, e",
-		"mov e, h", "mov e, l", "mov e, m", "mov e, a",
-		"mov h, b", "mov h, c", "mov h, d", "mov h, e",
-		"mov h, h", "mov h, l", "mov h, m", "mov h, a",
-		"mov l, b", "mov l, c", "mov l, d", "mov l, e",
-		"mov l, h", "mov l, l", "mov l, m", "mov l, a",
-		"mov m, b", "mov m, c", "mov m, d", "mov m, e",
-		"mov m, h", "mov m, l", "hlt", "mov m, a",
-		"mov a, b", "mov a, c", "mov a, d", "mov a, e",
-		"mov a, h", "mov a, l", "mov a, m", "mov a, a",
-		"add b", "add c", "add d", "add e",
-		"add h", "add l", "add m", "add a",
-		"adc b", "adc c", "adc d", "adc e",
-		"adc h", "adc l", "adc m", "adc a",
-		"sub b", "sub c", "sub d", "sub e",
-		"sub h", "sub l", "sub m", "sub a",
-		"sbb b", "sbb c", "sbb d", "sbb e",
-		"sbb h", "sbb l", "sbb m", "sbb a",
-		"ana b", "ana c", "ana d", "ana e",
-		"ana h", "ana l", "ana m", "ana a",
-		"xra b", "xra c", "xra d", "xra e",
-		"xra h", "xra l", "xra m", "xra a",
-		"ora b", "ora c", "ora d", "ora e",
-		"ora h", "ora l", "ora m", "ora a",
-		"cmp b", "cmp c", "cmp d", "cmp e",
-		"cmp h", "cmp l", "cmp m", "cmp a",
-		"rnz", "pop b", "jnz +2", "jmp +2",
-		"cnz +2", "push b", "adi +1", "rst 0",
-		"rz", "ret", "jz +2", "jmp +2",
-		"cz +2", "call +2", "aci +1", "rst 1",
-		"rnc", "pop d", "jnc +2", "out +1",
-		"cnc +2", "push d", "sui +1", "rst 2",
-		"rc", "ret", "jc +2", "in +1",
-		"cc +2", "call +2", "sbi +1", "rst 3",
-		"rpo", "pop h", "jpo +2", "xthl",
-		"cpo +2", "push h", "ani +1", "rst 4",
-		"rpe", "pchl", "jpe +2", "xchg",
-		"cpe +2", "call +2", "xri +1", "rst 5",
-		"rp", "pop psw", "jp +2", "di",
-		"cp +2", "push psw", "ori +1", "rst 6",
-		"rm", "sphl", "jm +2", "ei",
-		"cm +2", "call +2", "cpi +1", "rst 7"
-	};
+		"0nop", "2lxi b, ", "0stax b", "0inx b",
+		"0inr b", "0dcr b", "1mvi b, ", "0rlc",
+		"0nop", "0dad b", "0ldax b", "0dcx b",
+		"0inr c", "0dcr c", "1mvi c, ", "0rrc",
+		"0nop", "2lxi d, ", "0stax d", "0inx d",
+		"0inr d", "0dcr d", "1mvi d, ", "0ral",
+		"0nop", "0dad d", "0ldax d", "0dcx d",
+		"0inr e", "0dcr e", "1mvi e, ", "0rar",
+		"0nop", "2lxi h, ", "0shld", "0inx h",
+		"0inr h", "0dcr h", "1mvi h, ", "0daa",
+		"0nop", "0dad h", "2lhld ", "0dcx h",
+		"0inr l", "0dcr l", "1mvi l, ", "0 cma",
+		"0nop", "2lxi sp, ", "2sta ", "0inx sp",
+		"0inr m", "0dcr m", "1mvi m, ", "0stc",
+		"0nop", "0dad sp", "2lda ", "0dcx sp",
+		"0inr a", "0dcr a", "1mvi a, ", "0cmc",
+		"0mov b, b", "0mov b, c", "0mov b, d", "0mov b, e",
+		"0mov b, h", "0mov b, l", "0mov b, m", "0mov b, a",
+		"0mov c, b", "0mov c, c", "0mov c, d", "0mov c, e",
+		"0mov c, h", "0mov c, l", "0mov c, m", "0mov c, a",
+		"0mov d, b", "0mov d, c", "0mov d, d", "0mov d, e",
+		"0mov d, h", "0mov d, l", "0mov d, m", "0mov d, a",
+		"0mov e, b", "0mov e, c", "0mov e, d", "0mov e, e",
+		"0mov e, h", "0mov e, l", "0mov e, m", "0mov e, a",
+		"0mov h, b", "0mov h, c", "0mov h, d", "0mov h, e",
+		"0mov h, h", "0mov h, l", "0mov h, m", "0mov h, a",
+		"0mov l, b", "0mov l, c", "0mov l, d", "0mov l, e",
+		"0mov l, h", "0mov l, l", "0mov l, m", "0mov l, a",
+		"0mov m, b", "0mov m, c", "0mov m, d", "0mov m, e",
+		"0mov m, h", "0mov m, l", "0hlt", "0mov m, a",
+		"0mov a, b", "0mov a, c", "0mov a, d", "0mov a, e",
+		"0mov a, h", "0mov a, l", "0mov a, m", "0mov a, a",
+		"0add b", "0add c", "0add d", "0add e",
+		"0add h", "0add l", "0add m", "0add a",
+		"0adc b", "0adc c", "0adc d", "0adc e",
+		"0adc h", "0adc l", "0adc m", "0adc a",
+		"0sub b", "0sub c", "0sub d", "0sub e",
+		"0sub h", "0sub l", "0sub m", "0sub a",
+		"0sbb b", "0sbb c", "0sbb d", "0sbb e",
+		"0sbb h", "0sbb l", "0sbb m", "0sbb a",
+		"0ana b", "0ana c", "0ana d", "0ana e",
+		"0ana h", "0ana l", "0ana m", "0ana a",
+		"0xra b", "0xra c", "0xra d", "0xra e",
+		"0xra h", "0xra l", "0xra m", "0xra a",
+		"0ora b", "0ora c", "0ora d", "0ora e",
+		"0ora h", "0ora l", "0ora m", "0ora a",
+		"0cmp b", "0cmp c", "0cmp d", "0cmp e",
+		"0cmp h", "0cmp l", "0cmp m", "0cmp a",
+		"0rnz", "0pop b", "2jnz ", "2jmp ",
+		"2cnz ", "0push b", "1adi ", "0rst 0",
+		"0rz", "0ret", "2jz ", "2jmp ",
+		"2cz ", "2call ", "1aci ", "0rst 1",
+		"0rnc", "0pop d", "2jnc ", "1out ",
+		"2cnc ", "0push d", "1sui ", "0rst 2",
+		"0rc", "0ret", "2jc ", "1in ",
+		"2cc ", "2call ", "1sbi ", "0rst 3",
+		"0rpo", "0pop h", "2jpo ", "0xthl",
+		"2cpo ", "0push h", "1ani ", "0rst 4",
+		"0rpe", "0pchl", "2jpe ", "0xchg",
+		"2cpe ", "2call ", "1xri ", "0rst 5",
+		"0rp", "0pop psw", "2jp ", "0di",
+		"2cp ", "0push psw", "1ori ", "0rst 6",
+		"0rm", "0sphl", "2jm ", "0ei",
+		"2cm ", "2call ", "1cpi ", "0rst 7"
+};
 
 /* Instruction decode table. */
 static const Instruction decode[] =
@@ -150,7 +150,7 @@ static const Instruction decode[] =
 		instr_nop, instr_pushp, instr_nop, instr_nop, /*0xF7*/
 		instr_nop, instr_sphl, instr_jm, instr_nop, /*0xFB*/
 		instr_nop, instr_nop, instr_nop, instr_nop  /*0xFF*/
-	};
+};
 
 I8080_State *init_8080() {
 	I8080_State * ret = malloc(sizeof(I8080_State));
@@ -179,19 +179,21 @@ void gen_pzs(I8080_State *s) {
 }
 
 void disassemble_opcode(uint8_t opcode, I8080_State *s) {
-	char *idx = strchr(lookup[opcode], '+');
-	char opstr[10];
-	if (idx) {
-		strncpy(opstr, lookup[opcode], idx - lookup[opcode]);
-		/* Detect operand count */
-		if (idx[1] == '1') {
+	char *opstr = opcodes[opcode];
+	switch (*opstr) {
+		case '0':
+			opstr++;
+			printf("OP: %s \r\n", opstr);
+			break;
+		case '1':
+			opstr++;
 			printf("OP: %s0x%02x \r\n", opstr, s->mem[s->pc + 1]);
-		} else {
+			break;
+		case '2':
+			opstr++;
 			/* N.B. LE */
 			printf("OP: %s0x%02x%02x \r\n", opstr, s->mem[s->pc + 2], s->mem[s->pc + 1]);
-		}
-	} else { /* Opcode only,no operand */
-		printf("OP: %s \r\n", lookup[opcode]);
+			break;
 	}
 }
 
@@ -215,7 +217,7 @@ void add_dev_8080(I8080_State *s, uint8_t addr, IODevice *dev) {
 /* Run... */
 void run_8080(I8080_State *s) {
 	while (!s->hlt) {
-		//dbg_8080(s);
+		dbg_8080(s);
 		/* Execute current opcode */
 		(*decode[s->mem[s->pc]])(s);
 	}

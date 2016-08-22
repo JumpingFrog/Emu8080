@@ -2,7 +2,7 @@
 #include <groups/arithmetic.h>
 
 /* Add register to A - Affects: S Z A P C */
-void instr_addr(I8080_State * s) {
+void instr_addr(I8080_State *s) {
 	uint8_t r = (s->mem[s->pc++] & 0x07);
 	uint16_t res = s->regs[REG_A] + s->regs[r];
 	/* Carry */
@@ -16,7 +16,7 @@ void instr_addr(I8080_State * s) {
 }
 
 /* Add memory to A - Affects: S Z A P C */
-void instr_addm(I8080_State * s) {
+void instr_addm(I8080_State *s) {
 	uint16_t res = s->regs[REG_A] + s->mem[RP_HL(s)];
 	/* Carry */
 	COND_FLAG(res > 0xFF, s, FLG_C);
@@ -30,7 +30,7 @@ void instr_addm(I8080_State * s) {
 }
 
 /* Add immediate to A - Affects: S Z A P C */
-void instr_adi(I8080_State * s) {
+void instr_adi(I8080_State *s) {
 	uint16_t res = s->regs[REG_A] + s->mem[++s->pc];
 	/* Carry */
 	COND_FLAG(res > 0xFF, s, FLG_C);
@@ -45,7 +45,7 @@ void instr_adi(I8080_State * s) {
 
 
 /* Add memory to A with carry. - Affects: S Z A P C */
-void instr_adcm(I8080_State * s) {
+void instr_adcm(I8080_State *s) {
 	uint16_t res = s->regs[REG_A] + s->mem[RP_HL(s)] + FLAG(s, FLG_C);
 	/* Carry */
 	COND_FLAG(res > 0xFF, s, FLG_C);
@@ -59,7 +59,7 @@ void instr_adcm(I8080_State * s) {
 }
 
 /* Add register to A with carry - Affects: S Z A P C */
-void instr_adcr(I8080_State * s) {
+void instr_adcr(I8080_State *s) {
 	uint8_t r = (s->mem[s->pc++] & 0x07);
 	uint16_t res = s->regs[REG_A] + s->regs[r] + FLAG(s, FLG_C);
 	/* Carry */
@@ -73,7 +73,7 @@ void instr_adcr(I8080_State * s) {
 }
 
 /* Add immediate to A with carry - Affects: S Z A P C */
-void instr_aci(I8080_State * s) {
+void instr_aci(I8080_State *s) {
 	uint16_t res = s->regs[REG_A] + s->mem[++s->pc] + FLAG(s, FLG_C);
 	/* Carry */
 	COND_FLAG(res > 0xFF, s, FLG_C);
@@ -87,7 +87,7 @@ void instr_aci(I8080_State * s) {
 }
 
 /* Double add BC to HL - Affects: C */
-void instr_dadb(I8080_State * s) {
+void instr_dadb(I8080_State *s) {
 	uint32_t res = RP_BC(s) + RP_HL(s);
 	/* Carry */
 	COND_FLAG(res > 0xFFFF, s, FLG_C);
@@ -98,7 +98,7 @@ void instr_dadb(I8080_State * s) {
 }
 
 /* Double add DE to HL - Affects: C */
-void instr_dadd(I8080_State * s) {
+void instr_dadd(I8080_State *s) {
 	uint32_t res = RP_DE(s) + RP_HL(s);
 	/* Carry */
 	COND_FLAG(res > 0xFFFF, s, FLG_C);
@@ -109,7 +109,7 @@ void instr_dadd(I8080_State * s) {
 }
 
 /* Double add HL to HL - Affects: C */
-void instr_dadh(I8080_State * s) {
+void instr_dadh(I8080_State *s) {
 	uint32_t res = RP_HL(s) << 1;
 	/* Carry */
 	COND_FLAG(res > 0xFFFF, s, FLG_C);
@@ -120,7 +120,7 @@ void instr_dadh(I8080_State * s) {
 }
 
 /* Double add SP to HL - Affects: C */
-void instr_dads(I8080_State * s) {
+void instr_dads(I8080_State *s) {
 	uint32_t res = RP_HL(s) + s->sp;
 	/* Carry */
 	COND_FLAG(res > 0xFFFF, s, FLG_C);
@@ -131,7 +131,7 @@ void instr_dads(I8080_State * s) {
 }
 
 /* Increment register - Affects: S Z A P */
-void instr_inrr(I8080_State * s) {
+void instr_inrr(I8080_State *s) {
 	uint8_t r = (s->mem[s->pc++] & 0x38) >> 3;
 	/* Aux Carry */
 	COND_FLAG((s->regs[r] & 0x0F) == 0x0F, s, FLG_A);
@@ -141,7 +141,7 @@ void instr_inrr(I8080_State * s) {
 }
 
 /* Increment memory - Affects: S Z A P */
-void instr_inrm(I8080_State * s) {
+void instr_inrm(I8080_State *s) {
 	/* Aux Carry */
 	COND_FLAG((s->mem[RP_HL(s)] & 0x0F) == 0x0F, s, FLG_A);
 	/* Update result */
@@ -150,7 +150,7 @@ void instr_inrm(I8080_State * s) {
 }
 
 /* Decrement register - Affects: S Z A P  */
-void instr_dcrr(I8080_State * s) {
+void instr_dcrr(I8080_State *s) {
 	uint8_t r = (s->mem[s->pc++] & 0x38) >> 3;
 	/* Aux Carry - Could do with verifying this on a real chip. */
 	COND_FLAG(s->regs[r] & 0x0F, s, FLG_A);
@@ -160,7 +160,7 @@ void instr_dcrr(I8080_State * s) {
 }
 
 /* Decrement memory - Affects: S Z A P */
-void instr_dcrm(I8080_State * s) {
+void instr_dcrm(I8080_State *s) {
 	/* Aux Carry - Could do with verifying this on a real chip. */
 	COND_FLAG(s->mem[RP_HL(s)] & 0x0F, s, FLG_A);
 	/* Update result */
@@ -169,7 +169,7 @@ void instr_dcrm(I8080_State * s) {
 }
 
 /* Increment register pair - Affects: None */
-void instr_inxb(I8080_State * s) {
+void instr_inxb(I8080_State *s) {
 	uint16_t res = RP_BC(s) + 1;
 	s->regs[REG_C] = res & 0xFF;
 	s->regs[REG_B] = (res >> 8) & 0xFF;
@@ -177,7 +177,7 @@ void instr_inxb(I8080_State * s) {
 }
 
 /* Increment register pair - Affects: None */
-void instr_inxd(I8080_State * s) {
+void instr_inxd(I8080_State *s) {
 	uint16_t res = RP_DE(s) + 1;
 	s->regs[REG_E] = res & 0xFF;
 	s->regs[REG_D] = (res >> 8) & 0xFF;
@@ -185,7 +185,7 @@ void instr_inxd(I8080_State * s) {
 }
 
 /* Increment register pair - Affects: None */
-void instr_inxh(I8080_State * s) {
+void instr_inxh(I8080_State *s) {
 	uint16_t res = RP_HL(s) + 1;
 	s->regs[REG_L] = res & 0xFF;
 	s->regs[REG_H] = (res >> 8) & 0xFF;
@@ -193,7 +193,7 @@ void instr_inxh(I8080_State * s) {
 }
 
 /* Decrement register pair - Affects: None */
-void instr_dcxb(I8080_State * s) {
+void instr_dcxb(I8080_State *s) {
 	uint16_t res = RP_BC(s) - 1;
 	s->regs[REG_C] = res & 0xFF;
 	s->regs[REG_B] = (res >> 8) & 0xFF;
@@ -201,7 +201,7 @@ void instr_dcxb(I8080_State * s) {
 }
 
 /* Decrement register pair - Affects: None */
-void instr_dcxd(I8080_State * s) {
+void instr_dcxd(I8080_State *s) {
 	uint16_t res = RP_DE(s) - 1;
 	s->regs[REG_E] = res & 0xFF;
 	s->regs[REG_D] = (res >> 8) & 0xFF;
@@ -209,7 +209,7 @@ void instr_dcxd(I8080_State * s) {
 }
 
 /* Decrement register pair - Affects: None */
-void instr_dcxh(I8080_State * s) {
+void instr_dcxh(I8080_State *s) {
 	uint16_t res = RP_HL(s) - 1;
 	s->regs[REG_L] = res & 0xFF;
 	s->regs[REG_H] = (res >> 8) & 0xFF;
@@ -217,7 +217,7 @@ void instr_dcxh(I8080_State * s) {
 }
 
 /* Subtract register from A - Affects: S Z A P C */
-void instr_subr(I8080_State * s) {
+void instr_subr(I8080_State *s) {
 	/* Two's complement */
 	uint8_t r = ~s->regs[s->mem[s->pc++] & 0x07] + 1;
 	uint16_t res = s->regs[REG_A] + r;
@@ -232,7 +232,7 @@ void instr_subr(I8080_State * s) {
 }
 
 /* Subtract memory from A - Affects: S Z A P C */
-void instr_subm(I8080_State * s) {
+void instr_subm(I8080_State *s) {
 	/* Two's complement */
 	uint8_t r = ~s->mem[RP_HL(s)] + 1;
 	uint16_t res = s->regs[REG_A] + r;
@@ -248,22 +248,22 @@ void instr_subm(I8080_State * s) {
 }
 
 /* Subtract immediate from A - Affects: S Z A P C */
-void instr_sui(I8080_State * s) {
+void instr_sui(I8080_State *s) {
 
 }
 
 /* Subtract register from A with borrow - Affects: S Z A P C */
-void instr_sbbr(I8080_State * s) {
+void instr_sbbr(I8080_State *s) {
 
 }
 
 /* Subtract memory from A with borrow - Affects: S Z A P C */
-void instr_sbbm(I8080_State * s) {
+void instr_sbbm(I8080_State *s) {
 
 }
 
 /* Subtract immediate from A with borrow - Affects: S Z A P C */
-void instr_sbi(I8080_State * s) {
+void instr_sbi(I8080_State *s) {
 
 }
 
