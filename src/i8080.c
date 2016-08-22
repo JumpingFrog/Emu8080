@@ -101,7 +101,7 @@ static const Instruction decode[] =
 		instr_nop, instr_lxisp, instr_sta, instr_inxsp, /*0x33*/
 		instr_nop, instr_nop, instr_mvim, instr_stc, /*0x37*/
 		instr_nop, instr_dads, instr_lda, instr_dcxsp, /*0x3B*/
-		instr_nop, instr_nop, instr_mvir, instr_cmc, /*0x3F*/
+		instr_inrr, instr_nop, instr_mvir, instr_cmc, /*0x3F*/
 		instr_movrr, instr_movrr, instr_movrr, instr_movrr, /*0x43*/
 		instr_movrr, instr_movrr, instr_movrm, instr_movrr, /*0x47*/
 		instr_movrr, instr_movrr, instr_movrr, instr_movrr, /*0x4B*/
@@ -163,23 +163,23 @@ I8080_State *init_8080() {
 
 /* Generate PZS flags from Reg A */
 void gen_pzs(I8080_State *s) {
-	uint8_t count, bit, temp;
+	uint8_t temp = s->regs[REG_A];
 	/* Zero */
-	COND_FLAG(!s->regs[REG_A], s, FLG_Z);
+	COND_FLAG(!temp, s, FLG_Z);
 	/* Sign */
-	COND_FLAG(s->regs[REG_A] & 0x80, s, FLG_S);
+	COND_FLAG(temp & 0x80, s, FLG_S);
 	/* Parity */
-	temp = s->regs[REG_A];
-	count = 0;
-	for (bit = 0; bit < 8; bit++) {
-		if (temp & 0x01) count++;
-		temp >>= 1;
-	}
-	COND_FLAG(!(count % 2), s, FLG_P);
+	temp ^= temp >> 4;
+	temp ^= temp >> 2;
+	temp ^= temp >> 1;
+	COND_FLAG(!(temp & 1), s, FLG_P);
 }
 
-void disassemble_opcode(uint8_t opcode, I8080_State *s) {
-	char *opstr = opcodes[opcode];
+void dbg_8080(I8080_State *s) {
+	const char *opstr = opcodes[s->mem[s->pc]];
+	puts("-------------------------------------------------");
+	printf("PC: 0x%04x \t [PC]: 0x%02x \t", s->pc, s->mem[s->pc]);
+	/* First char of opcode describes number of bytes to instruction. */
 	switch (*opstr) {
 		case '0':
 			opstr++;
@@ -195,12 +195,6 @@ void disassemble_opcode(uint8_t opcode, I8080_State *s) {
 			printf("OP: %s0x%02x%02x \r\n", opstr, s->mem[s->pc + 2], s->mem[s->pc + 1]);
 			break;
 	}
-}
-
-void dbg_8080(I8080_State *s) {
-	puts("-------------------------------------------------");
-	printf("PC: 0x%04x \t [PC]: 0x%02x \t", s->pc, s->mem[s->pc]);
-	disassemble_opcode(s->mem[s->pc], s);
 	printf("A:  0x%02x \t F: 0x%02x \r\n", s->regs[REG_A], s->flags);
 	printf("B:  0x%02x \t C: 0x%02x \r\n", s->regs[REG_B], s->regs[REG_C]);
 	printf("D:  0x%02x \t E: 0x%02x \r\n", s->regs[REG_D], s->regs[REG_E]);
