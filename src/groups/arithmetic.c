@@ -6,9 +6,9 @@ void instr_addr(I8080_State *s) {
 	uint8_t r = (s->mem[s->pc++] & 0x07);
 	uint16_t res = s->regs[REG_A] + s->regs[r];
 	/* Carry */
-	COND_FLAG(res > 0xFF, s, FLG_C);
+	GEN_CY(res, s);
 	/* Aux Carry */
-	COND_FLAG(((s->regs[REG_A] & 0x0F) + (s->regs[r] & 0x0F)) > 0x0F, s, FLG_A);
+	GEN_AC(s->regs[REG_A], s->regs[r], s);
 	/* Update result */
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */
@@ -19,9 +19,9 @@ void instr_addr(I8080_State *s) {
 void instr_addm(I8080_State *s) {
 	uint16_t res = s->regs[REG_A] + s->mem[RP_HL(s)];
 	/* Carry */
-	COND_FLAG(res > 0xFF, s, FLG_C);
+	GEN_CY(res, s)
 	/* Aux Carry */
-	COND_FLAG(((s->regs[REG_A] & 0x0F) + (s->mem[RP_HL(s)] & 0x0F)) > 0x0F, s, FLG_A);
+	GEN_AC(s->regs[REG_A], s->mem[RP_HL(s)], s);
 	/* Update result */
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */

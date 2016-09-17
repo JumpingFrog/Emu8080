@@ -27,7 +27,9 @@
 #define RP_HL(S) ((S->regs[REG_H] << 8) | S->regs[REG_L])
 
 /* Macro to set a flag based on condition. Cleared if cond is false. */
-#define COND_FLAG(COND, S, F) if (COND) S->flags |= F; else S->flags &= ~F;
+#define COND_FLAG(COND, S, F) if (COND) (S)->flags |= F; else (S)->flags &= ~F;
+#define GEN_CY(V, S) COND_FLAG((V) > 0xFF, (S), FLG_C);
+#define GEN_AC(A, B, S) COND_FLAG(((A) & 0X0F) + ((B) & 0x0F) > 0x0F, (S), FLG_A);
 
 /* Data for 8080 */
 typedef struct {

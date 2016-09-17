@@ -12,7 +12,7 @@ int main(int argc, char * argv[]) {
 
 	/* Init stuff */
 	if ((fp = fopen("rom.bin", "rb"))) {
-		printf("Read in %lu bytes from rom.bin\n\r", fread(r->mem, sizeof(uint8_t), 0xFFFF, fp));
+		printf("Read in %lu bytes from rom.bin\r\n", fread(r->mem, sizeof(uint8_t), 0xFFFF, fp));
 		fclose(fp);
 		/* Go */
 		run_8080(r);
@@ -25,3 +25,4 @@ int main(int argc, char * argv[]) {
 
 	return 0;
 }
+

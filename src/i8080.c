@@ -183,25 +183,31 @@ void dbg_8080(I8080_State *s) {
 	switch (*opstr) {
 		case '0':
 			opstr++;
-			printf("OP: %s \r\n", opstr);
+			printf("OP: %s\r\n", opstr);
 			break;
 		case '1':
 			opstr++;
-			printf("OP: %s0x%02x \r\n", opstr, s->mem[s->pc + 1]);
+			printf("OP: %s0x%02x\r\n", opstr, s->mem[s->pc + 1]);
 			break;
 		case '2':
 			opstr++;
 			/* N.B. LE */
-			printf("OP: %s0x%02x%02x \r\n", opstr, s->mem[s->pc + 2], s->mem[s->pc + 1]);
+			printf("OP: %s0x%02x%02x\r\n", opstr, s->mem[s->pc + 2], s->mem[s->pc + 1]);
 			break;
 	}
-	printf("A:  0x%02x \t F: 0x%02x \r\n", s->regs[REG_A], s->flags);
-	printf("B:  0x%02x \t C: 0x%02x \r\n", s->regs[REG_B], s->regs[REG_C]);
-	printf("D:  0x%02x \t E: 0x%02x \r\n", s->regs[REG_D], s->regs[REG_E]);
-	printf("H:  0x%02x \t L: 0x%02x \r\n", s->regs[REG_H], s->regs[REG_L]);
-	printf("SP: 0x%04x \t [SP]: 0x%02x \t [SP+1]: 0x%02x \r\n", s->sp, s->mem[s->sp], s->mem[s->sp + 1]);
-	printf("S: %x Z: %x \t A: %x P: %x \t C: %x \r\n", FLAG(s, FLG_S), 
-		FLAG(s, FLG_Z), FLAG(s, FLG_A), FLAG(s, FLG_P), FLAG(s, FLG_C));
+	printf("A:  0x%02x \t F: 0x%02x\r\n"
+			"B:  0x%02x \t C: 0x%02x\r\n"
+			"D:  0x%02x \t E: 0x%02x\r\n"
+			"H:  0x%02x \t L: 0x%02x\r\n"
+			"SP: 0x%04x \t [SP]: 0x%02x \t [SP+1]: 0x%02x\r\n"
+			"S: %x Z: %x \t A: %x P: %x \t C: %x\r\n",
+			s->regs[REG_A], s->flags,
+			s->regs[REG_B], s->regs[REG_C],
+			s->regs[REG_D], s->regs[REG_E],
+			s->regs[REG_H], s->regs[REG_L],
+			s->sp, s->mem[s->sp], s->mem[s->sp + 1],
+			FLAG(s, FLG_S), FLAG(s, FLG_Z), FLAG(s, FLG_A),
+			FLAG(s, FLG_P), FLAG(s, FLG_C));
 }
 
 void add_dev_8080(I8080_State *s, uint8_t addr, IODevice *dev) {
