@@ -81,15 +81,3 @@ void instr_lxisp(I8080_State *s) {
 	s->sp = s->mem[s->pc++];
 	s->sp |= s->mem[s->pc++] << 0x08;
 }
-
-/* Increment SP */
-void instr_inxsp(I8080_State *s) {
-	s->sp++;
-	s->pc++;
-}
-
-/* Decrement SP */
-void instr_dcxsp(I8080_State *s) {
-	s->sp--;
-	s->pc++;
-}

@@ -17,9 +17,11 @@ void instr_dcrm(I8080_State *);
 void instr_inxb(I8080_State *);
 void instr_inxd(I8080_State *);
 void instr_inxh(I8080_State *);
+void instr_inxs(I8080_State *);
 void instr_dcxb(I8080_State *);
 void instr_dcxd(I8080_State *);
 void instr_dcxh(I8080_State *);
+void instr_dcxs(I8080_State *);
 /* Subtract */
 // void instr_subr(I8080_State *);
 // void instr_subm(I8080_State *);

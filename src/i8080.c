@@ -86,22 +86,22 @@ static const char *opcodes[] =
 /* Instruction decode table. */
 static const Instruction decode[] =
 	{
-		instr_nop, instr_lxib, instr_staxb, instr_nop, /*0x03*/
-		instr_nop, instr_nop, instr_mvir, instr_nop, /*0x07*/
-		instr_nop, instr_dadb, instr_ldaxb, instr_nop, /*0x0B*/
-		instr_nop, instr_nop, instr_mvir, instr_nop, /*0x0F*/
-		instr_nop, instr_lxid, instr_staxd, instr_nop, /*0x13*/
-		instr_nop, instr_nop, instr_mvir, instr_nop, /*0x17*/
-		instr_nop, instr_dadd, instr_ldaxd, instr_nop, /*0x1B*/
-		instr_nop, instr_nop, instr_mvir, instr_nop, /*0x1F*/
-		instr_nop, instr_lxih, instr_shld, instr_nop, /*0x23*/
-		instr_nop, instr_nop, instr_mvir, instr_nop, /*0x27*/
-		instr_nop, instr_dadh, instr_lhld, instr_nop, /*0x2B*/
-		instr_nop, instr_nop, instr_mvir, instr_cma, /*0x2F*/
-		instr_nop, instr_lxisp, instr_sta, instr_inxsp, /*0x33*/
-		instr_nop, instr_nop, instr_mvim, instr_stc, /*0x37*/
-		instr_nop, instr_dads, instr_lda, instr_dcxsp, /*0x3B*/
-		instr_inrr, instr_nop, instr_mvir, instr_cmc, /*0x3F*/
+		instr_nop, instr_lxib, instr_staxb, instr_inxb, /*0x03*/
+		instr_inrr, instr_dcrr, instr_mvir, instr_nop, /*0x07*/
+		instr_nop, instr_dadb, instr_ldaxb, instr_dcxb, /*0x0B*/
+		instr_inrr, instr_dcrr, instr_mvir, instr_nop, /*0x0F*/
+		instr_nop, instr_lxid, instr_staxd, instr_inxd, /*0x13*/
+		instr_inrr, instr_dcrr, instr_mvir, instr_nop, /*0x17*/
+		instr_nop, instr_dadd, instr_ldaxd, instr_dcxd, /*0x1B*/
+		instr_inrr, instr_dcrr, instr_mvir, instr_nop, /*0x1F*/
+		instr_nop, instr_lxih, instr_shld, instr_inxh, /*0x23*/
+		instr_inrr, instr_dcrr, instr_mvir, instr_nop, /*0x27*/
+		instr_nop, instr_dadh, instr_lhld, instr_dcxh, /*0x2B*/
+		instr_inrr, instr_dcrr, instr_mvir, instr_cma, /*0x2F*/
+		instr_nop, instr_lxisp, instr_sta, instr_inxs, /*0x33*/
+		instr_inrm, instr_dcrm, instr_mvim, instr_stc, /*0x37*/
+		instr_nop, instr_dads, instr_lda, instr_dcxs, /*0x3B*/
+		instr_inrr, instr_dcrr, instr_mvir, instr_cmc, /*0x3F*/
 		instr_movrr, instr_movrr, instr_movrr, instr_movrr, /*0x43*/
 		instr_movrr, instr_movrr, instr_movrm, instr_movrr, /*0x47*/
 		instr_movrr, instr_movrr, instr_movrr, instr_movrr, /*0x4B*/
@@ -162,7 +162,7 @@ I8080_State *init_8080() {
 }
 
 /* Generate PZS flags from Reg A */
-void gen_pzs(I8080_State *s) {
+inline void gen_pzs(I8080_State *s) {
 	uint8_t temp = s->regs[REG_A];
 	/* Zero */
 	COND_FLAG(!temp, s, FLG_Z);
@@ -198,13 +198,13 @@ void dbg_8080(I8080_State *s) {
 	printf("A:  0x%02x \t F: 0x%02x\r\n"
 			"B:  0x%02x \t C: 0x%02x\r\n"
 			"D:  0x%02x \t E: 0x%02x\r\n"
-			"H:  0x%02x \t L: 0x%02x\r\n"
+			"H:  0x%02x \t L: 0x%02x \t [M]: 0x%02x\r\n"
 			"SP: 0x%04x \t [SP]: 0x%02x \t [SP+1]: 0x%02x\r\n"
 			"S: %x Z: %x \t A: %x P: %x \t C: %x\r\n",
 			s->regs[REG_A], s->flags,
 			s->regs[REG_B], s->regs[REG_C],
 			s->regs[REG_D], s->regs[REG_E],
-			s->regs[REG_H], s->regs[REG_L],
+			s->regs[REG_H], s->regs[REG_L], s->mem[RP_HL(s)],
 			s->sp, s->mem[s->sp], s->mem[s->sp + 1],
 			FLAG(s, FLG_S), FLAG(s, FLG_Z), FLAG(s, FLG_A),
 			FLAG(s, FLG_P), FLAG(s, FLG_C));

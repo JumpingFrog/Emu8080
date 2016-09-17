@@ -5,6 +5,7 @@
 void instr_addr(I8080_State *s) {
 	uint8_t r = (s->mem[s->pc++] & 0x07);
 	uint16_t res = s->regs[REG_A] + s->regs[r];
+	DBG("Instruction: addr\r\n");
 	/* Carry */
 	GEN_CY(res, s);
 	/* Aux Carry */
@@ -18,6 +19,7 @@ void instr_addr(I8080_State *s) {
 /* Add memory to A - Affects: S Z A P C */
 void instr_addm(I8080_State *s) {
 	uint16_t res = s->regs[REG_A] + s->mem[RP_HL(s)];
+	DBG("Instruction: addm\r\n");
 	/* Carry */
 	GEN_CY(res, s)
 	/* Aux Carry */
@@ -32,10 +34,11 @@ void instr_addm(I8080_State *s) {
 /* Add immediate to A - Affects: S Z A P C */
 void instr_adi(I8080_State *s) {
 	uint16_t res = s->regs[REG_A] + s->mem[++s->pc];
+	DBG("Instruction: adi\r\n");
 	/* Carry */
-	COND_FLAG(res > 0xFF, s, FLG_C);
+	GEN_CY(res, s);
 	/* Aux Carry */
-	COND_FLAG(((s->regs[REG_A] & 0x0F) + (s->mem[s->pc] & 0x0F)) > 0x0F, s, FLG_A);
+	GEN_AC(s->regs[REG_A], s->mem[s->pc], s);
 	/* Update result */
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */
@@ -47,10 +50,11 @@ void instr_adi(I8080_State *s) {
 /* Add memory to A with carry. - Affects: S Z A P C */
 void instr_adcm(I8080_State *s) {
 	uint16_t res = s->regs[REG_A] + s->mem[RP_HL(s)] + FLAG(s, FLG_C);
+	DBG("Instruction: adcm\r\n");
 	/* Carry */
-	COND_FLAG(res > 0xFF, s, FLG_C);
+	GEN_CY(res, s);
 	/* Aux Carry */
-	COND_FLAG(((s->regs[REG_A] & 0x0F) + (s->mem[RP_HL(s)] & 0x0F) + FLAG(s, FLG_C)) > 0x0F, s, FLG_A);
+	GEN_AC(s->regs[REG_A], s->mem[RP_HL(s)] + FLAG(s, FLG_C), s);
 	/* Update result */
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */
@@ -62,10 +66,11 @@ void instr_adcm(I8080_State *s) {
 void instr_adcr(I8080_State *s) {
 	uint8_t r = (s->mem[s->pc++] & 0x07);
 	uint16_t res = s->regs[REG_A] + s->regs[r] + FLAG(s, FLG_C);
+	DBG("Instruction: adcr\r\n");
 	/* Carry */
-	COND_FLAG(res > 0xFF, s, FLG_C);
+	GEN_CY(res, s);
 	/* Aux Carry */
-	COND_FLAG(((s->regs[REG_A] & 0x0F) + (s->regs[r] & 0x0F) + FLAG(s, FLG_C)) > 0x0F, s, FLG_A);
+	GEN_AC(s->regs[REG_A], s->regs[r] + FLAG(s, FLG_C), s);
 	/* Update result */
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */
@@ -75,10 +80,11 @@ void instr_adcr(I8080_State *s) {
 /* Add immediate to A with carry - Affects: S Z A P C */
 void instr_aci(I8080_State *s) {
 	uint16_t res = s->regs[REG_A] + s->mem[++s->pc] + FLAG(s, FLG_C);
+	DBG("Instruction: aci\r\n");
 	/* Carry */
-	COND_FLAG(res > 0xFF, s, FLG_C);
+	GEN_CY(res, s);
 	/* Aux Carry */
-	COND_FLAG(((s->regs[REG_A] & 0x0F) + (s->mem[s->pc] & 0x0F) + FLAG(s, FLG_C)) > 0x0F, s, FLG_A);
+	GEN_AC(s->regs[REG_A], s->mem[s->pc] + FLAG(s, FLG_C), s);
 	/* Update result */
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */
@@ -89,6 +95,7 @@ void instr_aci(I8080_State *s) {
 /* Double add BC to HL - Affects: C */
 void instr_dadb(I8080_State *s) {
 	uint32_t res = RP_BC(s) + RP_HL(s);
+	DBG("Instruction: dadb\r\n");
 	/* Carry */
 	COND_FLAG(res > 0xFFFF, s, FLG_C);
 	/* Update result */
@@ -100,6 +107,7 @@ void instr_dadb(I8080_State *s) {
 /* Double add DE to HL - Affects: C */
 void instr_dadd(I8080_State *s) {
 	uint32_t res = RP_DE(s) + RP_HL(s);
+	DBG("Instruction: dadd\r\n");
 	/* Carry */
 	COND_FLAG(res > 0xFFFF, s, FLG_C);
 	/* Update result */
@@ -111,6 +119,7 @@ void instr_dadd(I8080_State *s) {
 /* Double add HL to HL - Affects: C */
 void instr_dadh(I8080_State *s) {
 	uint32_t res = RP_HL(s) << 1;
+	DBG("Insturction: dadh\r\n");
 	/* Carry */
 	COND_FLAG(res > 0xFFFF, s, FLG_C);
 	/* Update result */
@@ -122,6 +131,7 @@ void instr_dadh(I8080_State *s) {
 /* Double add SP to HL - Affects: C */
 void instr_dads(I8080_State *s) {
 	uint32_t res = RP_HL(s) + s->sp;
+	DBG("Insturction: dads\r\n");
 	/* Carry */
 	COND_FLAG(res > 0xFFFF, s, FLG_C);
 	/* Update result */
@@ -133,6 +143,7 @@ void instr_dads(I8080_State *s) {
 /* Increment register - Affects: S Z A P */
 void instr_inrr(I8080_State *s) {
 	uint8_t r = (s->mem[s->pc++] & 0x38) >> 3;
+	DBG("Instruction: inrr\r\n");
 	/* Aux Carry */
 	COND_FLAG((s->regs[r] & 0x0F) == 0x0F, s, FLG_A);
 	/* Update result */
@@ -142,6 +153,7 @@ void instr_inrr(I8080_State *s) {
 
 /* Increment memory - Affects: S Z A P */
 void instr_inrm(I8080_State *s) {
+	DBG("Instruction inrm\r\n");
 	/* Aux Carry */
 	COND_FLAG((s->mem[RP_HL(s)] & 0x0F) == 0x0F, s, FLG_A);
 	/* Update result */
@@ -149,9 +161,10 @@ void instr_inrm(I8080_State *s) {
 	s->pc++;
 }
 
-/* Decrement register - Affects: S Z A P  */
+/* Decrement register - Affects: S Z A P */
 void instr_dcrr(I8080_State *s) {
 	uint8_t r = (s->mem[s->pc++] & 0x38) >> 3;
+	DBG("Instruction: dcrr\r\n");
 	/* Aux Carry - Could do with verifying this on a real chip. */
 	COND_FLAG(s->regs[r] & 0x0F, s, FLG_A);
 	/* Update result */
@@ -161,6 +174,7 @@ void instr_dcrr(I8080_State *s) {
 
 /* Decrement memory - Affects: S Z A P */
 void instr_dcrm(I8080_State *s) {
+	DBG("Insturction: dcrm\r\n");
 	/* Aux Carry - Could do with verifying this on a real chip. */
 	COND_FLAG(s->mem[RP_HL(s)] & 0x0F, s, FLG_A);
 	/* Update result */
@@ -171,6 +185,7 @@ void instr_dcrm(I8080_State *s) {
 /* Increment register pair - Affects: None */
 void instr_inxb(I8080_State *s) {
 	uint16_t res = RP_BC(s) + 1;
+	DBG("Insturction: inxb\r\n");
 	s->regs[REG_C] = res & 0xFF;
 	s->regs[REG_B] = (res >> 8) & 0xFF;
 	s->pc++;
@@ -179,6 +194,7 @@ void instr_inxb(I8080_State *s) {
 /* Increment register pair - Affects: None */
 void instr_inxd(I8080_State *s) {
 	uint16_t res = RP_DE(s) + 1;
+	DBG("Instruction: inxd\r\n");
 	s->regs[REG_E] = res & 0xFF;
 	s->regs[REG_D] = (res >> 8) & 0xFF;
 	s->pc++;
@@ -187,14 +203,23 @@ void instr_inxd(I8080_State *s) {
 /* Increment register pair - Affects: None */
 void instr_inxh(I8080_State *s) {
 	uint16_t res = RP_HL(s) + 1;
+	DBG("Instruction inxh\r\n");
 	s->regs[REG_L] = res & 0xFF;
 	s->regs[REG_H] = (res >> 8) & 0xFF;
+	s->pc++;
+}
+
+/* Increment register SP - Affects: None */
+void instr_inxs(I8080_State *s) {
+	DBG("Instruction inxs\r\n");
+	s->sp++;
 	s->pc++;
 }
 
 /* Decrement register pair - Affects: None */
 void instr_dcxb(I8080_State *s) {
 	uint16_t res = RP_BC(s) - 1;
+	DBG("Instruction: dcxb\r\n");
 	s->regs[REG_C] = res & 0xFF;
 	s->regs[REG_B] = (res >> 8) & 0xFF;
 	s->pc++;
@@ -203,6 +228,7 @@ void instr_dcxb(I8080_State *s) {
 /* Decrement register pair - Affects: None */
 void instr_dcxd(I8080_State *s) {
 	uint16_t res = RP_DE(s) - 1;
+	DBG("Instruction: dcxd\r\n");
 	s->regs[REG_E] = res & 0xFF;
 	s->regs[REG_D] = (res >> 8) & 0xFF;
 	s->pc++;
@@ -211,8 +237,16 @@ void instr_dcxd(I8080_State *s) {
 /* Decrement register pair - Affects: None */
 void instr_dcxh(I8080_State *s) {
 	uint16_t res = RP_HL(s) - 1;
+	DBG("Instruction: dcxh\r\n");
 	s->regs[REG_L] = res & 0xFF;
 	s->regs[REG_H] = (res >> 8) & 0xFF;
+	s->pc++;
+}
+
+/* Decrement register SP - Affects: None */
+void instr_dcxs(I8080_State *s) {
+	DBG("Instruction: dcxs\r\n");
+	s->sp--;
 	s->pc++;
 }
 

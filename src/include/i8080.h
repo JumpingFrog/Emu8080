@@ -31,6 +31,14 @@
 #define GEN_CY(V, S) COND_FLAG((V) > 0xFF, (S), FLG_C);
 #define GEN_AC(A, B, S) COND_FLAG(((A) & 0X0F) + ((B) & 0x0F) > 0x0F, (S), FLG_A);
 
+/* Debug print macro */
+#define DBG_PRINT
+#ifdef DBG_PRINT
+	#define DBG(...) printf(__VA_ARGS__)
+#else
+	#define DBG(...)
+#endif
+
 /* Data for 8080 */
 typedef struct {
 	/* Halt flag */
@@ -42,7 +50,7 @@ typedef struct {
 	/* Flags Register */
 	uint8_t flags;
 	/* Stack Pointer */
-	uint16_t sp ;
+	uint16_t sp;
 	/* Memory */
 	uint8_t mem[0xFFFF];
 	/* IO Devices */
