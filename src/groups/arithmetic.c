@@ -362,7 +362,6 @@ void instr_daa(I8080_State *s) {
 		GEN_AC(s->regs[REG_A], 0x06, s);
 		s->regs[REG_A] += 0x06;
 	}
-	// Should this be nested maybe
 	if ((s->regs[REG_A] & 0xF0) > 0x90 || FLAG(s, FLG_C)) {
 		/* Carry */
 		res = s->regs[REG_A] + 0x60;

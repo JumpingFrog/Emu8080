@@ -126,14 +126,14 @@ static const Instruction decode[] =
 		instr_subr, instr_subr, instr_subm, instr_subr, /*0x97*/
 		instr_sbbr, instr_sbbr, instr_sbbr, instr_sbbr, /*0x9B*/
 		instr_sbbr, instr_sbbr, instr_sbbm, instr_sbbr, /*0x9F*/
-		instr_nop, instr_nop, instr_nop, instr_nop, /*0xA3*/
-		instr_nop, instr_nop, instr_nop, instr_nop, /*0xA7*/
+		instr_anar, instr_anar, instr_anar, instr_anar, /*0xA3*/
+		instr_anar, instr_anar, instr_anam, instr_anar, /*0xA7*/
 		instr_nop, instr_nop, instr_nop, instr_nop, /*0xAB*/
 		instr_nop, instr_nop, instr_nop, instr_nop, /*0xAF*/
 		instr_nop, instr_nop, instr_nop, instr_nop, /*0xB3*/
 		instr_nop, instr_nop, instr_nop, instr_nop, /*0xB7*/
-		instr_nop, instr_nop, instr_nop, instr_nop, /*0xBB*/
-		instr_nop, instr_nop, instr_nop, instr_nop, /*0xBF*/
+		instr_cmpr, instr_cmpr, instr_cmpr, instr_cmpr, /*0xBB*/
+		instr_cmpr, instr_cmpr, instr_cmpm, instr_cmpr, /*0xBF*/
 		instr_nop, instr_popb, instr_jnz, instr_jmp, /*0xC3*/
 		instr_nop, instr_pushb, instr_adi, instr_nop, /*0xC7*/
 		instr_nop, instr_nop, instr_jz, instr_jmp, /*0xCB*/
@@ -143,13 +143,13 @@ static const Instruction decode[] =
 		instr_nop, instr_nop, instr_jc, instr_nop, /*0xDB*/
 		instr_nop, instr_nop, instr_sbi, instr_nop, /*0xDF*/
 		instr_nop, instr_poph, instr_jpo, instr_xthl, /*0xE3*/
-		instr_nop, instr_pushh, instr_nop, instr_nop, /*0xE7*/
+		instr_nop, instr_pushh, instr_ani, instr_nop, /*0xE7*/
 		instr_nop, instr_pchl, instr_jpe, instr_xchg, /*0xEB*/
 		instr_nop, instr_nop, instr_nop, instr_nop, /*0xEF*/
 		instr_nop, instr_popp, instr_jp, instr_nop, /*0xF3*/
 		instr_nop, instr_pushp, instr_nop, instr_nop, /*0xF7*/
 		instr_nop, instr_sphl, instr_jm, instr_nop, /*0xFB*/
-		instr_nop, instr_nop, instr_nop, instr_nop  /*0xFF*/
+		instr_nop, instr_nop, instr_cpi, instr_nop  /*0xFF*/
 };
 
 I8080_State *init_8080() {
