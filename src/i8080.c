@@ -95,8 +95,8 @@ static const Instruction decode[] =
 		instr_nop, instr_dadd, instr_ldaxd, instr_dcxd, /*0x1B*/
 		instr_inrr, instr_dcrr, instr_mvir, instr_nop, /*0x1F*/
 		instr_nop, instr_lxih, instr_shld, instr_inxh, /*0x23*/
-		instr_inrr, instr_dcrr, instr_mvir, instr_nop, /*0x27*/
-		instr_nop, instr_dadh, instr_lhld, instr_dcxh, /*0x2B*/
+		instr_inrr, instr_dcrr, instr_mvir, instr_daa, /*0x27*/
+		instr_nop, instr_dadh, instr_lhld, instr_nop, /*0x2B*/
 		instr_inrr, instr_dcrr, instr_mvir, instr_cma, /*0x2F*/
 		instr_nop, instr_lxisp, instr_sta, instr_inxs, /*0x33*/
 		instr_inrm, instr_dcrm, instr_mvim, instr_stc, /*0x37*/
@@ -122,10 +122,10 @@ static const Instruction decode[] =
 		instr_addr, instr_addr, instr_addm, instr_addr, /*0x87*/
 		instr_adcr, instr_adcr, instr_adcr, instr_adcr, /*0x8B*/
 		instr_adcr, instr_adcr, instr_adcm, instr_adcr, /*0x8F*/
-		instr_nop, instr_nop, instr_nop, instr_nop, /*0x93*/
-		instr_nop, instr_nop, instr_nop, instr_nop, /*0x97*/
-		instr_nop, instr_nop, instr_nop, instr_nop, /*0x9B*/
-		instr_nop, instr_nop, instr_nop, instr_nop, /*0x9F*/
+		instr_subr, instr_subr, instr_subr, instr_subr, /*0x93*/
+		instr_subr, instr_subr, instr_subm, instr_subr, /*0x97*/
+		instr_sbbr, instr_sbbr, instr_sbbr, instr_sbbr, /*0x9B*/
+		instr_sbbr, instr_sbbr, instr_sbbm, instr_sbbr, /*0x9F*/
 		instr_nop, instr_nop, instr_nop, instr_nop, /*0xA3*/
 		instr_nop, instr_nop, instr_nop, instr_nop, /*0xA7*/
 		instr_nop, instr_nop, instr_nop, instr_nop, /*0xAB*/
@@ -139,9 +139,9 @@ static const Instruction decode[] =
 		instr_nop, instr_nop, instr_jz, instr_jmp, /*0xCB*/
 		instr_nop, instr_nop, instr_aci, instr_nop, /*0xCF*/
 		instr_nop, instr_popd, instr_jnc, instr_out, /*0xD3*/
-		instr_nop, instr_pushd, instr_nop, instr_nop, /*0xD7*/
+		instr_nop, instr_pushd, instr_sui, instr_nop, /*0xD7*/
 		instr_nop, instr_nop, instr_jc, instr_nop, /*0xDB*/
-		instr_nop, instr_nop, instr_nop, instr_nop, /*0xDF*/
+		instr_nop, instr_nop, instr_sbi, instr_nop, /*0xDF*/
 		instr_nop, instr_poph, instr_jpo, instr_xthl, /*0xE3*/
 		instr_nop, instr_pushh, instr_nop, instr_nop, /*0xE7*/
 		instr_nop, instr_pchl, instr_jpe, instr_xchg, /*0xEB*/

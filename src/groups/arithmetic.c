@@ -255,10 +255,11 @@ void instr_subr(I8080_State *s) {
 	/* Two's complement */
 	uint8_t r = ~s->regs[s->mem[s->pc++] & 0x07] + 1;
 	uint16_t res = s->regs[REG_A] + r;
+	DBG("Instruction: subr\r\n");
 	/* Carry */
-	COND_FLAG(!(res > 0xFF), s, FLG_C);
+	COND_FLAG(!(res & 0x100), s, FLG_C);
 	/* Aux Carry */
-	COND_FLAG(((s->regs[REG_A] & 0x0F) + (r & 0x0F)) > 0x0F, s, FLG_A);
+	GEN_AC(s->regs[REG_A], r, s);
 	/* Update result */
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */
@@ -270,10 +271,11 @@ void instr_subm(I8080_State *s) {
 	/* Two's complement */
 	uint8_t r = ~s->mem[RP_HL(s)] + 1;
 	uint16_t res = s->regs[REG_A] + r;
+	DBG("Instruction: subm\r\n");
 	/* Carry */
-	COND_FLAG(!(res > 0xFF), s, FLG_C);
+	COND_FLAG(!(res & 0x100), s, FLG_C);
 	/* Aux Carry */
-	COND_FLAG(((s->regs[REG_A] & 0x0F) + (s->regs[r] & 0x0F)) > 0x0F, s, FLG_A);
+	GEN_AC(s->regs[REG_A], r, s);
 	/* Update result */
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */
@@ -283,21 +285,91 @@ void instr_subm(I8080_State *s) {
 
 /* Subtract immediate from A - Affects: S Z A P C */
 void instr_sui(I8080_State *s) {
-
+	/* Two's complement */
+	uint8_t r = ~s->mem[++s->pc] + 1;
+	uint16_t res = s->regs[REG_A] + r;
+	DBG("Instruction: sui\r\n");
+	/* Carry */
+	COND_FLAG(!(res & 0x100), s, FLG_C);
+	/* Aux Carry */
+	GEN_AC(s->regs[REG_A], r, s);
+	/* Update result */
+	s->regs[REG_A] = res & 0xFF;
+	/* PZS Flags */
+	gen_pzs(s);
+	s->pc++;
 }
 
 /* Subtract register from A with borrow - Affects: S Z A P C */
 void instr_sbbr(I8080_State *s) {
-
+	/* Two's complement */
+	uint8_t r = s->regs[s->mem[s->pc++] & 0x07] + FLAG(s, FLG_C);
+	r = ~r + 1;
+	uint16_t res = s->regs[REG_A] + r;
+	DBG("Instruction: sbbr\r\n");
+	/* Carry */
+	COND_FLAG(!(res & 0x100), s, FLG_C);
+	/* Aux Carry */
+	GEN_AC(s->regs[REG_A], r, s);
+	/* Update result */
+	s->regs[REG_A] = res & 0xFF;
+	/* PZS Flags */
+	gen_pzs(s);
 }
 
 /* Subtract memory from A with borrow - Affects: S Z A P C */
 void instr_sbbm(I8080_State *s) {
-
+	/* Two's complement */
+	uint8_t r = s->mem[RP_HL(s)] + FLAG(s, FLG_C);
+	r = ~r + 1;
+	uint16_t res = s->regs[REG_A] + r;
+	DBG("Instruction: sbbm\r\n");
+	/* Carry */
+	COND_FLAG(!(res & 0x100), s, FLG_C);
+	/* Aux Carry */
+	GEN_AC(s->regs[REG_A], r, s);
+	/* Update result */
+	s->regs[REG_A] = res & 0xFF;
+	/* PZS Flags */
+	gen_pzs(s);
+	s->pc++;
 }
 
 /* Subtract immediate from A with borrow - Affects: S Z A P C */
 void instr_sbi(I8080_State *s) {
+	/* Two's complement */
+	uint8_t r = s->mem[++s->pc] + FLAG(s, FLG_C);
+	r = ~r + 1;
+	uint16_t res = s->regs[REG_A] + r;
+	DBG("Instruction: sbi\r\n");
+	/* Carry */
+	COND_FLAG(!(res & 0x100), s, FLG_C);
+	/* Aux Carry */
+	GEN_AC(s->regs[REG_A], r, s);
+	/* Update result */
+	s->regs[REG_A] = res & 0xFF;
+	/* PZS Flags */
+	gen_pzs(s);
+	s->pc++;
+}
 
+/* Decimal adjust accumulator - Affects: S Z A P C */
+void instr_daa(I8080_State *s) {
+	uint16_t res;
+	DBG("Instruction: daa\r\n");
+	if ((s->regs[REG_A] & 0x0F) > 0x09 || FLAG(s, FLG_A)) {
+		/* Aux Carry */
+		GEN_AC(s->regs[REG_A], 0x06, s);
+		s->regs[REG_A] += 0x06;
+	}
+	// Should this be nested maybe
+	if ((s->regs[REG_A] & 0xF0) > 0x90 || FLAG(s, FLG_C)) {
+		/* Carry */
+		res = s->regs[REG_A] + 0x60;
+		GEN_CY(res, s);
+		s->regs[REG_A] = res & 0xFF;
+	}
+	gen_pzs(s);
+	s->pc++;
 }
 

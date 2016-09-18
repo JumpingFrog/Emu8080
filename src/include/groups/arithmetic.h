@@ -23,9 +23,12 @@ void instr_dcxd(I8080_State *);
 void instr_dcxh(I8080_State *);
 void instr_dcxs(I8080_State *);
 /* Subtract */
-// void instr_subr(I8080_State *);
-// void instr_subm(I8080_State *);
-// void instr_sbbr(I8080_State *);
-// void instr_sbbm(I8080_State *);
-// void instr_sui(I8080_State *);
-// void instr_sbi(I8080_State *);
+void instr_subr(I8080_State *);
+void instr_subm(I8080_State *);
+void instr_sbbr(I8080_State *);
+void instr_sbbm(I8080_State *);
+void instr_sui(I8080_State *);
+void instr_sbi(I8080_State *);
+/* Misc */
+void instr_daa(I8080_State *);
+

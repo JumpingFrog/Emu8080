@@ -67,4 +67,28 @@ dcx b
 dcx d
 dcx h
 dcx sp
+;" - sub
+sub a
+sub b
+sub c
+sub d
+sub e
+sub h
+sub l
+sub m
+;" - sui
+sui 0x00
+;" - sbb
+sbb a
+sbb b
+sbb c
+sbb d
+sbb e
+sbb h
+sbb l
+sbb m
+;" - sbi
+sbi 0x00
+;" - daa
+daa
 hlt
