@@ -77,3 +77,107 @@ void instr_cpi(I8080_State *s) {
 	s->pc++;
 }
 
+/* Or register with A - Affects: S Z A P C */
+void instr_orar(I8080_State *s) {
+	DBG("Instruction: orar\r\n");
+	s->regs[REG_A] |= s->regs[s->mem[s->pc++] & 0x03];
+	/* Reset Carry and Aux Carry */
+	COND_FLAG(0, s, FLG_C);
+	COND_FLAG(0, s, FLG_A);
+	gen_pzs(s);
+}
+
+/* Or memory with A - Affects: S Z A P C */
+void instr_oram(I8080_State *s) {
+	DBG("Instruction: oram\r\n");
+	s->regs[REG_A] |= s->mem[RP_HL(s)];
+	/* Reset Carry and Aux Carry */
+	COND_FLAG(0, s, FLG_C);
+	COND_FLAG(0, s, FLG_A);
+	gen_pzs(s);
+	s->pc++;
+}
+
+/* Or immediate with A - Affects: S Z A P C */
+void instr_ori(I8080_State *s) {
+	DBG("Instruction: ori\r\n");
+	s->regs[REG_A] |= s->mem[++s->pc];
+	/* Reset Carry and Aux Carry */
+	COND_FLAG(0, s, FLG_C);
+	COND_FLAG(0, s, FLG_A);
+	gen_pzs(s);
+	s->pc++;
+}
+
+/* Rotate A left through carry - Affects: C */
+void instr_ral(I8080_State *s) {
+	uint8_t res = s->regs[REG_A] << 1;
+	DBG("Instruction: ral\r\n");
+	res |= FLAG(s, FLG_C);
+	COND_FLAG(s->regs[REG_A] & 0x80, s, FLG_C);
+	s->regs[REG_A] = res;
+	s->pc++;
+}
+
+/* Rotate A right through carry - Affects: C */
+void instr_rar(I8080_State *s) {
+	uint8_t res = s->regs[REG_A] >> 1;
+	DBG("Instruction: rar\r\n");
+	res |= FLAG(s, FLG_C) << 7;
+	COND_FLAG(s->regs[REG_A] & 0x1, s, FLG_C);
+	s->regs[REG_A] = res;
+	s->pc++;
+}
+
+/* Rotate A Left - Affects: C */
+void instr_rlc(I8080_State *s) {
+	uint8_t res = s->regs[REG_A] << 1;
+	DBG("Instruction: rlc\r\n");
+	COND_FLAG(s->regs[REG_A] & 0x80, s, FLG_C);
+	res |= FLAG(s, FLG_C);
+	s->regs[REG_A] = res;
+	s->pc++;
+}
+
+/* Rotate A Right - Affects: C */
+void instr_rrc(I8080_State *s) {
+	uint8_t res = s->regs[REG_A] >> 1;
+	DBG("Instruction: rrc\r\n");
+	COND_FLAG(s->regs[REG_A] & 0x1, s, FLG_C);
+	res |= FLAG(s, FLG_C) << 7;
+	s->regs[REG_A] = res;
+	s->pc++;
+}
+
+/* XOR register with A - Affects: S Z A P C */
+void instr_xrar(I8080_State *s) {
+	DBG("Instruction: xrar\r\n");
+	s->regs[REG_A] ^= s->regs[s->mem[s->pc++] & 0x03];
+	/* Reset Carry and Aux Carry */
+	COND_FLAG(0, s, FLG_C);
+	COND_FLAG(0, s, FLG_A);
+	gen_pzs(s);
+}
+
+/* XOR memory with A - Affects: S Z A P C */
+void instr_xram(I8080_State *s) {
+	DBG("Instruction: xram\r\n");
+	s->regs[REG_A] ^= s->mem[RP_HL(s)];
+	/* Reset Carry and Aux Carry */
+	COND_FLAG(0, s, FLG_C);
+	COND_FLAG(0, s, FLG_A);
+	gen_pzs(s);
+	s->pc++;
+}
+
+/* XOR immediate with A -  Affects: S Z A P C */
+void instr_xri(I8080_State *s) {
+	DBG("Instruction: xri\r\n");
+	s->regs[REG_A] ^= s->mem[++s->pc];
+	/* Reset Carry and Aux Carry */
+	COND_FLAG(0, s, FLG_C);
+	COND_FLAG(0, s, FLG_A);
+	gen_pzs(s);
+	s->pc++;
+}
+
