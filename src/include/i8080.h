@@ -1,4 +1,5 @@
-#include "stdint.h"
+#include <stdint.h>
+#include <stdio.h>
 
 /* Macros for Register functionality */
 #define REG_A 7

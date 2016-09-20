@@ -14,5 +14,29 @@ round1:
 	nop
 	jpo end
 	nop
-end:
-	hlt
+;Test instruction decode - jumps
+a: jmp b
+b: jc c
+c: jnc d
+d: jz e
+e: jnz f
+f: jp g
+g: jm h
+h: jpe i
+i: jpo j
+j:
+;" - pchl
+lxi h, k
+pchl
+;" - calls
+k: call l
+l: cc m
+m: cnc n
+n: cz o
+o: cnz p
+p: cp q
+q: cm r
+r: cpe s
+s: cpo end
+end: hlt
+
