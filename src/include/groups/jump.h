@@ -20,3 +20,13 @@ void instr_cm(I8080_State *);
 void instr_cpe(I8080_State *);
 void instr_cpo(I8080_State *);
 
+void instr_ret(I8080_State *);
+void instr_rc(I8080_State *);
+void instr_rnc(I8080_State *);
+void instr_rz(I8080_State *);
+void instr_rnz(I8080_State *);
+void instr_rp(I8080_State *);
+void instr_rm(I8080_State *);
+void instr_rpe(I8080_State *);
+void instr_rpo(I8080_State *);
+

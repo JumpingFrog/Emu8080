@@ -134,21 +134,21 @@ static const Instruction decode[] =
 		instr_orar, instr_orar, instr_oram, instr_orar, /*0xB7*/
 		instr_cmpr, instr_cmpr, instr_cmpr, instr_cmpr, /*0xBB*/
 		instr_cmpr, instr_cmpr, instr_cmpm, instr_cmpr, /*0xBF*/
-		instr_nop, instr_popb, instr_jnz, instr_jmp, /*0xC3*/
+		instr_rnz, instr_popb, instr_jnz, instr_jmp, /*0xC3*/
 		instr_cnz, instr_pushb, instr_adi, instr_nop, /*0xC7*/
-		instr_nop, instr_nop, instr_jz, instr_jmp, /*0xCB*/
+		instr_rz, instr_ret, instr_jz, instr_jmp, /*0xCB*/
 		instr_cz, instr_call, instr_aci, instr_nop, /*0xCF*/
-		instr_nop, instr_popd, instr_jnc, instr_out, /*0xD3*/
+		instr_rnc, instr_popd, instr_jnc, instr_out, /*0xD3*/
 		instr_cnc, instr_pushd, instr_sui, instr_nop, /*0xD7*/
-		instr_nop, instr_nop, instr_jc, instr_nop, /*0xDB*/
+		instr_rc, instr_nop, instr_jc, instr_nop, /*0xDB*/
 		instr_cc, instr_nop, instr_sbi, instr_nop, /*0xDF*/
-		instr_nop, instr_poph, instr_jpo, instr_xthl, /*0xE3*/
+		instr_rpo, instr_poph, instr_jpo, instr_xthl, /*0xE3*/
 		instr_cpo, instr_pushh, instr_ani, instr_nop, /*0xE7*/
-		instr_nop, instr_pchl, instr_jpe, instr_xchg, /*0xEB*/
+		instr_rpe, instr_pchl, instr_jpe, instr_xchg, /*0xEB*/
 		instr_cpe, instr_nop, instr_xri, instr_nop, /*0xEF*/
-		instr_nop, instr_popp, instr_jp, instr_nop, /*0xF3*/
+		instr_rp, instr_popp, instr_jp, instr_nop, /*0xF3*/
 		instr_cp, instr_pushp, instr_ori, instr_nop, /*0xF7*/
-		instr_nop, instr_sphl, instr_jm, instr_nop, /*0xFB*/
+		instr_rm, instr_sphl, instr_jm, instr_nop, /*0xFB*/
 		instr_cm, instr_nop, instr_cpi, instr_nop  /*0xFF*/
 };
 

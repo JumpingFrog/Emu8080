@@ -6,7 +6,7 @@
 					A |= S->mem[++S->pc] << 8;\
 					S->pc = A;
 
-#define JMPC(C, S, A)	if (C) { JMP(S, A) }\
+#define JMPC(C, S, A)	if (C) { JMP(S, A); }\
 						else { S->pc += 3; }
 
 /* Macros for calls */
@@ -16,11 +16,15 @@
 					S->mem[--S->sp] = S->pc;\
 					S->pc = A;
 
-#define CALLC(C, S, A) if (C) { CALL(S, A) }\
+#define CALLC(C, S, A) if (C) { CALL(S, A); }\
 						else { S->pc += 3; }
 
 /* Macros for returns */
-#define RET(S, A)
+#define RET(S) S->pc = S->mem[S->sp++];\
+				S->pc |= S->mem[S->sp++] << 8;
+
+#define RETC(C, S) if (C) { RET(S); }\
+					else { S->pc++; }
 
 /* Jump unconditional */
 void instr_jmp(I8080_State *s) {
@@ -153,5 +157,59 @@ void instr_cpo(I8080_State *s) {
 	uint16_t addr;
 	DBG("Instruction: cpo\r\n");
 	CALLC(!(s->flags & FLG_P), s, addr);
+}
+
+/* Return unconditional */
+void instr_ret(I8080_State *s) {
+	DBG("Instruction: ret\r\n");
+	RET(s);
+}
+
+/* Return on carry */
+void instr_rc(I8080_State *s) {
+	DBG("Instruction: rc\r\n");
+	RETC((s->flags & FLG_C), s);
+}
+
+/* Return on no carry */
+void instr_rnc(I8080_State *s) {
+	DBG("Instruction: rnc\r\n");
+	RETC(!(s->flags & FLG_C), s);
+}
+
+/* Return on zero */
+void instr_rz(I8080_State *s) {
+	DBG("Instruction: rz\r\n");
+	RETC((s->flags & FLG_Z), s);
+}
+
+/* Return on no zero */
+void instr_rnz(I8080_State *s) {
+	DBG("Instruction: rnz\r\n");
+	RETC(!(s->flags & FLG_Z), s);
+}
+
+/* Return on positive */
+void instr_rp(I8080_State *s) {
+	DBG("Instruction: rp\r\n");
+	RETC(!(s->flags & FLG_S), s);
+}
+
+/* Return on minus */
+void instr_rm(I8080_State *s) {
+	DBG("Instruction: rm\r\n");
+	RETC((s->flags & FLG_S), s);
+}
+
+/* Return on parity even */
+void instr_rpe(I8080_State *s) {
+	DBG("Instruction: rpe\r\n");
+	RETC((s->flags & FLG_P), s);
+}
+
+/* Return on parity odd */
+void instr_rpo(I8080_State *s) {
+	DBG("Instruction: rpo\r\n");
+	RETC(!(s->flags & FLG_P), s);
 }
 
