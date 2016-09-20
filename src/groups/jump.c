@@ -213,3 +213,12 @@ void instr_rpo(I8080_State *s) {
 	RETC(!(s->flags & FLG_P), s);
 }
 
+/* RESET */
+void instr_rst(I8080_State *s) {
+	uint16_t addr = s->mem[s->pc++] & 0x38;
+	DBG("Instruction: rst\r\n");
+	s->mem[--s->sp] = s->pc >> 8;
+	s->mem[--s->sp] = s->pc;
+	s->pc = addr;
+}
+

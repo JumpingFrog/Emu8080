@@ -29,4 +29,5 @@ void instr_rp(I8080_State *);
 void instr_rm(I8080_State *);
 void instr_rpe(I8080_State *);
 void instr_rpo(I8080_State *);
+void instr_rst(I8080_State *);
 

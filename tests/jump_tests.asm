@@ -1,6 +1,37 @@
 ; Tests for jump group instructions
-; Assume data group and stack group works.
-.org 0
+;RST 0
+.org 0h
+jmp start
+
+;RST 1
+.org 8h
+ret
+
+;RST 2
+.org 10h
+ret
+
+;RST 3
+.org 18h
+ret
+
+;RST 4
+.org 20h
+ret
+
+;RST 5
+.org 28h
+ret
+
+;RST 6
+.org 30h
+ret
+
+;RST 7
+org 38h
+ret
+
+start:
 	mvi e, 0xff
 	push d
 	pop psw
@@ -65,5 +96,17 @@ r_f: rp
 r_g: rm
 r_h: rpe
 r_i: rpo
+;" - resets
+;overwrite jmp at 0x00 with rst
+lxi h, 0000h
+mvi m, 0c9h
+rst 0
+rst 1
+rst 2
+rst 3
+rst 4
+rst 5
+rst 6
+rst 7
 end: hlt
 
