@@ -47,4 +47,16 @@ test_sp:
 	;expect sp = 0xf010
 	dcx sp
 	;expect sp = 0xf00f
+;Test instruction decode
+	push b
+	push d
+	push h
+	push psw
+	pop b
+	pop d
+	pop h
+	pop psw
+	xthl
+	sphl
 hlt
+
