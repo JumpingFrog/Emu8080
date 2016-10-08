@@ -138,15 +138,15 @@ static const Instruction decode[] =
 		instr_cz, instr_call, instr_aci, instr_rst, /*0xCF*/
 		instr_rnc, instr_popd, instr_jnc, instr_out, /*0xD3*/
 		instr_cnc, instr_pushd, instr_sui, instr_rst, /*0xD7*/
-		instr_rc, instr_nop, instr_jc, instr_nop, /*0xDB*/
+		instr_rc, instr_nop, instr_jc, instr_in, /*0xDB*/
 		instr_cc, instr_nop, instr_sbi, instr_rst, /*0xDF*/
 		instr_rpo, instr_poph, instr_jpo, instr_xthl, /*0xE3*/
 		instr_cpo, instr_pushh, instr_ani, instr_rst, /*0xE7*/
 		instr_rpe, instr_pchl, instr_jpe, instr_xchg, /*0xEB*/
 		instr_cpe, instr_nop, instr_xri, instr_rst, /*0xEF*/
-		instr_rp, instr_popp, instr_jp, instr_nop, /*0xF3*/
+		instr_rp, instr_popp, instr_jp, instr_di, /*0xF3*/
 		instr_cp, instr_pushp, instr_ori, instr_rst, /*0xF7*/
-		instr_rm, instr_sphl, instr_jm, instr_nop, /*0xFB*/
+		instr_rm, instr_sphl, instr_jm, instr_ei, /*0xFB*/
 		instr_cm, instr_nop, instr_cpi, instr_rst  /*0xFF*/
 };
 
