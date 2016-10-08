@@ -8,4 +8,4 @@ void instr_poph(I8080_State *);
 void instr_popp(I8080_State *);
 void instr_xthl(I8080_State *);
 void instr_sphl(I8080_State *);
-void instr_lxisp(I8080_State *);
+

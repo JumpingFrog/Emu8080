@@ -6,6 +6,7 @@ void instr_movrm(I8080_State *);
 void instr_lxib(I8080_State *);
 void instr_lxid(I8080_State *);
 void instr_lxih(I8080_State *);
+void instr_lxisp(I8080_State *);
 void instr_staxb(I8080_State *);
 void instr_staxd(I8080_State *);
 void instr_ldaxb(I8080_State *);
@@ -15,3 +16,4 @@ void instr_lda(I8080_State *);
 void instr_shld(I8080_State *);
 void instr_lhld(I8080_State *);
 void instr_xchg(I8080_State *);
+

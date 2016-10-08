@@ -75,9 +75,3 @@ void instr_sphl(I8080_State *s) {
 	s->pc++;
 }
 
-/* Load immediate SP */
-void instr_lxisp(I8080_State *s) {
-	s->pc++;
-	s->sp = s->mem[s->pc++];
-	s->sp |= s->mem[s->pc++] << 0x08;
-}

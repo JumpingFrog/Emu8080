@@ -97,7 +97,7 @@ r_g: rm
 r_h: rpe
 r_i: rpo
 ;" - resets
-;overwrite jmp at 0x00 with rst
+;overwrite jmp at 0x00 with ret
 lxi h, 0000h
 mvi m, 0c9h
 rst 0
