@@ -29,69 +29,69 @@
 /* Jump unconditional */
 void instr_jmp(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: jmp\r\n");
+	DBG(s, "Instruction: jmp\r\n");
 	JMP(s, addr);
 }
 
 /* Jump on carry */
 void instr_jc(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: jc\r\n");
+	DBG(s, "Instruction: jc\r\n");
 	JMPC((s->flags & FLG_C), s, addr);
 }
 
 /* Jump on no carry */
 void instr_jnc(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: jnc\r\n");
+	DBG(s, "Instruction: jnc\r\n");
 	JMPC(!(s->flags & FLG_C), s, addr);
 }
 
 /* Jump on zero */
 void instr_jz(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: jz\r\n");
+	DBG(s, "Instruction: jz\r\n");
 	JMPC((s->flags & FLG_Z), s, addr);
 }
 
 /* Jump on no zero */
 void instr_jnz(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: jnz\r\n");
+	DBG(s, "Instruction: jnz\r\n");
 	JMPC(!(s->flags & FLG_Z), s, addr);
 }
 
 /* Jump on positive */
 void instr_jp(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: jp\r\n");
+	DBG(s, "Instruction: jp\r\n");
 	JMPC(!(s->flags & FLG_S), s, addr);
 }
 
 /* Jump on minus */
 void instr_jm(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: jm\r\n");
+	DBG(s, "Instruction: jm\r\n");
 	JMPC((s->flags & FLG_S), s, addr);
 }
 
 /* Jump on parity even */
 void instr_jpe(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: jpe\r\n");
+	DBG(s, "Instruction: jpe\r\n");
 	JMPC((s->flags & FLG_P), s, addr);
 }
 
 /* Jump on parity odd */
 void instr_jpo(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: jpo\r\n");
+	DBG(s, "Instruction: jpo\r\n");
 	JMPC(!(s->flags & FLG_P), s, addr);
 }
 
 /* H & L to PC */
 void instr_pchl(I8080_State *s) {
-	DBG("Instruction: pchl\r\n");
+	DBG(s, "Instruction: pchl\r\n");
 	s->pc = s->regs[REG_L];
 	s->pc |= s->regs[REG_H] << 8;
 }
@@ -99,124 +99,124 @@ void instr_pchl(I8080_State *s) {
 /* Call unconditional */
 void instr_call(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: call\r\n");
+	DBG(s, "Instruction: call\r\n");
 	CALL(s, addr);
 }
 
 /* Call on carry */
 void instr_cc(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: cc\r\n");
+	DBG(s, "Instruction: cc\r\n");
 	CALLC((s->flags & FLG_C), s, addr);
 }
 
 /* Call on no carry */
 void instr_cnc(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: cnc\r\n");
+	DBG(s, "Instruction: cnc\r\n");
 	CALLC(!(s->flags & FLG_C), s, addr);
 }
 
 /* Call on zero */
 void instr_cz(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: cz\r\n");
+	DBG(s, "Instruction: cz\r\n");
 	CALLC((s->flags & FLG_Z), s, addr);
 }
 
 /* Call on no zero */
 void instr_cnz(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: cnz\r\n");
+	DBG(s, "Instruction: cnz\r\n");
 	CALLC(!(s->flags & FLG_Z), s, addr);
 }
 
 /* Call on positive */
 void instr_cp(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: cp\r\n");
+	DBG(s, "Instruction: cp\r\n");
 	CALLC(!(s->flags & FLG_S), s, addr);
 }
 
 /* Call on minus */
 void instr_cm(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: cm\r\n");
+	DBG(s, "Instruction: cm\r\n");
 	CALLC((s->flags & FLG_S), s, addr);
 }
 
 /* Call on parity even */
 void instr_cpe(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: cpe\r\n");
+	DBG(s, "Instruction: cpe\r\n");
 	CALLC((s->flags & FLG_P), s, addr);
 }
 
 /* Call on parity odd */
 void instr_cpo(I8080_State *s) {
 	uint16_t addr;
-	DBG("Instruction: cpo\r\n");
+	DBG(s, "Instruction: cpo\r\n");
 	CALLC(!(s->flags & FLG_P), s, addr);
 }
 
 /* Return unconditional */
 void instr_ret(I8080_State *s) {
-	DBG("Instruction: ret\r\n");
+	DBG(s, "Instruction: ret\r\n");
 	RET(s);
 }
 
 /* Return on carry */
 void instr_rc(I8080_State *s) {
-	DBG("Instruction: rc\r\n");
+	DBG(s, "Instruction: rc\r\n");
 	RETC((s->flags & FLG_C), s);
 }
 
 /* Return on no carry */
 void instr_rnc(I8080_State *s) {
-	DBG("Instruction: rnc\r\n");
+	DBG(s, "Instruction: rnc\r\n");
 	RETC(!(s->flags & FLG_C), s);
 }
 
 /* Return on zero */
 void instr_rz(I8080_State *s) {
-	DBG("Instruction: rz\r\n");
+	DBG(s, "Instruction: rz\r\n");
 	RETC((s->flags & FLG_Z), s);
 }
 
 /* Return on no zero */
 void instr_rnz(I8080_State *s) {
-	DBG("Instruction: rnz\r\n");
+	DBG(s, "Instruction: rnz\r\n");
 	RETC(!(s->flags & FLG_Z), s);
 }
 
 /* Return on positive */
 void instr_rp(I8080_State *s) {
-	DBG("Instruction: rp\r\n");
+	DBG(s, "Instruction: rp\r\n");
 	RETC(!(s->flags & FLG_S), s);
 }
 
 /* Return on minus */
 void instr_rm(I8080_State *s) {
-	DBG("Instruction: rm\r\n");
+	DBG(s, "Instruction: rm\r\n");
 	RETC((s->flags & FLG_S), s);
 }
 
 /* Return on parity even */
 void instr_rpe(I8080_State *s) {
-	DBG("Instruction: rpe\r\n");
+	DBG(s, "Instruction: rpe\r\n");
 	RETC((s->flags & FLG_P), s);
 }
 
 /* Return on parity odd */
 void instr_rpo(I8080_State *s) {
-	DBG("Instruction: rpo\r\n");
+	DBG(s, "Instruction: rpo\r\n");
 	RETC(!(s->flags & FLG_P), s);
 }
 
 /* RESET */
 void instr_rst(I8080_State *s) {
 	uint16_t addr = s->mem[s->pc++] & 0x38;
-	DBG("Instruction: rst\r\n");
+	DBG(s, "Instruction: rst\r\n");
 	s->mem[--s->sp] = s->pc >> 8;
 	s->mem[--s->sp] = s->pc;
 	s->pc = addr;

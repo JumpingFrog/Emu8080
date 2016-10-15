@@ -34,8 +34,18 @@
 
 /* Debug print macro */
 #define DBG_PRINT
+#define TRACE_FILE
+
+#ifdef TRACE_FILE
+	#define TRACE(S, V) fputs(V"\r\n", S->ftrace)
+	#define TRACEF(S, ...) fprintf(S->ftrace, __VA_ARGS__)
+#else
+	#define TRACE(S, V) puts(V)
+	#define TRACEF(S, ...) printf(__VA_ARGS__)
+#endif
+
 #ifdef DBG_PRINT
-	#define DBG(...) printf(__VA_ARGS__)
+	#define DBG(S, ...) TRACEF(S, __VA_ARGS__)
 #else
 	#define DBG(...)
 #endif
@@ -56,6 +66,9 @@ typedef struct {
 	uint8_t mem[0xFFFF];
 	/* IO Devices */
 	struct _IODevice *devices[256];
+	#ifdef TRACE
+	FILE *ftrace;
+	#endif
 } I8080_State;
 
 /* Typedefs for IO device functionality.

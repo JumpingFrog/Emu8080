@@ -156,6 +156,9 @@ I8080_State *init_8080() {
 	ret->flags = 0x02;
 	ret->sp = 0xFFFF;
 	ret->hlt = 0;
+	#ifdef TRACE_FILE
+		ret->ftrace = fopen("trace.log", "w+");
+	#endif
 	return ret;
 }
 
@@ -175,25 +178,25 @@ inline void gen_pzs(I8080_State *s) {
 
 void dbg_8080(I8080_State *s) {
 	const char *opstr = opcodes[s->mem[s->pc]];
-	puts("-------------------------------------------------");
-	printf("PC: 0x%04x \t [PC]: 0x%02x \t", s->pc, s->mem[s->pc]);
+	TRACE(s, "-------------------------------------------------");
+	TRACEF(s, "PC: 0x%04x \t [PC]: 0x%02x \t", s->pc, s->mem[s->pc]);
 	/* First char of opcode describes number of bytes to instruction. */
 	switch (*opstr) {
 		case '0':
 			opstr++;
-			printf("OP: %s\r\n", opstr);
+			TRACEF(s, "OP: %s\r\n", opstr);
 			break;
 		case '1':
 			opstr++;
-			printf("OP: %s0x%02x\r\n", opstr, s->mem[s->pc + 1]);
+			TRACEF(s, "OP: %s0x%02x\r\n", opstr, s->mem[s->pc + 1]);
 			break;
 		case '2':
 			opstr++;
 			/* N.B. LE */
-			printf("OP: %s0x%02x%02x\r\n", opstr, s->mem[s->pc + 2], s->mem[s->pc + 1]);
+			TRACEF(s, "OP: %s0x%02x%02x\r\n", opstr, s->mem[s->pc + 2], s->mem[s->pc + 1]);
 			break;
 	}
-	printf("A:  0x%02x \t F: 0x%02x\r\n"
+	TRACEF(s, "A:  0x%02x \t F: 0x%02x\r\n"
 			"B:  0x%02x \t C: 0x%02x\r\n"
 			"D:  0x%02x \t E: 0x%02x\r\n"
 			"H:  0x%02x \t L: 0x%02x \t [M]: 0x%02x\r\n"
@@ -219,4 +222,8 @@ void run_8080(I8080_State *s) {
 		/* Execute current opcode */
 		(*decode[s->mem[s->pc]])(s);
 	}
+	#ifdef TRACE_FILE
+		fclose(s->ftrace);
+	#endif
 }
+
