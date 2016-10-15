@@ -66,8 +66,8 @@ typedef struct {
 	uint8_t mem[0xFFFF];
 	/* IO Devices */
 	struct _IODevice *devices[256];
-	#ifdef TRACE
-	FILE *ftrace;
+	#ifdef TRACE_FILE
+		FILE *ftrace;
 	#endif
 } I8080_State;
 

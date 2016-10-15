@@ -40,26 +40,34 @@ void instr_ani(I8080_State *s) {
 void instr_cmpr(I8080_State *s) {
 	/* Two's complement */
 	uint8_t r = ~s->regs[s->mem[s->pc++] & 0x03] + 1;
-	uint16_t res = s->regs[REG_A] + r;
+	uint8_t tmp = s->regs[REG_A];
+	uint16_t res = tmp + r;
 	DBG(s, "Instruction: cmpr\r\n");
+	s->regs[REG_A] = res;
 	/* Carry */
 	COND_FLAG(!(res & 0x100), s, FLG_C);
 	/* Aux Carry */
-	GEN_AC(s->regs[REG_A], r, s);
+	GEN_AC(tmp, r, s);
 	gen_pzs(s);
+	/* Restore value */
+	s->regs[REG_A] = tmp;
 }
 
 /* Compare memory with A - Affects: S Z A P C */
 void instr_cmpm(I8080_State *s) {
 	/* Two's complement */
 	uint8_t r = ~s->mem[RP_HL(s)] + 1;
+	uint8_t tmp = s->regs[REG_A];
 	uint16_t res = s->regs[REG_A] + r;
 	DBG(s, "Instruction: cmpm\r\n");
+	s->regs[REG_A] = res;
 	/* Carry */
 	COND_FLAG(!(res & 0x100), s, FLG_C);
 	/* Aux Carry */
-	GEN_AC(s->regs[REG_A], r, s);
+	GEN_AC(tmp, r, s);
 	gen_pzs(s);
+	/* Restore value */
+	s->regs[REG_A] = tmp;
 	s->pc++;
 }
 
@@ -68,12 +76,16 @@ void instr_cpi(I8080_State *s) {
 	/* Two's complement */
 	uint8_t r = ~s->mem[++s->pc] + 1;
 	uint16_t res = s->regs[REG_A] + r;
+	uint8_t tmp = s->regs[REG_A];
 	DBG(s, "Instruction: cpi\r\n");
+	s->regs[REG_A] = res;
 	/* Carry */
 	COND_FLAG(!(res & 0x100), s, FLG_C);
 	/* Aux Carry */
-	GEN_AC(s->regs[REG_A], r, s);
+	GEN_AC(tmp, r, s);
 	gen_pzs(s);
+	/* Restore value */
+	s->regs[REG_A] = tmp;
 	s->pc++;
 }
 
