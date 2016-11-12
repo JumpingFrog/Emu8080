@@ -63,7 +63,7 @@ typedef struct {
 	/* Stack Pointer */
 	uint16_t sp;
 	/* Memory */
-	uint8_t mem[0xFFFF];
+	uint8_t mem[65536];
 	/* IO Devices */
 	struct _IODevice *devices[256];
 	#ifdef TRACE_FILE
@@ -91,3 +91,7 @@ void run_8080(I8080_State *);
 I8080_State *init_8080();
 void gen_pzs(I8080_State *);
 void add_dev_8080(I8080_State *, uint8_t, IODevice *);
+void mem_write8(I8080_State *, uint16_t, uint8_t);
+uint8_t mem_read8(I8080_State *, uint16_t);
+void mem_write16(I8080_State *, uint16_t, uint16_t);
+uint16_t mem_read16(I8080_State *, uint16_t);

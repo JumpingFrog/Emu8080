@@ -211,6 +211,29 @@ void dbg_8080(I8080_State *s) {
 			FLAG(s, FLG_P), FLAG(s, FLG_C));
 }
 
+inline void mem_write8(I8080_State *s, uint16_t addr, uint8_t data) {
+	TRACEF(s, "MEM WRITE 0x%04x: 0x%02x\r\n", addr, data);
+	s->mem[addr] = data;
+}
+
+inline uint8_t mem_read8(I8080_State *s, uint16_t addr) {
+	uint8_t res = s->mem[addr];
+	TRACEF(s, "MEM READ 0x%04x: 0x%02x\r\n", addr, res);
+	return res;
+}
+
+inline void mem_write16(I8080_State *s, uint16_t addr, uint16_t data) {
+	TRACEF(s, "MEM WRITE 0x%04x: 0x%04x\r\n", addr, data);
+	s->mem[addr] = data & 0xFF;
+	s->mem[addr + 1] = (data >> 8) & 0xFF;
+}
+
+inline uint16_t mem_read16(I8080_State *s, uint16_t addr) {
+	uint16_t res = s->mem[addr] | (s->mem[addr + 1] >> 8);
+	TRACEF(s, "MEM READ 0x%04x: 0x%04x\r\n", addr, res);
+	return res;
+}
+
 void add_dev_8080(I8080_State *s, uint8_t addr, IODevice *dev) {
 	s->devices[addr] = dev;
 }
