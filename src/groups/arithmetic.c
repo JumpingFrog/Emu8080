@@ -18,12 +18,13 @@ void instr_addr(I8080_State *s) {
 
 /* Add memory to A - Affects: S Z A P C */
 void instr_addm(I8080_State *s) {
-	uint16_t res = s->regs[REG_A] + s->mem[RP_HL(s)];
+	uint8_t val = mem_read8(s, RP_HL(s));
+	uint16_t res = s->regs[REG_A] + val;
 	DBG(s, "Instruction: addm\r\n");
 	/* Carry */
 	GEN_CY(res, s)
 	/* Aux Carry */
-	GEN_AC(s->regs[REG_A], s->mem[RP_HL(s)], s);
+	GEN_AC(s->regs[REG_A], val, s);
 	/* Update result */
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */
@@ -49,12 +50,13 @@ void instr_adi(I8080_State *s) {
 
 /* Add memory to A with carry. - Affects: S Z A P C */
 void instr_adcm(I8080_State *s) {
-	uint16_t res = s->regs[REG_A] + s->mem[RP_HL(s)] + FLAG(s, FLG_C);
+	uint8_t val = mem_read8(s, RP_HL(s));
+	uint16_t res = s->regs[REG_A] + val + FLAG(s, FLG_C);
 	DBG(s, "Instruction: adcm\r\n");
 	/* Carry */
 	GEN_CY(res, s);
 	/* Aux Carry */
-	GEN_AC(s->regs[REG_A], s->mem[RP_HL(s)] + FLAG(s, FLG_C), s);
+	GEN_AC(s->regs[REG_A], val + FLAG(s, FLG_C), s);
 	/* Update result */
 	s->regs[REG_A] = res & 0xFF;
 	/* PZS Flags */
@@ -153,11 +155,12 @@ void instr_inrr(I8080_State *s) {
 
 /* Increment memory - Affects: S Z A P */
 void instr_inrm(I8080_State *s) {
+	uint8_t val = mem_read8(s, RP_HL(s));
 	DBG(s, "Instruction inrm\r\n");
 	/* Aux Carry */
-	COND_FLAG((s->mem[RP_HL(s)] & 0x0F) == 0x0F, s, FLG_A);
+	COND_FLAG((val & 0x0F) == 0x0F, s, FLG_A);
 	/* Update result */
-	s->mem[RP_HL(s)] = s->mem[RP_HL(s)] + 1;
+	mem_write8(s, RP_HL(s), val + 1);
 	s->pc++;
 }
 
@@ -174,11 +177,12 @@ void instr_dcrr(I8080_State *s) {
 
 /* Decrement memory - Affects: S Z A P */
 void instr_dcrm(I8080_State *s) {
+	uint8_t val = mem_read8(s, RP_HL(s));
 	DBG(s, "Insturction: dcrm\r\n");
 	/* Aux Carry - Could do with verifying this on a real chip. */
-	COND_FLAG(s->mem[RP_HL(s)] & 0x0F, s, FLG_A);
+	COND_FLAG(val & 0x0F, s, FLG_A);
 	/* Update result */
-	s->mem[RP_HL(s)] = s->mem[RP_HL(s)] - 1;
+	mem_write8(s, RP_HL(s), val - 1);
 	s->pc++;
 }
 
@@ -269,7 +273,7 @@ void instr_subr(I8080_State *s) {
 /* Subtract memory from A - Affects: S Z A P C */
 void instr_subm(I8080_State *s) {
 	/* Two's complement */
-	uint8_t r = ~s->mem[RP_HL(s)] + 1;
+	uint8_t r = ~mem_read8(s, RP_HL(s)) + 1;
 	uint16_t res = s->regs[REG_A] + r;
 	DBG(s, "Instruction: subm\r\n");
 	/* Carry */
@@ -320,7 +324,7 @@ void instr_sbbr(I8080_State *s) {
 /* Subtract memory from A with borrow - Affects: S Z A P C */
 void instr_sbbm(I8080_State *s) {
 	/* Two's complement */
-	uint8_t r = s->mem[RP_HL(s)] + FLAG(s, FLG_C);
+	uint8_t r = mem_read8(s, RP_HL(s)) + FLAG(s, FLG_C);
 	r = ~r + 1;
 	uint16_t res = s->regs[REG_A] + r;
 	DBG(s, "Instruction: sbbm\r\n");
