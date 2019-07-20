@@ -3,7 +3,7 @@
 
 /* Add register to A - Affects: S Z A P C */
 void instr_addr(I8080_State *s) {
-	uint8_t r = (s->mem[s->pc] & 0x07);
+	uint8_t r = READ_MEM(s, s->pc) & 0x07;
 	uint16_t res = s->regs[REG_A] + s->regs[r];
 	DBG(s, "Instruction: addr\n");
 	/* Carry */
@@ -18,7 +18,7 @@ void instr_addr(I8080_State *s) {
 
 /* Add memory to A - Affects: S Z A P C */
 void instr_addm(I8080_State *s) {
-	uint16_t res = s->regs[REG_A] + s->mem[RP_HL(s)];
+	uint16_t res = s->regs[REG_A] + READ_MEM(s, RP_HL(s));
 	DBG(s, "Instruction: addm\n");
 	/* Carry */
 	GEN_CY(s, res);
@@ -32,7 +32,7 @@ void instr_addm(I8080_State *s) {
 
 /* Add immediate to A - Affects: S Z A P C */
 void instr_adi(I8080_State *s) {
-	uint16_t res = s->regs[REG_A] + s->mem[s->pc + 1];
+	uint16_t res = s->regs[REG_A] + READ_IMM8(s);
 	DBG(s, "Instruction: adi\n");
 	/* Carry */
 	GEN_CY(s, res);

@@ -69,7 +69,7 @@
 
 /* Macros for memory */
 #define READ_MEM(S, A) ((S)->mem[A])
-#define WRITE_MEM(S, A, V) ((S)->mem[A] = (V))
+#define WRITE_MEM(S, A, V) ((S)->mem[A] = ((V) & 0xff))
 #define READ_IMM8(S) READ_MEM(S, (S)->pc + 1)
 #define READ_IMM16(S) ((READ_MEM(S, (S)->pc + 2) << 8) | READ_MEM(S, (S)->pc + 1))
 

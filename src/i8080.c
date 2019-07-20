@@ -240,23 +240,24 @@ inline void gen_p(I8080_State * s, uint8_t value) {
 	COND_FLAG(s, value & 1, FLG_P);
 }
 
-void dbg_8080(I8080_State *s) {
-	uint8_t opcode = s->mem[s->pc];
+void dbg_8080(I8080_State *s, uint16_t cur_pc) {
+	uint8_t opcode = s->mem[cur_pc];
 	TRACE(s, "-------------------------------------------------");
-	TRACEF(s, "PC: 0x%04x \t [PC]: 0x%02x \t ", s->pc, opcode);
+	TRACEF(s, "Current PC: 0x%04x \t ", cur_pc);
 	switch (instr_length[opcode]) {
 		case 1:
 			TRACEF(s, "OP: %s\n", instr_disas[opcode]);
 			break;
 		case 2:
-			TRACEF(s, "OP: %s0x%02x\n", instr_disas[opcode], s->mem[s->pc + 1]);
+			TRACEF(s, "OP: %s0x%02x\n", instr_disas[opcode], s->mem[cur_pc + 1]);
 			break;
 		case 3:
 			/* N.B. LE */
-			TRACEF(s, "OP: %s0x%02x%02x\n", instr_disas[opcode], s->mem[s->pc + 2], s->mem[s->pc + 1]);
+			TRACEF(s, "OP: %s0x%02x%02x\n", instr_disas[opcode], s->mem[cur_pc + 2], s->mem[cur_pc + 1]);
 			break;
 		default:
-			TRACEF(s, "OP: ERROR\n");
+			/* This should never happen... */
+			TRACEF(s, "OP: EROR\n");
 	}
 	/* Print modified state */
 	/* |SP (9)|flags (8)|REG_A (7)|REG_M (6)|REG_L (5)|REG_H (4)|REG_E (3)|REG_D (2)|REG_C (1)|REG_B (0)| */
@@ -294,6 +295,10 @@ void dbg_8080(I8080_State *s) {
 		TRACEF(s, "SP: 0x%04x \t [SP]: 0x%02x \t [SP+1]: 0x%02x\n",
 				s->sp, s->mem[s->sp], s->mem[s->sp + 1]);
 	}
+	if (s->reg_mod & MOD_PC) {
+		TRACEF(s, "PC:  0x%04x \t [PC]: 0x%02x\n",
+			 s->pc,  s->mem[s->pc]);
+	}
 	/* TODO: MEMORY WRITES */
 }
 
@@ -302,15 +307,18 @@ void add_dev_8080(I8080_State *s, uint8_t addr, IODevice *dev) {
 }
 
 void run_8080(I8080_State *s) {
+	uint16_t cur_pc;
 	uint8_t opcode;
 	while (!s->hlt) {
 		/* Clear mod vector */
 		s->reg_mod = 0;
-		opcode = s->mem[s->pc];
+		/* Cache PC */
+		cur_pc = s->pc;
+		opcode = s->mem[cur_pc];
 		/* Execute current opcode */
 		(*instr_decode[opcode])(s);
 		/* If the instr didn't modify the PC, move on to next instruction. */
-		dbg_8080(s);
+		dbg_8080(s, cur_pc);
 		if (!(s->reg_mod & MOD_PC)) {
 			s->pc += instr_length[opcode];
 		}
