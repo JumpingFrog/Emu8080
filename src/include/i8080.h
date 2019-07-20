@@ -5,6 +5,7 @@
 #define MOD_REG(X)  (1 << X)
 #define MOD_FLAGS   (1 << 8)
 #define MOD_SP      (1 << 9)
+#define MOD_PC      (1 << 10)
 
 /* Macros for Register functionality */
 #define REG_A 7
@@ -28,6 +29,7 @@
                             (S)->reg_mod |= MOD_REG(X)
 
 #define WRITE_SP(S, V) (S)->sp = (V); (S)->reg_mod |= MOD_SP
+#define WRITE_PC(S, V) (S)->pc = (V); (S)->reg_mod |= MOD_PC
 
 /* Macros for reading register pairs */
 #define RP_BC(S) (((S)->regs[REG_B] << 8) | (S)->regs[REG_C])
@@ -66,9 +68,10 @@
 #define GEN_PZS(S, V) GEN_Z(S, V); GEN_S(S, V); gen_p(S, V)
 
 /* Macros for memory */
-
-#define READ_MEM(S, A) (S)->mem[A]
-#define WRITE_MEM(S, A, V) (S)->mem[A] = (V)
+#define READ_MEM(S, A) ((S)->mem[A])
+#define WRITE_MEM(S, A, V) ((S)->mem[A] = (V))
+#define READ_IMM8(S) READ_MEM(S, (S)->pc + 1)
+#define READ_IMM16(S) ((READ_MEM(S, (S)->pc + 2) << 8) | READ_MEM(S, (S)->pc + 1))
 
 /* Debug print macro */
 #define DBG_PRINT
@@ -103,7 +106,7 @@ typedef struct {
 	/* Memory */
 	uint8_t mem[0xFFFF];
 	/* Modification vector, used for trace */
-	/* |SP (9)|flags (8)|REG_A (7)|REG_M (6)|REG_L (5)|REG_H (4)|REG_E (3)|REG_D (2)|REG_C (1)|REG_B (0)| */
+	/* |PC (10|SP (9)|flags (8)|REG_A (7)|REG_M (6)|REG_L (5)|REG_H (4)|REG_E (3)|REG_D (2)|REG_C (1)|REG_B (0)| */
 	uint16_t reg_mod;
 	/* IO Devices */
 	struct _IODevice *devices[256];

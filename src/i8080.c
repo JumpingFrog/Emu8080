@@ -306,12 +306,14 @@ void run_8080(I8080_State *s) {
 	while (!s->hlt) {
 		/* Clear mod vector */
 		s->reg_mod = 0;
-		/* Execute current opcode */
 		opcode = s->mem[s->pc];
+		/* Execute current opcode */
 		(*instr_decode[opcode])(s);
+		/* If the instr didn't modify the PC, move on to next instruction. */
 		dbg_8080(s);
-		/* Move PC on by instr length */
-		s->pc += instr_length[opcode];
+		if (!(s->reg_mod & MOD_PC)) {
+			s->pc += instr_length[opcode];
+		}
 	}
 	#ifdef TRACE_FILE
 		fclose(s->ftrace);
