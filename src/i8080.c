@@ -13,76 +13,76 @@
 /* Lookup instructions for disassemble.
 http://pastraiser.com/cpu/i8080/i8080_opcodes.html
 */
-static const char *opcodes[] =
+static const char *instr_disas[] =
 	{
-		"0nop", "2lxi b, ", "0stax b", "0inx b",
-		"0inr b", "0dcr b", "1mvi b, ", "0rlc",
-		"0nop", "0dad b", "0ldax b", "0dcx b",
-		"0inr c", "0dcr c", "1mvi c, ", "0rrc",
-		"0nop", "2lxi d, ", "0stax d", "0inx d",
-		"0inr d", "0dcr d", "1mvi d, ", "0ral",
-		"0nop", "0dad d", "0ldax d", "0dcx d",
-		"0inr e", "0dcr e", "1mvi e, ", "0rar",
-		"0nop", "2lxi h, ", "2shld ", "0inx h",
-		"0inr h", "0dcr h", "1mvi h, ", "0daa",
-		"0nop", "0dad h", "2lhld ", "0dcx h",
-		"0inr l", "0dcr l", "1mvi l, ", "0 cma",
-		"0nop", "2lxi sp, ", "2sta ", "0inx sp",
-		"0inr m", "0dcr m", "1mvi m, ", "0stc",
-		"0nop", "0dad sp", "2lda ", "0dcx sp",
-		"0inr a", "0dcr a", "1mvi a, ", "0cmc",
-		"0mov b, b", "0mov b, c", "0mov b, d", "0mov b, e",
-		"0mov b, h", "0mov b, l", "0mov b, m", "0mov b, a",
-		"0mov c, b", "0mov c, c", "0mov c, d", "0mov c, e",
-		"0mov c, h", "0mov c, l", "0mov c, m", "0mov c, a",
-		"0mov d, b", "0mov d, c", "0mov d, d", "0mov d, e",
-		"0mov d, h", "0mov d, l", "0mov d, m", "0mov d, a",
-		"0mov e, b", "0mov e, c", "0mov e, d", "0mov e, e",
-		"0mov e, h", "0mov e, l", "0mov e, m", "0mov e, a",
-		"0mov h, b", "0mov h, c", "0mov h, d", "0mov h, e",
-		"0mov h, h", "0mov h, l", "0mov h, m", "0mov h, a",
-		"0mov l, b", "0mov l, c", "0mov l, d", "0mov l, e",
-		"0mov l, h", "0mov l, l", "0mov l, m", "0mov l, a",
-		"0mov m, b", "0mov m, c", "0mov m, d", "0mov m, e",
-		"0mov m, h", "0mov m, l", "0hlt", "0mov m, a",
-		"0mov a, b", "0mov a, c", "0mov a, d", "0mov a, e",
-		"0mov a, h", "0mov a, l", "0mov a, m", "0mov a, a",
-		"0add b", "0add c", "0add d", "0add e",
-		"0add h", "0add l", "0add m", "0add a",
-		"0adc b", "0adc c", "0adc d", "0adc e",
-		"0adc h", "0adc l", "0adc m", "0adc a",
-		"0sub b", "0sub c", "0sub d", "0sub e",
-		"0sub h", "0sub l", "0sub m", "0sub a",
-		"0sbb b", "0sbb c", "0sbb d", "0sbb e",
-		"0sbb h", "0sbb l", "0sbb m", "0sbb a",
-		"0ana b", "0ana c", "0ana d", "0ana e",
-		"0ana h", "0ana l", "0ana m", "0ana a",
-		"0xra b", "0xra c", "0xra d", "0xra e",
-		"0xra h", "0xra l", "0xra m", "0xra a",
-		"0ora b", "0ora c", "0ora d", "0ora e",
-		"0ora h", "0ora l", "0ora m", "0ora a",
-		"0cmp b", "0cmp c", "0cmp d", "0cmp e",
-		"0cmp h", "0cmp l", "0cmp m", "0cmp a",
-		"0rnz", "0pop b", "2jnz ", "2jmp ",
-		"2cnz ", "0push b", "1adi ", "0rst 0",
-		"0rz", "0ret", "2jz ", "2jmp ",
-		"2cz ", "2call ", "1aci ", "0rst 1",
-		"0rnc", "0pop d", "2jnc ", "1out ",
-		"2cnc ", "0push d", "1sui ", "0rst 2",
-		"0rc", "0ret", "2jc ", "1in ",
-		"2cc ", "2call ", "1sbi ", "0rst 3",
-		"0rpo", "0pop h", "2jpo ", "0xthl",
-		"2cpo ", "0push h", "1ani ", "0rst 4",
-		"0rpe", "0pchl", "2jpe ", "0xchg",
-		"2cpe ", "2call ", "1xri ", "0rst 5",
-		"0rp", "0pop psw", "2jp ", "0di",
-		"2cp ", "0push psw", "1ori ", "0rst 6",
-		"0rm", "0sphl", "2jm ", "0ei",
-		"2cm ", "2call ", "1cpi ", "0rst 7"
+		"nop", "lxi b, ", "stax b", "inx b",
+		"inr b", "dcr b", "mvi b, ", "rlc",
+		"nop", "dad b", "ldax b", "dcx b",
+		"inr c", "dcr c", "mvi c, ", "rrc",
+		"nop", "lxi d, ", "stax d", "inx d",
+		"inr d", "dcr d", "mvi d, ", "ral",
+		"nop", "dad d", "ldax d", "dcx d",
+		"inr e", "dcr e", "mvi e, ", "rar",
+		"nop", "lxi h, ", "shld ", "inx h",
+		"inr h", "dcr h", "mvi h, ", "daa",
+		"nop", "dad h", "lhld ", "dcx h",
+		"inr l", "dcr l", "mvi l, ", " cma",
+		"nop", "lxi sp, ", "sta ", "inx sp",
+		"inr m", "dcr m", "mvi m, ", "stc",
+		"nop", "dad sp", "lda ", "dcx sp",
+		"inr a", "dcr a", "mvi a, ", "cmc",
+		"mov b, b", "mov b, c", "mov b, d", "mov b, e",
+		"mov b, h", "mov b, l", "mov b, m", "mov b, a",
+		"mov c, b", "mov c, c", "mov c, d", "mov c, e",
+		"mov c, h", "mov c, l", "mov c, m", "mov c, a",
+		"mov d, b", "mov d, c", "mov d, d", "mov d, e",
+		"mov d, h", "mov d, l", "mov d, m", "mov d, a",
+		"mov e, b", "mov e, c", "mov e, d", "mov e, e",
+		"mov e, h", "mov e, l", "mov e, m", "mov e, a",
+		"mov h, b", "mov h, c", "mov h, d", "mov h, e",
+		"mov h, h", "mov h, l", "mov h, m", "mov h, a",
+		"mov l, b", "mov l, c", "mov l, d", "mov l, e",
+		"mov l, h", "mov l, l", "mov l, m", "mov l, a",
+		"mov m, b", "mov m, c", "mov m, d", "mov m, e",
+		"mov m, h", "mov m, l", "hlt", "mov m, a",
+		"mov a, b", "mov a, c", "mov a, d", "mov a, e",
+		"mov a, h", "mov a, l", "mov a, m", "mov a, a",
+		"add b", "add c", "add d", "add e",
+		"add h", "add l", "add m", "add a",
+		"adc b", "adc c", "adc d", "adc e",
+		"adc h", "adc l", "adc m", "adc a",
+		"sub b", "sub c", "sub d", "sub e",
+		"sub h", "sub l", "sub m", "sub a",
+		"sbb b", "sbb c", "sbb d", "sbb e",
+		"sbb h", "sbb l", "sbb m", "sbb a",
+		"ana b", "ana c", "ana d", "ana e",
+		"ana h", "ana l", "ana m", "ana a",
+		"xra b", "xra c", "xra d", "xra e",
+		"xra h", "xra l", "xra m", "xra a",
+		"ora b", "ora c", "ora d", "ora e",
+		"ora h", "ora l", "ora m", "ora a",
+		"cmp b", "cmp c", "cmp d", "cmp e",
+		"cmp h", "cmp l", "cmp m", "cmp a",
+		"rnz", "pop b", "jnz ", "jmp ",
+		"cnz ", "push b", "adi ", "rst 0",
+		"rz", "ret", "jz ", "jmp ",
+		"cz ", "call ", "aci ", "rst 1",
+		"rnc", "pop d", "jnc ", "out ",
+		"cnc ", "push d", "sui ", "rst 2",
+		"rc", "ret", "jc ", "in ",
+		"cc ", "call ", "sbi ", "rst 3",
+		"rpo", "pop h", "jpo ", "xthl",
+		"cpo ", "push h", "ani ", "rst 4",
+		"rpe", "pchl", "jpe ", "xchg",
+		"cpe ", "call ", "xri ", "rst 5",
+		"rp", "pop psw", "jp ", "di",
+		"cp ", "push psw", "ori ", "rst 6",
+		"rm", "sphl", "jm ", "ei",
+		"cm ", "call ", "cpi ", "rst 7"
 };
 
 /* Instruction decode table. */
-static const Instruction decode[] =
+static const Instruction instr_decode[] =
 	{
 		instr_nop, instr_lxib, instr_staxb, instr_inxb, /*0x03*/
 		instr_inrr, instr_dcrr, instr_mvir, instr_rlc, /*0x07*/
@@ -94,7 +94,7 @@ static const Instruction decode[] =
 		instr_inrr, instr_dcrr, instr_mvir, instr_rar, /*0x1F*/
 		instr_nop, instr_lxih, instr_shld, instr_inxh, /*0x23*/
 		instr_inrr, instr_dcrr, instr_mvir, instr_daa, /*0x27*/
-		instr_nop, instr_dadh, instr_lhld, instr_nop, /*0x2B*/
+		instr_nop, instr_dadh, instr_lhld, instr_dcxh, /*0x2B*/
 		instr_inrr, instr_dcrr, instr_mvir, instr_cma, /*0x2F*/
 		instr_nop, instr_lxisp, instr_sta, instr_inxs, /*0x33*/
 		instr_inrm, instr_dcrm, instr_mvim, instr_stc, /*0x37*/
@@ -150,77 +150,168 @@ static const Instruction decode[] =
 		instr_cm, instr_nop, instr_cpi, instr_rst  /*0xFF*/
 };
 
+static const uint8_t instr_length[] =
+	{
+		1, 3, 1, 1, /*0x03*/
+		1, 1, 2, 1, /*0x07*/
+		1, 1, 1, 1, /*0x0B*/
+		1, 1, 2, 1, /*0x0F*/
+		1, 3, 1, 1, /*0x13*/
+		1, 1, 2, 1, /*0x17*/
+		1, 1, 1, 1, /*0x1B*/
+		1, 1, 2, 1, /*0x1F*/
+		1, 3, 3, 1, /*0x23*/
+		1, 1, 2, 1, /*0x27*/
+		1, 1, 3, 1, /*0x2B*/
+		1, 1, 2, 1, /*0x2F*/
+		1, 3, 3, 1, /*0x33*/
+		1, 1, 2, 1, /*0x37*/
+		1, 1, 3, 1, /*0x3B*/
+		1, 1, 2, 1, /*0x3F*/
+		1, 1, 1, 1, /*0x43*/
+		1, 1, 1, 1, /*0x47*/
+		1, 1, 1, 1, /*0x4B*/
+		1, 1, 1, 1, /*0x4F*/
+		1, 1, 1, 1, /*0x53*/
+		1, 1, 1, 1, /*0x57*/
+		1, 1, 1, 1, /*0x5B*/
+		1, 1, 1, 1, /*0x5F*/
+		1, 1, 1, 1, /*0x63*/
+		1, 1, 1, 1, /*0x67*/
+		1, 1, 1, 1, /*0x6B*/
+		1, 1, 1, 1, /*0x6F*/
+		1, 1, 1, 1, /*0x73*/
+		1, 1, 1, 1, /*0x77*/
+		1, 1, 1, 1, /*0x7B*/
+		1, 1, 1, 1, /*0x7F*/
+		1, 1, 1, 1, /*0x83*/
+		1, 1, 1, 1, /*0x87*/
+		1, 1, 1, 1, /*0x8B*/
+		1, 1, 1, 1, /*0x8F*/
+		1, 1, 1, 1, /*0x93*/
+		1, 1, 1, 1, /*0x97*/
+		1, 1, 1, 1, /*0x9B*/
+		1, 1, 1, 1, /*0x9F*/
+		1, 1, 1, 1, /*0xA3*/
+		1, 1, 1, 1, /*0xA7*/
+		1, 1, 1, 1, /*0xAB*/
+		1, 1, 1, 1, /*0xAF*/
+		1, 1, 1, 1, /*0xB3*/
+		1, 1, 1, 1, /*0xB7*/
+		1, 1, 1, 1, /*0xBB*/
+		1, 1, 1, 1, /*0xBF*/
+		1, 1, 3, 3, /*0xC3*/
+		3, 1, 2, 1, /*0xC7*/
+		1, 1, 3, 3, /*0xCB*/
+		3, 3, 2, 1, /*0xCF*/
+		1, 1, 3, 2, /*0xD3*/
+		3, 1, 2, 1, /*0xD7*/
+		1, 1, 3, 2, /*0xDB*/
+		3, 3, 2, 1, /*0xDF*/
+		1, 1, 3, 1, /*0xE3*/
+		3, 1, 2, 1, /*0xE7*/
+		1, 1, 3, 1, /*0xEB*/
+		3, 3, 2, 1, /*0xEF*/
+		1, 1, 3, 1, /*0xF3*/
+		3, 1, 2, 1, /*0xF7*/
+		1, 1, 3, 1, /*0xFB*/
+		3, 3, 2, 1  /*0xFF*/
+};
+
 I8080_State *init_8080() {
 	I8080_State * ret = malloc(sizeof(I8080_State));
 	ret->pc = 0x0000;
 	ret->flags = 0x02;
 	ret->sp = 0xFFFF;
 	ret->hlt = 0;
+	ret->reg_mod = 0;
 	#ifdef TRACE_FILE
 		ret->ftrace = fopen("trace.log", "w+");
 	#endif
 	return ret;
 }
 
-/* Generate PZS flags from Reg A */
-inline void gen_pzs(I8080_State *s) {
-	uint8_t temp = s->regs[REG_A];
-	/* Zero */
-	COND_FLAG(!temp, s, FLG_Z);
-	/* Sign */
-	COND_FLAG(temp & 0x80, s, FLG_S);
+/* A LUT may be faster still. */
+inline void gen_p(I8080_State * s, uint8_t value) {
 	/* Parity */
-	temp ^= temp >> 4;
-	temp ^= temp >> 2;
-	temp ^= temp >> 1;
-	COND_FLAG(!(temp & 1), s, FLG_P);
+	value ^= value >> 4;
+	value ^= value >> 2;
+	value ^= value >> 1;
+	COND_FLAG(s, value & 1, FLG_P);
 }
 
 void dbg_8080(I8080_State *s) {
-	const char *opstr = opcodes[s->mem[s->pc]];
+	uint8_t opcode = s->mem[s->pc];
 	TRACE(s, "-------------------------------------------------");
-	TRACEF(s, "PC: 0x%04x \t [PC]: 0x%02x \t", s->pc, s->mem[s->pc]);
-	/* First char of opcode describes number of bytes to instruction. */
-	switch (*opstr) {
-		case '0':
-			opstr++;
-			TRACEF(s, "OP: %s\r\n", opstr);
+	TRACEF(s, "PC: 0x%04x \t [PC]: 0x%02x \t ", s->pc, opcode);
+	switch (instr_length[opcode]) {
+		case 1:
+			TRACEF(s, "OP: %s\n", instr_disas[opcode]);
 			break;
-		case '1':
-			opstr++;
-			TRACEF(s, "OP: %s0x%02x\r\n", opstr, s->mem[s->pc + 1]);
+		case 2:
+			TRACEF(s, "OP: %s0x%02x\n", instr_disas[opcode], s->mem[s->pc + 1]);
 			break;
-		case '2':
-			opstr++;
+		case 3:
 			/* N.B. LE */
-			TRACEF(s, "OP: %s0x%02x%02x\r\n", opstr, s->mem[s->pc + 2], s->mem[s->pc + 1]);
+			TRACEF(s, "OP: %s0x%02x%02x\n", instr_disas[opcode], s->mem[s->pc + 2], s->mem[s->pc + 1]);
 			break;
+		default:
+			TRACEF(s, "OP: ERROR\n");
 	}
-	TRACEF(s, "A:  0x%02x \t F: 0x%02x\r\n"
-			"B:  0x%02x \t C: 0x%02x\r\n"
-			"D:  0x%02x \t E: 0x%02x\r\n"
-			"H:  0x%02x \t L: 0x%02x \t [M]: 0x%02x\r\n"
-			"SP: 0x%04x \t [SP]: 0x%02x \t [SP+1]: 0x%02x\r\n"
-			"S: %x Z: %x \t A: %x P: %x \t C: %x\r\n",
-			s->regs[REG_A], s->flags,
-			s->regs[REG_B], s->regs[REG_C],
-			s->regs[REG_D], s->regs[REG_E],
-			s->regs[REG_H], s->regs[REG_L], s->mem[RP_HL(s)],
-			s->sp, s->mem[s->sp], s->mem[s->sp + 1],
-			FLAG(s, FLG_S), FLAG(s, FLG_Z), FLAG(s, FLG_A),
-			FLAG(s, FLG_P), FLAG(s, FLG_C));
+	/* Print modified state */
+	/* |SP (9)|flags (8)|REG_A (7)|REG_M (6)|REG_L (5)|REG_H (4)|REG_E (3)|REG_D (2)|REG_C (1)|REG_B (0)| */
+	if (s->reg_mod & MOD_REG(REG_A)) {
+		TRACEF(s, "A: 0x%02x\n", s->regs[REG_A]);
+	}
+	if (s->reg_mod & MOD_REG(REG_B)) {
+		TRACEF(s, "B: 0x%02x\n", s->regs[REG_B]);
+	}
+	if (s->reg_mod & MOD_REG(REG_C)) {
+		TRACEF(s, "C: 0x%02x\n", s->regs[REG_C]);
+	}
+	if (s->reg_mod & MOD_REG(REG_D)) {
+		TRACEF(s, "D: 0x%02x\n", s->regs[REG_D]);
+	}
+	if (s->reg_mod & MOD_REG(REG_E)) {
+		TRACEF(s, "E: 0x%02x\n", s->regs[REG_E]);
+	}
+	if (s->reg_mod & MOD_REG(REG_H)) {
+		TRACEF(s, "H: 0x%02x\n", s->regs[REG_H]);
+	}
+	if (s->reg_mod & MOD_REG(REG_L)) {
+		TRACEF(s, "L: 0x%02x\n", s->regs[REG_L]);
+	}
+	if (s->reg_mod & MOD_REG(REG_M)) {
+		TRACEF(s, "M:  0x%04x \t [M]: 0x%02x\n",
+			 RP_HL(s),  s->mem[RP_HL(s)]);
+	}
+	if (s->reg_mod & MOD_FLAGS) {
+		TRACEF(s, "S: %x \t Z: %x \t A: %x \t P: %x \t C: %x\n",
+				READ_FLAG(s, FLG_S), READ_FLAG(s, FLG_Z), READ_FLAG(s, FLG_A),
+				READ_FLAG(s, FLG_P), READ_FLAG(s, FLG_C));
+	}
+	if (s->reg_mod & MOD_SP) {
+		TRACEF(s, "SP: 0x%04x \t [SP]: 0x%02x \t [SP+1]: 0x%02x\n",
+				s->sp, s->mem[s->sp], s->mem[s->sp + 1]);
+	}
+	/* TODO: MEMORY WRITES */
 }
 
 void add_dev_8080(I8080_State *s, uint8_t addr, IODevice *dev) {
 	s->devices[addr] = dev;
 }
 
-/* Run... */
 void run_8080(I8080_State *s) {
+	uint8_t opcode;
 	while (!s->hlt) {
-		dbg_8080(s);
+		/* Clear mod vector */
+		s->reg_mod = 0;
 		/* Execute current opcode */
-		(*decode[s->mem[s->pc]])(s);
+		opcode = s->mem[s->pc];
+		(*instr_decode[opcode])(s);
+		dbg_8080(s);
+		/* Move PC on by instr length */
+		s->pc += instr_length[opcode];
 	}
 	#ifdef TRACE_FILE
 		fclose(s->ftrace);

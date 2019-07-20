@@ -1,149 +1,133 @@
 #include <i8080.h>
 #include <groups/data.h>
 
-/* Move Immediate Register */
+/* Move Immediate Register - Affects: None */
 void instr_mvir(I8080_State *s) {
-	uint8_t r = (s->mem[s->pc++] & 0x38) >> 3;
+	uint8_t r = (s->mem[s->pc] & 0x38) >> 3;
 	DBG(s, "Instruction: mvir\r\n");
-	s->regs[r] = s->mem[s->pc++];
+	WRITE_REG(s, r,  s->mem[s->pc + 1]);
 }
 
-/* Move Immediate Memory (HL) */
+/* Move Immediate Memory (HL) - Affects: None */
 void instr_mvim(I8080_State *s) {
 	DBG(s, "Instruction: mvim\r\n");
-	s->pc++;
-	s->mem[RP_HL(s)] = s->mem[s->pc++];
+	WRITE_MEM(s, RP_HL(s), s->mem[s->pc + 1]);
 }
 
-/* Move register to register */
+/* Move register to register  - Affects: None */
 void instr_movrr(I8080_State *s) {
 	/* Dest */
 	uint8_t r1 = (s->mem[s->pc] & 0x38) >> 3;
 	/* Src */
-	uint8_t r2 = (s->mem[s->pc++] & 0x07);
+	uint8_t r2 = (s->mem[s->pc] & 0x07);
 	DBG(s, "Instruction: movrr\r\n");
-	s->regs[r1] = s->regs[r2];
+	WRITE_REG(s, r1, s->regs[r2]);
 }
 
-/* Move register to memory */
+/* Move register to memory  - Affects: None */
 void instr_movmr(I8080_State *s) {
-	uint8_t r = (s->mem[s->pc++] & 0x07);
+	uint8_t r = (s->mem[s->pc] & 0x07);
 	DBG(s, "Instruction: movmr\r\n");
-	s->mem[RP_HL(s)] = s->regs[r];
+	WRITE_MEM(s, RP_HL(s), s->regs[r]);
 }
 
-/* Move memory to register */
+/* Move memory to register  - Affects: None */
 void instr_movrm(I8080_State *s) {
-	uint8_t r = (s->mem[s->pc++] & 0x38) >> 3;
+	uint8_t r = (s->mem[s->pc] & 0x38) >> 3;
 	DBG(s, "Instruction: movrm\r\n");
-	s->regs[r] = s->mem[RP_HL(s)];
+	WRITE_REG(s, r, s->mem[RP_HL(s)]);
 }
 
-/* Load immediate register pair B, C */
+/* Load immediate register pair B, C  - Affects: None */
 void instr_lxib(I8080_State *s) {
 	DBG(s, "Instruction: lxib\r\n");
-	s->pc++;
-	s->regs[REG_C] = s->mem[s->pc++];
-	s->regs[REG_B] = s->mem[s->pc++];
+	WRITE_REG(s, REG_C, s->mem[s->pc + 1]);
+	WRITE_REG(s, REG_B, s->mem[s->pc + 2]);
 }
 
-/* Load immediate register pair D, E */
+/* Load immediate register pair D, E  - Affects: None */
 void instr_lxid(I8080_State *s) {
 	DBG(s, "Instruction: lxid\r\n");
-	s->pc++;
-	s->regs[REG_E] = s->mem[s->pc++];
-	s->regs[REG_D] = s->mem[s->pc++];
+	WRITE_REG(s, REG_E, s->mem[s->pc + 1]);
+	WRITE_REG(s, REG_D, s->mem[s->pc + 2]);
 }
 
-/* Load immediate register pair H, L */
+/* Load immediate register pair H, L  - Affects: None */
 void instr_lxih(I8080_State *s) {
 	DBG(s, "Instruction: lxih\r\n");
-	s->pc++;
-	s->regs[REG_L] = s->mem[s->pc++];
-	s->regs[REG_H] = s->mem[s->pc++];
+	WRITE_REG(s, REG_L, s->mem[s->pc + 1]);
+	WRITE_REG(s, REG_H, s->mem[s->pc + 2]);
 }
 
-/* Load immediate SP */
+/* Load immediate SP  - Affects: None */
 void instr_lxisp(I8080_State *s) {
 	DBG(s, "Instruction: lxisp\r\n");
-	s->pc++;
-	s->sp = s->mem[s->pc++];
-	s->sp |= s->mem[s->pc++] << 0x08;
+	uint16_t res = (s->mem[s->pc + 2] << 8) | s->mem[s->pc + 1];
+	WRITE_SP(s, res);
 }
 
-/* Store A indirect */
+/* Store A indirect - Affects: None */
 void instr_staxb(I8080_State *s) {
 	DBG(s, "Instruction: staxb\r\n");
-	s->pc++;
-	s->mem[(s->regs[REG_B] << 8) | s->regs[REG_C]] = s->regs[REG_A];
+	WRITE_MEM(s, RP_BC(s), s->regs[REG_A]);
 }
 
-/* Store A indirect */
+/* Store A indirect - Affects: None */
 void instr_staxd(I8080_State *s) {
 	DBG(s, "Instruction: staxd\r\n");
-	s->pc++;
-	s->mem[(s->regs[REG_D] << 8) | s->regs[REG_E]] = s->regs[REG_A];
+	WRITE_MEM(s, RP_DE(s), s->regs[REG_A]);
 }
 
-/* Load A indirect */
+/* Load A indirect - Affects: None */
 void instr_ldaxb(I8080_State *s) {
 	DBG(s, "Instruction: ldaxb\r\n");
-	s->pc++;
-	s->regs[REG_A] = s->mem[(s->regs[REG_B] << 8) | s->regs[REG_C]];
+	WRITE_REG(s, REG_A, s->mem[RP_BC(s)]);
 }
 
-/* Load A indirect */
+/* Load A indirect - Affects: None */
 void instr_ldaxd(I8080_State *s) {
 	DBG(s, "Instruction: ldaxd\r\n");
-	s->pc++;
-	s->regs[REG_A] = s->mem[(s->regs[REG_D] << 8) | s->regs[REG_E]];
+	WRITE_REG(s, REG_A, s->mem[RP_DE(s)]);
 }
 
-/* Store A direct */
+/* Store A direct - Affects: None */
 void instr_sta(I8080_State *s) {
-	uint16_t addr = s->mem[++s->pc];
+	uint16_t addr = s->mem[s->pc + 2] << 8 | s->mem[s->pc + 1];
 	DBG(s, "Instruction: sta\r\n");
-	addr |= s->mem[++s->pc] << 8;
-	s->pc++;
-	s->mem[addr] = s->regs[REG_A];
+	WRITE_MEM(s, addr, s->regs[REG_A]);
 }
 
-/* Load A direct */
+/* Load A direct - Affects: None */
 void instr_lda(I8080_State *s) {
-	uint16_t addr = s->mem[++s->pc];
+	uint16_t addr = s->mem[s->pc + 2] << 8 | s->mem[s->pc + 1];
 	DBG(s, "Instruction: lda\r\n");
-	addr |= s->mem[++s->pc] << 8;
-	s->pc++;
-	s->regs[REG_A] = s->mem[addr];
+	WRITE_REG(s, REG_A, s->mem[addr]);
 }
 
-/* Store H, L direct */
+/* Store H, L direct - Affects: None */
 void instr_shld(I8080_State *s) {
-	uint16_t addr = s->mem[++s->pc] | s->mem[++s->pc] << 8;
+	uint16_t addr = s->mem[s->pc + 2] << 8 | s->mem[s->pc + 1];
 	DBG(s, "Instruction: shld\r\n");
-	s->pc++;
-	s->mem[addr++] = s->regs[REG_L];
-	s->mem[addr] = s->regs[REG_H];
+	WRITE_MEM(s, addr, s->regs[REG_H]);
+	WRITE_MEM(s, addr + 1, s->regs[REG_L]);
 }
 
-/* Load H, L direct */
+/* Load H, L direct - Affects: None */
 void instr_lhld(I8080_State *s) {
-	uint16_t addr = s->mem[++s->pc] | s->mem[++s->pc] << 8;
+	uint16_t addr = s->mem[s->pc + 2] << 8 | s->mem[s->pc + 1];
 	DBG(s, "Instruction: lhld\r\n");
-	s->pc++;
-	s->regs[REG_L] = s->mem[addr++];
-	s->regs[REG_H] = s->mem[addr];
+	WRITE_REG(s, REG_L, s->mem[addr + 1]);
+	WRITE_REG(s, REG_H, s->mem[addr]);
 }
 
-/* Exchange D, E with H, L */
+/* Exchange D, E with H, L - Affects: None */
 void instr_xchg(I8080_State *s) {
 	uint8_t temp = s->regs[REG_D];
 	DBG(s, "Instruction: xchg\r\n");
-	s->regs[REG_D] = s->regs[REG_H];
-	s->regs[REG_H] = temp;
+	WRITE_REG(s, REG_D, s->regs[REG_H]);
+	WRITE_REG(s, REG_H, temp);
 	temp =  s->regs[REG_E];
-	s->regs[REG_E] = s->regs[REG_L];
-	s->regs[REG_L] = temp;
-	s->pc++;
+	WRITE_REG(s, REG_E, s->regs[REG_L]);
+	WRITE_REG(s, REG_L, temp);
 }
 

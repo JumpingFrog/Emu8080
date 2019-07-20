@@ -3,193 +3,172 @@
 
 /* And register with A - Affects: S Z A P C */
 void instr_anar(I8080_State *s) {
-	uint8_t r = s->regs[s->mem[s->pc++] & 0x03];
+	uint8_t r = s->regs[s->mem[s->pc] & 0x03];
 	DBG(s, "Instruction: anar\r\n");
 	/* N.B: The 8080 logical AND instructions set the 
 	flag to reflect the logical OR of bit 3 of the values 
 	involved in the AND operation. */
-	COND_FLAG((r | s->regs[REG_A]) & 0x03, s, FLG_A);
-	COND_FLAG(0, s, FLG_C);
-	s->regs[REG_A] &= r;
-	gen_pzs(s);
+	COND_FLAG(s, (r | s->regs[REG_A]) & 0x03, FLG_A);
+	COND_FLAG(s, 0, FLG_C);
+	WRITE_REG(s, REG_A, s->regs[REG_A] & r);
+	GEN_PZS(s, s->regs[REG_A]);
 }
 
 /* And memory with A - Affects: S Z A P C */
 void instr_anam(I8080_State *s) {
 	uint8_t r = s->mem[RP_HL(s)];
 	DBG(s, "Instruction: anam\r\n");
-	COND_FLAG((r | s->regs[REG_A]) & 0x03, s, FLG_A);
-	COND_FLAG(0, s, FLG_C);
-	s->regs[REG_A] &= r;
-	gen_pzs(s);
-	s->pc++;
+	COND_FLAG(s, (r | s->regs[REG_A]) & 0x03, FLG_A);
+	COND_FLAG(s, 0, FLG_C);
+	WRITE_REG(s, REG_A, s->regs[REG_A] & r);
+	GEN_PZS(s, s->regs[REG_A]);
 }
 
 /* And immediate with A - Affects: S Z A P C */
 void instr_ani(I8080_State *s) {
-	uint8_t r = s->mem[++s->pc];
+	uint8_t r = s->mem[s->pc + 1];
 	DBG(s, "Instruction: ani\r\n");
-	COND_FLAG((r | s->regs[REG_A]) & 0x03, s, FLG_A);
-	COND_FLAG(0, s, FLG_C);
-	s->regs[REG_A] &= r;
-	gen_pzs(s);
-	s->pc++;
+	COND_FLAG(s, (r | s->regs[REG_A]) & 0x03, FLG_A);
+	COND_FLAG(s, 0, FLG_C);
+	WRITE_REG(s, REG_A, s->regs[REG_A] & r);
+	GEN_PZS(s, s->regs[REG_A]);
 }
 
 /* Compare register with A - Affects: S Z A P C */
 void instr_cmpr(I8080_State *s) {
 	/* Two's complement */
-	uint8_t r = ~s->regs[s->mem[s->pc++] & 0x03] + 1;
-	uint8_t tmp = s->regs[REG_A];
-	uint16_t res = tmp + r;
+	uint8_t r = ~s->regs[s->mem[s->pc] & 0x03] + 1;
+	uint16_t res = s->regs[REG_A] + r;
 	DBG(s, "Instruction: cmpr\r\n");
-	s->regs[REG_A] = res;
 	/* Carry */
-	COND_FLAG(!(res & 0x100), s, FLG_C);
+	GEN_CY_SUB(s, res);
 	/* Aux Carry */
-	GEN_AC(tmp, r, s);
-	gen_pzs(s);
-	/* Restore value */
-	s->regs[REG_A] = tmp;
+	GEN_AC(s, s->regs[REG_A], r);
+	GEN_PZS(s, res);
 }
 
 /* Compare memory with A - Affects: S Z A P C */
 void instr_cmpm(I8080_State *s) {
 	/* Two's complement */
 	uint8_t r = ~s->mem[RP_HL(s)] + 1;
-	uint8_t tmp = s->regs[REG_A];
 	uint16_t res = s->regs[REG_A] + r;
 	DBG(s, "Instruction: cmpm\r\n");
-	s->regs[REG_A] = res;
 	/* Carry */
-	COND_FLAG(!(res & 0x100), s, FLG_C);
+	GEN_CY_SUB(S, res);
 	/* Aux Carry */
-	GEN_AC(tmp, r, s);
-	gen_pzs(s);
-	/* Restore value */
-	s->regs[REG_A] = tmp;
-	s->pc++;
+	GEN_AC(s, s->regs[REG_A], r);
+	GEN_PZS(s, res);
 }
 
 /* Compare immediate with A -  Affects: S Z A P C */
 void instr_cpi(I8080_State *s) {
 	/* Two's complement */
-	uint8_t r = ~s->mem[++s->pc] + 1;
+	uint8_t r = ~s->mem[s->pc + 1] + 1;
 	uint16_t res = s->regs[REG_A] + r;
-	uint8_t tmp = s->regs[REG_A];
 	DBG(s, "Instruction: cpi\r\n");
 	s->regs[REG_A] = res;
 	/* Carry */
-	COND_FLAG(!(res & 0x100), s, FLG_C);
+	GEN_CY_SUB(S, res);
 	/* Aux Carry */
-	GEN_AC(tmp, r, s);
-	gen_pzs(s);
-	/* Restore value */
-	s->regs[REG_A] = tmp;
-	s->pc++;
+	GEN_AC(s, s->regs[REG_A], r);
+	GEN_PZS(s, res);
 }
 
 /* Or register with A - Affects: S Z A P C */
 void instr_orar(I8080_State *s) {
+	uint8_t r =  s->regs[s->mem[s->pc] & 0x03];
 	DBG(s, "Instruction: orar\r\n");
-	s->regs[REG_A] |= s->regs[s->mem[s->pc++] & 0x03];
+	WRITE_REG(s, REG_A, s->regs[REG_A] | s->regs[r]);
 	/* Reset Carry and Aux Carry */
-	COND_FLAG(0, s, FLG_C);
-	COND_FLAG(0, s, FLG_A);
-	gen_pzs(s);
+	COND_FLAG(s, 0, FLG_C);
+	COND_FLAG(s, 0, FLG_A);
+	GEN_PZS(s,s->regs[REG_A]);
 }
 
 /* Or memory with A - Affects: S Z A P C */
 void instr_oram(I8080_State *s) {
 	DBG(s, "Instruction: oram\r\n");
-	s->regs[REG_A] |= s->mem[RP_HL(s)];
+	WRITE_REG(s, REG_A, s->regs[REG_A] | s->mem[RP_HL(s)]);
 	/* Reset Carry and Aux Carry */
-	COND_FLAG(0, s, FLG_C);
-	COND_FLAG(0, s, FLG_A);
-	gen_pzs(s);
-	s->pc++;
+	COND_FLAG(s, 0, FLG_C);
+	COND_FLAG(s, 0, FLG_A);
+	GEN_PZS(s, s->regs[REG_A]);
 }
 
 /* Or immediate with A - Affects: S Z A P C */
 void instr_ori(I8080_State *s) {
 	DBG(s, "Instruction: ori\r\n");
-	s->regs[REG_A] |= s->mem[++s->pc];
+	WRITE_REG(s, REG_A, s->regs[REG_A] | s->mem[s->pc + 1]);
 	/* Reset Carry and Aux Carry */
-	COND_FLAG(0, s, FLG_C);
-	COND_FLAG(0, s, FLG_A);
-	gen_pzs(s);
-	s->pc++;
+	COND_FLAG(s, 0, FLG_C);
+	COND_FLAG(s, 0, FLG_A);
+	GEN_PZS(s, s->regs[REG_A]);
 }
 
 /* Rotate A left through carry - Affects: C */
 void instr_ral(I8080_State *s) {
 	uint8_t res = s->regs[REG_A] << 1;
 	DBG(s, "Instruction: ral\r\n");
-	res |= FLAG(s, FLG_C);
-	COND_FLAG(s->regs[REG_A] & 0x80, s, FLG_C);
-	s->regs[REG_A] = res;
-	s->pc++;
+	res |= READ_FLAG(s, FLG_C);
+	GEN_CY(s, res);
+	WRITE_REG(s, REG_A, res);
 }
 
 /* Rotate A right through carry - Affects: C */
 void instr_rar(I8080_State *s) {
 	uint8_t res = s->regs[REG_A] >> 1;
 	DBG(s, "Instruction: rar\r\n");
-	res |= FLAG(s, FLG_C) << 7;
-	COND_FLAG(s->regs[REG_A] & 0x1, s, FLG_C);
-	s->regs[REG_A] = res;
-	s->pc++;
+	res |= READ_FLAG(s, FLG_C) << 7;
+	COND_FLAG(s, s->regs[REG_A] & 0x1, FLG_C);
+	WRITE_REG(s, REG_A, res);
 }
 
 /* Rotate A Left - Affects: C */
 void instr_rlc(I8080_State *s) {
 	uint8_t res = s->regs[REG_A] << 1;
 	DBG(s, "Instruction: rlc\r\n");
-	COND_FLAG(s->regs[REG_A] & 0x80, s, FLG_C);
-	res |= FLAG(s, FLG_C);
-	s->regs[REG_A] = res;
-	s->pc++;
+	res |= (s->regs[REG_A] & 0x80) >> 7;
+	GEN_CY(s, res);
+	WRITE_REG(s, REG_A, res);
 }
 
 /* Rotate A Right - Affects: C */
 void instr_rrc(I8080_State *s) {
 	uint8_t res = s->regs[REG_A] >> 1;
 	DBG(s, "Instruction: rrc\r\n");
-	COND_FLAG(s->regs[REG_A] & 0x1, s, FLG_C);
-	res |= FLAG(s, FLG_C) << 7;
-	s->regs[REG_A] = res;
-	s->pc++;
+	res |= (s->regs[REG_A] & 0x1) << 7;
+	COND_FLAG(s, s->regs[REG_A] & 0x1, FLG_C);
+	WRITE_REG(s, REG_A, res);
 }
 
 /* XOR register with A - Affects: S Z A P C */
 void instr_xrar(I8080_State *s) {
+	uint8_t r = s->mem[s->pc] & 0x03;
 	DBG(s, "Instruction: xrar\r\n");
-	s->regs[REG_A] ^= s->regs[s->mem[s->pc++] & 0x03];
+	WRITE_REG(s, REG_A, s->regs[REG_A] ^ s->regs[r]);
 	/* Reset Carry and Aux Carry */
-	COND_FLAG(0, s, FLG_C);
-	COND_FLAG(0, s, FLG_A);
-	gen_pzs(s);
+	COND_FLAG(s, 0, FLG_C);
+	COND_FLAG(s, 0, FLG_A);
+	GEN_PZS(s, s->regs[REG_A]);
 }
 
 /* XOR memory with A - Affects: S Z A P C */
 void instr_xram(I8080_State *s) {
 	DBG(s, "Instruction: xram\r\n");
-	s->regs[REG_A] ^= s->mem[RP_HL(s)];
+	WRITE_REG(s, REG_A, s->regs[REG_A] ^ s->mem[RP_HL(s)]);
 	/* Reset Carry and Aux Carry */
-	COND_FLAG(0, s, FLG_C);
-	COND_FLAG(0, s, FLG_A);
-	gen_pzs(s);
-	s->pc++;
+	COND_FLAG(s, 0, FLG_C);
+	COND_FLAG(s, 0, FLG_A);
+	GEN_PZS(s, s->regs[REG_A]);
 }
 
 /* XOR immediate with A -  Affects: S Z A P C */
 void instr_xri(I8080_State *s) {
 	DBG(s, "Instruction: xri\r\n");
-	s->regs[REG_A] ^= s->mem[++s->pc];
+	WRITE_REG(s, REG_A, s->regs[REG_A] ^ s->mem[s->pc + 1]);
 	/* Reset Carry and Aux Carry */
-	COND_FLAG(0, s, FLG_C);
-	COND_FLAG(0, s, FLG_A);
-	gen_pzs(s);
-	s->pc++;
+	COND_FLAG(s, 0, FLG_C);
+	COND_FLAG(s, 0, FLG_A);
+	GEN_PZS(s, s->regs[REG_A]);
 }
 

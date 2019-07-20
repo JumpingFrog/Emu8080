@@ -1,6 +1,11 @@
 #include <stdint.h>
 #include <stdio.h>
 
+/* Modification flags */
+#define MOD_REG(X)  (1 << X)
+#define MOD_FLAGS   (1 << 8)
+#define MOD_SP      (1 << 9)
+
 /* Macros for Register functionality */
 #define REG_A 7
 #define REG_B 0
@@ -11,7 +16,23 @@
 #define REG_L 5
 #define REG_M 6
 
-#define REG(S, X) (X==REG_M) ? (S->regs[REG_H] << 8) | S->regs[REG_L] : S->regs[X];
+#define READ_REG(S, X) (X==REG_M) ? ((S)->regs[REG_H] << 8) | (S)->regs[REG_L] : (S)->regs[X]
+
+#define WRITE_REG(S, X, V)  if (X==REG_M) {\
+                                (S)->regs[REG_H] = (V) >> 8;\
+                                (S)->regs[REG_L] = (V) & 0xff;\
+                            } \
+                            else {\
+                                (S)->regs[X] = (V) & 0xff;\
+                            }\
+                            (S)->reg_mod |= MOD_REG(X)
+
+#define WRITE_SP(S, V) (S)->sp = (V); (S)->reg_mod |= MOD_SP
+
+/* Macros for reading register pairs */
+#define RP_BC(S) (((S)->regs[REG_B] << 8) | (S)->regs[REG_C])
+#define RP_DE(S) (((S)->regs[REG_D] << 8) | (S)->regs[REG_E])
+#define RP_HL(S) (((S)->regs[REG_H] << 8) | (S)->regs[REG_L])
 
 /* Macros for flag functionality */
 #define FLG_C 0x01
@@ -20,17 +41,34 @@
 #define FLG_Z 0x40
 #define FLG_S 0x80
 
-#define FLAG(S, X) ((S->flags & X) ? 1 : 0)
+#define READ_FLAG(S, X) (((S)->flags & X) ? 1 : 0)
 
-/* Macros for register pairs */
-#define RP_BC(S) ((S->regs[REG_B] << 8) | S->regs[REG_C])
-#define RP_DE(S) ((S->regs[REG_D] << 8) | S->regs[REG_E])
-#define RP_HL(S) ((S->regs[REG_H] << 8) | S->regs[REG_L])
+/* Write entire flags register, maintaining RES0 and RES1 fields. */
+#define WRITE_FLAGS(S, V)   (S)->flags = V | 0x2;\
+                            (S)->flags &= 0xd7;\
+                            (S)->reg_mod |= MOD_FLAGS
 
 /* Macro to set a flag based on condition. Cleared if cond is false. */
-#define COND_FLAG(COND, S, F) if (COND) (S)->flags |= F; else (S)->flags &= ~F;
-#define GEN_CY(V, S) COND_FLAG((V) & 0x100, (S), FLG_C);
-#define GEN_AC(A, B, S) COND_FLAG(((A) & 0X0F) + ((B) & 0x0F) & 0x10, (S), FLG_A);
+#define COND_FLAG(S, COND, F)   if ((COND)) {\
+                                    (S)->flags |= F;\
+                                }\
+                                else {\
+                                    (S)->flags &= ~F;\
+                                }\
+                                (S)->reg_mod |= MOD_FLAGS
+
+#define GEN_CY(S, V) COND_FLAG(S, (V) & 0x100, FLG_C)
+/* Generate borrow */
+#define GEN_CY_SUB(S, V) COND_FLAG(s, !((V) & 0x100), FLG_C)
+#define GEN_AC(S, A, B) COND_FLAG(S, ((A) & 0x0F) + ((B) & 0x0F) & 0x10, FLG_A)
+#define GEN_Z(S, V) COND_FLAG(S, !(V), FLG_Z)
+#define GEN_S(S, V) COND_FLAG(S, (V) & 0x80, FLG_S)
+#define GEN_PZS(S, V) GEN_Z(S, V); GEN_S(S, V); gen_p(S, V)
+
+/* Macros for memory */
+
+#define READ_MEM(S, A) (S)->mem[A]
+#define WRITE_MEM(S, A, V) (S)->mem[A] = (V)
 
 /* Debug print macro */
 #define DBG_PRINT
@@ -64,6 +102,9 @@ typedef struct {
 	uint16_t sp;
 	/* Memory */
 	uint8_t mem[0xFFFF];
+	/* Modification vector, used for trace */
+	/* |SP (9)|flags (8)|REG_A (7)|REG_M (6)|REG_L (5)|REG_H (4)|REG_E (3)|REG_D (2)|REG_C (1)|REG_B (0)| */
+	uint16_t reg_mod;
 	/* IO Devices */
 	struct _IODevice *devices[256];
 	#ifdef TRACE_FILE
@@ -77,7 +118,7 @@ typedef struct {
 typedef uint8_t (*IO_in)(I8080_State *);
 typedef void (*IO_out)(I8080_State *);
 
-/* Typedef fdr IO Devices, implement in and out methods. */
+/* Typedef for IO Devices, implement in and out methods. */
 typedef struct _IODevice {
 	IO_in in;
 	IO_out out;
@@ -89,5 +130,5 @@ typedef void (*Instruction)(I8080_State *);
 /* Prototypes */
 void run_8080(I8080_State *);
 I8080_State *init_8080();
-void gen_pzs(I8080_State *);
+void gen_p(I8080_State *, uint8_t);
 void add_dev_8080(I8080_State *, uint8_t, IODevice *);
