@@ -36,25 +36,16 @@ start:
 	push d
 	pop psw
 	;All flags set.
-round1:
-	jnc end
-	nop
-	jnz end
-	nop
-	jp end
-	nop
-	jpo end
-	nop
 ;Test instruction decode - jumps
 j_a: jmp j_b
 j_b: jc j_c
-j_c: jnc j_d
+j_c: jnc end
 j_d: jz j_e
-j_e: jnz j_f
-j_f: jp j_g
+j_e: jnz end
+j_f: jp end
 j_g: jm j_h
 j_h: jpe j_i
-j_i: jpo j_j
+j_i: jpo end
 j_j:
 ;" - pchl
 lxi h, c_a
@@ -62,13 +53,13 @@ pchl
 ;" - calls
 c_a: call c_b
 c_b: cc c_c
-c_c: cnc c_d
+c_c: cnc end
 c_d: cz c_e
-c_e: cnz c_f
-c_f: cp c_g
+c_e: cnz end
+c_f: cp end
 c_g: cm c_h
 c_h: cpe c_i
-c_i: cpo c_j
+c_i: cpo end
 c_j:
 ;" - returns setup stack
 ;ret target

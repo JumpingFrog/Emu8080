@@ -70,6 +70,7 @@
 /* Macros for memory */
 #define READ_MEM(S, A) ((S)->mem[A])
 #define WRITE_MEM(S, A, V) ((S)->mem[A] = ((V) & 0xff))
+#define READ_OP(S) READ_MEM(S, (S)->pc)
 #define READ_IMM8(S) READ_MEM(S, (S)->pc + 1)
 #define READ_IMM16(S) ((READ_MEM(S, (S)->pc + 2) << 8) | READ_MEM(S, (S)->pc + 1))
 
@@ -78,7 +79,7 @@
 #define TRACE_FILE
 
 #ifdef TRACE_FILE
-	#define TRACE(S, V) fputs(V"\r\n", S->ftrace)
+	#define TRACE(S, V) fputs(V, S->ftrace)
 	#define TRACEF(S, ...) fprintf(S->ftrace, __VA_ARGS__)
 #else
 	#define TRACE(S, V) puts(V)
@@ -113,13 +114,13 @@ typedef struct {
 	#ifdef TRACE_FILE
 		FILE *ftrace;
 	#endif
-} I8080_State;
+} I8080State;
 
 /* Typedefs for IO device functionality.
 	Consider if passing state is neccesary...
  */
-typedef uint8_t (*IO_in)(I8080_State *);
-typedef void (*IO_out)(I8080_State *);
+typedef uint8_t (*IO_in)(I8080State *);
+typedef void (*IO_out)(I8080State *);
 
 /* Typedef for IO Devices, implement in and out methods. */
 typedef struct _IODevice {
@@ -127,11 +128,21 @@ typedef struct _IODevice {
 	IO_out out;
 } IODevice;
 
+typedef struct _MemoryChange {
+	uint16_t addr;
+	uint8_t value;
+} MemoryChange;
+
+typedef struct _MemoryChanges {
+	uint8_t count;
+	struct _MemoryChange changes[2];
+} MemoryChanges;
+
 /* Typedef for instructions */
-typedef void (*Instruction)(I8080_State *);
+typedef void (*Instruction)(I8080State *);
 
 /* Prototypes */
-void run_8080(I8080_State *);
-I8080_State *init_8080();
-void gen_p(I8080_State *, uint8_t);
-void add_dev_8080(I8080_State *, uint8_t, IODevice *);
+void run_8080(I8080State *);
+I8080State *init_8080();
+void gen_p(I8080State *, uint8_t);
+void add_dev_8080(I8080State *, uint8_t, IODevice *);

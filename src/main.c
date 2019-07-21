@@ -5,7 +5,7 @@
 
 int main(int argc, char * argv[]) {
 	FILE *fp;
-	I8080_State *r = init_8080();
+	I8080State *r = init_8080();
 	IODevice *serial = init_serial();
 	/* Add serial device to IO port 0x02. */
 	add_dev_8080(r, 0x02, serial);

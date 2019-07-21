@@ -17,19 +17,19 @@ static const char *instr_disas[] =
 	{
 		"nop", "lxi b, ", "stax b", "inx b",
 		"inr b", "dcr b", "mvi b, ", "rlc",
-		"nop", "dad b", "ldax b", "dcx b",
+		"*nop", "dad b", "ldax b", "dcx b",
 		"inr c", "dcr c", "mvi c, ", "rrc",
-		"nop", "lxi d, ", "stax d", "inx d",
+		"*nop", "lxi d, ", "stax d", "inx d",
 		"inr d", "dcr d", "mvi d, ", "ral",
-		"nop", "dad d", "ldax d", "dcx d",
+		"*nop", "dad d", "ldax d", "dcx d",
 		"inr e", "dcr e", "mvi e, ", "rar",
-		"nop", "lxi h, ", "shld ", "inx h",
+		"*nop", "lxi h, ", "shld ", "inx h",
 		"inr h", "dcr h", "mvi h, ", "daa",
-		"nop", "dad h", "lhld ", "dcx h",
+		"*nop", "dad h", "lhld ", "dcx h",
 		"inr l", "dcr l", "mvi l, ", " cma",
-		"nop", "lxi sp, ", "sta ", "inx sp",
+		"*nop", "lxi sp, ", "sta ", "inx sp",
 		"inr m", "dcr m", "mvi m, ", "stc",
-		"nop", "dad sp", "lda ", "dcx sp",
+		"*nop", "dad sp", "lda ", "dcx sp",
 		"inr a", "dcr a", "mvi a, ", "cmc",
 		"mov b, b", "mov b, c", "mov b, d", "mov b, e",
 		"mov b, h", "mov b, l", "mov b, m", "mov b, a",
@@ -65,20 +65,20 @@ static const char *instr_disas[] =
 		"cmp h", "cmp l", "cmp m", "cmp a",
 		"rnz", "pop b", "jnz ", "jmp ",
 		"cnz ", "push b", "adi ", "rst 0",
-		"rz", "ret", "jz ", "jmp ",
+		"rz", "ret", "jz ", "*jmp ",
 		"cz ", "call ", "aci ", "rst 1",
 		"rnc", "pop d", "jnc ", "out ",
 		"cnc ", "push d", "sui ", "rst 2",
-		"rc", "ret", "jc ", "in ",
-		"cc ", "call ", "sbi ", "rst 3",
+		"rc", "*ret", "jc ", "in ",
+		"cc ", "*call ", "sbi ", "rst 3",
 		"rpo", "pop h", "jpo ", "xthl",
 		"cpo ", "push h", "ani ", "rst 4",
 		"rpe", "pchl", "jpe ", "xchg",
-		"cpe ", "call ", "xri ", "rst 5",
+		"cpe ", "*call ", "xri ", "rst 5",
 		"rp", "pop psw", "jp ", "di",
 		"cp ", "push psw", "ori ", "rst 6",
 		"rm", "sphl", "jm ", "ei",
-		"cm ", "call ", "cpi ", "rst 7"
+		"cm ", "*call ", "cpi ", "rst 7"
 };
 
 /* Instruction decode table. */
@@ -96,7 +96,7 @@ static const Instruction instr_decode[] =
 		instr_inrr, instr_dcrr, instr_mvir, instr_daa, /*0x27*/
 		instr_nop, instr_dadh, instr_lhld, instr_dcxh, /*0x2B*/
 		instr_inrr, instr_dcrr, instr_mvir, instr_cma, /*0x2F*/
-		instr_nop, instr_lxisp, instr_sta, instr_inxs, /*0x33*/
+		instr_nop, instr_lxis, instr_sta, instr_inxs, /*0x33*/
 		instr_inrm, instr_dcrm, instr_mvim, instr_stc, /*0x37*/
 		instr_nop, instr_dads, instr_lda, instr_dcxs, /*0x3B*/
 		instr_inrr, instr_dcrr, instr_mvir, instr_cmc, /*0x3F*/
@@ -138,16 +138,16 @@ static const Instruction instr_decode[] =
 		instr_cz, instr_call, instr_aci, instr_rst, /*0xCF*/
 		instr_rnc, instr_popd, instr_jnc, instr_out, /*0xD3*/
 		instr_cnc, instr_pushd, instr_sui, instr_rst, /*0xD7*/
-		instr_rc, instr_nop, instr_jc, instr_in, /*0xDB*/
-		instr_cc, instr_nop, instr_sbi, instr_rst, /*0xDF*/
+		instr_rc, instr_ret, instr_jc, instr_in, /*0xDB*/
+		instr_cc, instr_call, instr_sbi, instr_rst, /*0xDF*/
 		instr_rpo, instr_poph, instr_jpo, instr_xthl, /*0xE3*/
 		instr_cpo, instr_pushh, instr_ani, instr_rst, /*0xE7*/
 		instr_rpe, instr_pchl, instr_jpe, instr_xchg, /*0xEB*/
-		instr_cpe, instr_nop, instr_xri, instr_rst, /*0xEF*/
+		instr_cpe, instr_call, instr_xri, instr_rst, /*0xEF*/
 		instr_rp, instr_popp, instr_jp, instr_di, /*0xF3*/
 		instr_cp, instr_pushp, instr_ori, instr_rst, /*0xF7*/
 		instr_rm, instr_sphl, instr_jm, instr_ei, /*0xFB*/
-		instr_cm, instr_nop, instr_cpi, instr_rst  /*0xFF*/
+		instr_cm, instr_call, instr_cpi, instr_rst  /*0xFF*/
 };
 
 static const uint8_t instr_length[] =
@@ -218,8 +218,8 @@ static const uint8_t instr_length[] =
 		3, 3, 2, 1  /*0xFF*/
 };
 
-I8080_State *init_8080() {
-	I8080_State * ret = malloc(sizeof(I8080_State));
+I8080State *init_8080() {
+	I8080State * ret = malloc(sizeof(I8080State));
 	ret->pc = 0x0000;
 	ret->flags = 0x02;
 	ret->sp = 0xFFFF;
@@ -232,7 +232,7 @@ I8080_State *init_8080() {
 }
 
 /* A LUT may be faster still. */
-inline void gen_p(I8080_State * s, uint8_t value) {
+inline void gen_p(I8080State * s, uint8_t value) {
 	/* Parity */
 	value ^= value >> 4;
 	value ^= value >> 2;
@@ -240,9 +240,9 @@ inline void gen_p(I8080_State * s, uint8_t value) {
 	COND_FLAG(s, value & 1, FLG_P);
 }
 
-void dbg_8080(I8080_State *s, uint16_t cur_pc) {
+void dbg_8080(I8080State *s, uint16_t cur_pc) {
 	uint8_t opcode = s->mem[cur_pc];
-	TRACE(s, "-------------------------------------------------");
+	TRACE(s, "-------------------------------------------------\n");
 	TRACEF(s, "Current PC: 0x%04x \t ", cur_pc);
 	switch (instr_length[opcode]) {
 		case 1:
@@ -302,11 +302,11 @@ void dbg_8080(I8080_State *s, uint16_t cur_pc) {
 	/* TODO: MEMORY WRITES */
 }
 
-void add_dev_8080(I8080_State *s, uint8_t addr, IODevice *dev) {
+void add_dev_8080(I8080State *s, uint8_t addr, IODevice *dev) {
 	s->devices[addr] = dev;
 }
 
-void run_8080(I8080_State *s) {
+void run_8080(I8080State *s) {
 	uint16_t cur_pc;
 	uint8_t opcode;
 	while (!s->hlt) {

@@ -3,11 +3,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-uint8_t in_serial(I8080_State *s) {
+uint8_t in_serial(I8080State *s) {
 	return getchar();
 }
 
-void out_serial(I8080_State *s) {
+void out_serial(I8080State *s) {
 	putchar(s->regs[REG_A]);
 	fflush(0);
 }
