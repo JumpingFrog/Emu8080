@@ -11,14 +11,17 @@ int main(int argc, char * argv[]) {
 	add_dev_8080(r, 0x02, serial);
 
 	/* Init stuff */
-	if ((fp = fopen("rom.bin", "rb"))) {
+	if(argc != 2) {
+		puts("Usage: emu <rom_file>");
+	}
+	else if ((fp = fopen(argv[1], "rb"))) {
 		printf("Read in %lu bytes from rom.bin\r\n", fread(r->mem, sizeof(uint8_t), 0xFFFF, fp));
 		fclose(fp);
 		/* Go */
 		run_8080(r);
 	}
 	else {
-		puts("No file; rom.bin. Exiting.");
+		printf("No file, %s, Exiting\n", argv[1]);
 	}
 
 	free(r);

@@ -1,7 +1,6 @@
 ; Tests for stack group instructions
 ; Assumes data group works and STC.
-.org 0
-
+.org 0x0
 test_b:
 	mvi b, 0xca
 	mvi c, 0xfe
@@ -33,7 +32,7 @@ test_p:
 	stc
 	pop psw
 	;expect a = 0xcd, flags = 0x02
-xthl:
+test_xthl:
 	push d
 	xthl
 	pop d
@@ -47,16 +46,19 @@ test_sp:
 	;expect sp = 0xf010
 	dcx sp
 	;expect sp = 0xf00f
-;Test instruction decode
+dec_push:
+	;Test instruction decode
 	push b
 	push d
 	push h
 	push psw
+dec_pop:
 	pop b
 	pop d
 	pop h
 	pop psw
+dec_misc:
 	xthl
 	sphl
-hlt
+	hlt
 

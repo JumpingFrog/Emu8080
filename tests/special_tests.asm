@@ -1,12 +1,14 @@
 ; Tests for special group instructions
-;Test instruction decode
-cma
-cmc
-stc
-in 10
-out 10
-ei
-di
-nop
-hlt
+.org 0x0
+start:
+	;Test instruction decode
+	cma
+	cmc
+	stc
+	in 10
+	out 10
+	ei
+	di
+	nop
+	hlt
 

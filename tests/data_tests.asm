@@ -1,8 +1,7 @@
 ; Tests for data group instructions
-.org 0
-
+.org 0x0
 ;test mvir
-mvir:
+group_mvir:
 	mvi a, 0x01
 	mvi b, 0x02
 	mvi c, 0x04
@@ -10,12 +9,12 @@ mvir:
 	mvi e, 0x10
 	mvi h, 0x0ff
 	mvi l, 0x0fe
-mvim:
+group_mvim:
 	mvi m, 0xbe
-movrm:
+group_movrm:
 	mov a, m
 	;expect a = 0xbe
-movrr:
+group_movrr:
 	mov a, a
 	mov b, a
 	mov c, a
@@ -78,11 +77,11 @@ movrr:
 	mov h, l
 	mov l, l
 	;expect all = 0xbc
-lxi:
+group_lxi:
 	lxi b, 0xdead
 	lxi d, 0xbeef
 	lxi h, 0xcafe
-stax:
+group_stax:
 	mvi a, 0xd0
 	stax b
 	mvi a, 0x0d
@@ -95,23 +94,23 @@ stax:
 	mov l, e
 	mov c, m
 	;expect c = 0x0d
-ldax:
+group_ldax:
 	lxi b, 0xbeef
 	lxi d, 0xdead
 	ldax d
 	;expect a = 0xd0
 	ldax b
 	;expect a= 0x0d
-sta:
+group_sta:
 	sta 0xd00d
 	mvi h, 0xd0
 	mvi l, 0x0d
 	mov b, m
 	;expect b = 0x0d
-lda:
+group_lda:
 	lda 0xfffe
 	;expect a = 0xbe
-shld:
+group_shld:
 	shld 0xabcd ;[0xabcd] = 0xd00d
 	mvi h, 0xab
 	mvi l, 0xcd
@@ -120,15 +119,16 @@ shld:
 	mvi l, 0xce
 	mov c, m
 	;expect c = 0xd0
-lhld:
+group_lhld:
 	lhld 0xabcd
 	;expect h,l = 0xd00d
-xchg:
+group_xchg:
 	lxi d, 0xcafe
 	mvi h, 0xbe
 	mvi l, 0xef
 	xchg
-;Test instruction decode - mvi
+	;Test instruction decode - mvi
+dec_mvi:
 	mvi a, 0
 	mvi b, 0
 	mvi c, 0
@@ -137,7 +137,8 @@ xchg:
 	mvi h, 0
 	mvi l, 0
 	mvi m, 0
-;" - mov
+dec_mov:
+	;" - mov
 	mov a, a
 	mov a, b
 	mov a, c
@@ -199,23 +200,31 @@ xchg:
 	mov m, e
 	mov m, h
 	mov m, l
-;" - lxi
+dec_lxi:
+	;" - lxi
 	lxi b, 0
 	lxi d, 0
 	lxi h, 0
 	lxi sp, 0
-;" - stax
+dec_stax:
+	;" - stax
 	stax b
 	stax d
-;" - ldax
+dec_ldax:
+	;" - ldax
 	ldax b
 	ldax d
-;" - sta, lda
+dec_sta:
+	;" - sta, lda
 	sta 0
 	lda 0
-;" - shld, lhld
+dec_shld:
+	;" - shld
 	shld 0
+dec_lhld:
+	;" - lhld
 	lhld 0
-;" - xchg
+dec_xchg:
+	;" - xchg
 	xchg
-hlt
+	hlt
