@@ -1,4 +1,4 @@
-# Emulator Binary
+# Emulator binary
 CC = clang
 CFLAGS = -Wall -Wextra -Wpedantic -O0 -Isrc/include
 
@@ -10,7 +10,7 @@ EMU_OBJ += src/devices/serial.o
 
 EXECNAME=emu
 
-# Test roms
+# Test binaries
 AS = zasm
 ASFLAGS = --asm8080 -uwy
 

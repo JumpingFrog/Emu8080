@@ -144,7 +144,7 @@ void instr_inrr(I8080State *s) {
 	COND_FLAG(s, (s->regs[r] & 0x0F) == 0x0F, FLG_A);
 	/* Update result */
 	WRITE_REG(s, r, s->regs[r] + 1);
-	GEN_PZS(s, s->regs[REG_A]);
+	GEN_PZS(s, s->regs[r]);
 }
 
 /* Increment memory - Affects: S Z A P */
@@ -154,7 +154,7 @@ void instr_inrm(I8080State *s) {
 	COND_FLAG(s, (READ_MEM(s, RP_HL(s)) & 0x0F) == 0x0F, FLG_A);
 	/* Update result */
 	WRITE_MEM(s, RP_HL(s), READ_MEM(s, RP_HL(s) + 1));
-	GEN_PZS(s, s->regs[REG_A]);
+	GEN_PZS(s, READ_MEM(s, RP_HL(s)));
 }
 
 /* Decrement register - Affects: S Z A P */
@@ -165,7 +165,7 @@ void instr_dcrr(I8080State *s) {
 	COND_FLAG(s, s->regs[r] & 0x0F, FLG_A);
 	/* Update result */
 	WRITE_REG(s, r, s->regs[r] - 1);
-	GEN_PZS(s, s->regs[REG_A]);
+	GEN_PZS(s, s->regs[r]);
 }
 
 /* Decrement memory - Affects: S Z A P */
@@ -175,7 +175,7 @@ void instr_dcrm(I8080State *s) {
 	COND_FLAG(s, READ_MEM(s, RP_HL(s)) & 0x0F, FLG_A);
 	/* Update result */
 	WRITE_MEM(s, RP_HL(s), READ_MEM(s, RP_HL(s)) - 1);
-	GEN_PZS(s, s->regs[REG_A]);
+	GEN_PZS(s, READ_MEM(s, RP_HL(s)));
 }
 
 /* Increment register pair - Affects: None */

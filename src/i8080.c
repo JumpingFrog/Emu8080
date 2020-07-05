@@ -330,7 +330,7 @@ void run_8080(I8080State *s) {
 		opcode = s->mem[cur_pc];
 		/* Execute current opcode */
 		(*instr_decode[opcode])(s);
-		/* If the instr didn't modify the PC, move on to next instruction. */
+
 		dbg_8080(s, cur_pc);
 		/* Run device tick functions */
 		for (cur_node = iter_start_llist(s->devices); cur_node; cur_node = iter_next_llist(s->devices)) {
@@ -339,6 +339,7 @@ void run_8080(I8080State *s) {
 				(*cur_dev->tick)(s);
 			}
 		}
+		/* If the instr didn't modify the PC, move on to next instruction. */
 		if (!(s->reg_mod & MOD_PC)) {
 			s->pc += instr_length[opcode];
 		}

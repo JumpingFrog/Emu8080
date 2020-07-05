@@ -44,7 +44,7 @@ void instr_cmpr(I8080State *s) {
 	GEN_CY_SUB(s, res);
 	/* Aux Carry */
 	GEN_AC(s, s->regs[REG_A], operand);
-	GEN_PZS(s, res);
+	GEN_PZS(s, res & 0xFF);
 }
 
 /* Compare memory with A - Affects: S Z A P C */
@@ -57,7 +57,7 @@ void instr_cmpm(I8080State *s) {
 	GEN_CY_SUB(S, res);
 	/* Aux Carry */
 	GEN_AC(s, s->regs[REG_A], operand);
-	GEN_PZS(s, res);
+	GEN_PZS(s, res & 0xFF);
 }
 
 /* Compare immediate with A -  Affects: S Z A P C */
@@ -66,12 +66,11 @@ void instr_cpi(I8080State *s) {
 	uint8_t operand = ~READ_IMM8(s) + 1;
 	uint16_t res = s->regs[REG_A] + operand;
 	DBG(s, "Instruction: cpi\n");
-	s->regs[REG_A] = res;
 	/* Carry */
 	GEN_CY_SUB(S, res);
 	/* Aux Carry */
 	GEN_AC(s, s->regs[REG_A], operand);
-	GEN_PZS(s, res);
+	GEN_PZS(s, res & 0xFF);
 }
 
 /* Or register with A - Affects: S Z A P C */
@@ -82,7 +81,7 @@ void instr_orar(I8080State *s) {
 	/* Reset Carry and Aux Carry */
 	COND_FLAG(s, 0, FLG_C);
 	COND_FLAG(s, 0, FLG_A);
-	GEN_PZS(s,s->regs[REG_A]);
+	GEN_PZS(s, s->regs[REG_A]);
 }
 
 /* Or memory with A - Affects: S Z A P C */
