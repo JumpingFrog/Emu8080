@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include <stdio.h>
+#include <util.h>
 
 /* Modification flags */
 #define MOD_REG(X)  (1 << X)
@@ -110,7 +111,9 @@ typedef struct {
 	/* |PC (10|SP (9)|flags (8)|REG_A (7)|REG_M (6)|REG_L (5)|REG_H (4)|REG_E (3)|REG_D (2)|REG_C (1)|REG_B (0)| */
 	uint16_t reg_mod;
 	/* IO Devices */
-	struct _IODevice *devices[256];
+	struct _IODevice *dev_map[256];
+	/* Linked list of device tick functions */
+	LList *devices;
 	#ifdef TRACE_FILE
 		FILE *ftrace;
 	#endif
@@ -121,11 +124,13 @@ typedef struct {
  */
 typedef uint8_t (*IO_in)(I8080State *);
 typedef void (*IO_out)(I8080State *);
+typedef void (*IO_tick)(I8080State *);
 
-/* Typedef for IO Devices, implement in and out methods. */
+/* Typedef for IO Devices, implement in, out and tick methods. */
 typedef struct _IODevice {
 	IO_in in;
 	IO_out out;
+	IO_tick tick;
 } IODevice;
 
 typedef struct _MemoryChange {
@@ -146,3 +151,4 @@ void run_8080(I8080State *);
 I8080State *init_8080();
 void gen_p(I8080State *, uint8_t);
 void add_dev_8080(I8080State *, uint8_t, IODevice *);
+void rm_dev_8080(I8080State *, uint8_t);

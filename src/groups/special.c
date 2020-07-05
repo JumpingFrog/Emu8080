@@ -23,16 +23,16 @@ void instr_stc(I8080State *s) {
 void instr_in(I8080State *s) {
 	uint8_t p = s->mem[s->pc + 1];
 	DBG(s, "Instruction: in\n");
-	if (s->devices[p]) {
-		WRITE_REG(s, REG_A, (*s->devices[p]->in)(s));
+	if (s->dev_map[p]) {
+		WRITE_REG(s, REG_A, (*s->dev_map[p]->in)(s));
 	}
 }
 
 void instr_out(I8080State *s) {
 	uint8_t p = s->mem[s->pc + 1];
 	DBG(s, "Instruction: out\n");
-	if (s->devices[p]) {
-		(*s->devices[p]->out)(s);
+	if (s->dev_map[p]) {
+		(*s->dev_map[p]->out)(s);
 	}
 }
 

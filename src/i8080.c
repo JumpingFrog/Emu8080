@@ -219,12 +219,13 @@ static const uint8_t instr_length[] =
 };
 
 I8080State *init_8080() {
-	I8080State * ret = malloc(sizeof(I8080State));
+	I8080State *ret = malloc(sizeof(I8080State));
 	ret->pc = 0x0000;
 	ret->flags = 0x02;
 	ret->sp = 0xFFFF;
 	ret->hlt = 0;
 	ret->reg_mod = 0;
+	ret->devices = init_llist();
 	#ifdef TRACE_FILE
 		ret->ftrace = fopen("trace.log", "w+");
 	#endif
@@ -302,13 +303,25 @@ void dbg_8080(I8080State *s, uint16_t cur_pc) {
 	/* TODO: MEMORY WRITES */
 }
 
-void add_dev_8080(I8080State *s, uint8_t addr, IODevice *dev) {
-	s->devices[addr] = dev;
+void add_dev_8080(I8080State *s, uint8_t port, IODevice *dev) {
+	s->dev_map[port] = dev;
+	/* We also build a linked list of devices, this lets us scan tick functions fast */
+	append_llist(s->devices, (void *)dev);
+}
+
+void rm_dev_8080(I8080State *s, uint8_t port) {
+	/* Remove a device from the given port */
+	if(s->dev_map[port]) {
+		remove_llist(s->devices, (void *)s->dev_map[port]);
+		s->dev_map[port] = NULL;
+	}
 }
 
 void run_8080(I8080State *s) {
 	uint16_t cur_pc;
 	uint8_t opcode;
+	IODevice *cur_dev;
+	LNode *cur_node;
 	while (!s->hlt) {
 		/* Clear mod vector */
 		s->reg_mod = 0;
@@ -319,6 +332,13 @@ void run_8080(I8080State *s) {
 		(*instr_decode[opcode])(s);
 		/* If the instr didn't modify the PC, move on to next instruction. */
 		dbg_8080(s, cur_pc);
+		/* Run device tick functions */
+		for (cur_node = iter_start_llist(s->devices); cur_node; cur_node = iter_next_llist(s->devices)) {
+			cur_dev = (IODevice *)cur_node->data;
+			if(cur_dev->tick) {
+				(*cur_dev->tick)(s);
+			}
+		}
 		if (!(s->reg_mod & MOD_PC)) {
 			s->pc += instr_length[opcode];
 		}

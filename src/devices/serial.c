@@ -14,8 +14,9 @@ void out_serial(I8080State *s) {
 
 IODevice *init_serial(void) {
 	/* TODO: Settings here */
-	IODevice *result = malloc(sizeof(IODevice));
-	result->in = in_serial;
-	result->out = out_serial;
-	return result;
+	IODevice *ret = malloc(sizeof(IODevice));
+	ret->in = in_serial;
+	ret->out = out_serial;
+	ret->tick = NULL;
+	return ret;
 }
