@@ -3,7 +3,7 @@
 
 /* And register with A - Affects: S Z A P C */
 void instr_anar(I8080State *s) {
-	uint8_t operand = s->regs[READ_OP(s) & 0x03];
+	uint8_t operand = s->regs[s->opcode & 0x03];
 	DBG(s, "Instruction: anar\n");
 	/* N.B: The 8080 logical AND instructions set the 
 	flag to reflect the logical OR of bit 3 of the values 
@@ -37,7 +37,7 @@ void instr_ani(I8080State *s) {
 /* Compare register with A - Affects: S Z A P C */
 void instr_cmpr(I8080State *s) {
 	/* Two's complement */
-	uint8_t operand = ~s->regs[READ_OP(s) & 0x03] + 1;
+	uint8_t operand = ~s->regs[s->opcode & 0x03] + 1;
 	uint16_t res = s->regs[REG_A] + operand;
 	DBG(s, "Instruction: cmpr\n");
 	/* Carry */
@@ -75,7 +75,7 @@ void instr_cpi(I8080State *s) {
 
 /* Or register with A - Affects: S Z A P C */
 void instr_orar(I8080State *s) {
-	uint8_t operand = s->regs[READ_OP(s) & 0x03];
+	uint8_t operand = s->regs[s->opcode & 0x03];
 	DBG(s, "Instruction: orar\n");
 	WRITE_REG(s, REG_A, s->regs[REG_A] | operand);
 	/* Reset Carry and Aux Carry */
@@ -142,7 +142,7 @@ void instr_rrc(I8080State *s) {
 
 /* XOR register with A - Affects: S Z A P C */
 void instr_xrar(I8080State *s) {
-	uint8_t operand = s->regs[READ_OP(s) & 0x03];
+	uint8_t operand = s->regs[s->opcode & 0x03];
 	DBG(s, "Instruction: xrar\n");
 	WRITE_REG(s, REG_A, s->regs[REG_A] ^ operand);
 	/* Reset Carry and Aux Carry */

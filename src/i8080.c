@@ -221,6 +221,8 @@ static const uint8_t instr_length[] =
 I8080State *init_8080() {
 	I8080State *ret = malloc(sizeof(I8080State));
 	ret->pc = 0x0000;
+	ret->int_ff = 1;
+	ret->int_pend = 0;
 	ret->flags = 0x02;
 	ret->sp = 0xFFFF;
 	ret->hlt = 0;
@@ -242,19 +244,18 @@ inline void gen_p(I8080State * s, uint8_t value) {
 }
 
 void dbg_8080(I8080State *s, uint16_t cur_pc) {
-	uint8_t opcode = s->mem[cur_pc];
 	TRACE(s, "-------------------------------------------------\n");
 	TRACEF(s, "Current PC: 0x%04x \t ", cur_pc);
-	switch (instr_length[opcode]) {
+	switch (instr_length[s->opcode]) {
 		case 1:
-			TRACEF(s, "OP: %s\n", instr_disas[opcode]);
+			TRACEF(s, "OP: %s\n", instr_disas[s->opcode]);
 			break;
 		case 2:
-			TRACEF(s, "OP: %s0x%02x\n", instr_disas[opcode], s->mem[cur_pc + 1]);
+			TRACEF(s, "OP: %s0x%02x\n", instr_disas[s->opcode], s->mem[cur_pc + 1]);
 			break;
 		case 3:
 			/* N.B. LE */
-			TRACEF(s, "OP: %s0x%02x%02x\n", instr_disas[opcode], s->mem[cur_pc + 2], s->mem[cur_pc + 1]);
+			TRACEF(s, "OP: %s0x%02x%02x\n", instr_disas[s->opcode], s->mem[cur_pc + 2], s->mem[cur_pc + 1]);
 			break;
 		default:
 			/* This should never happen... */
@@ -317,9 +318,14 @@ void rm_dev_8080(I8080State *s, uint8_t port) {
 	}
 }
 
+void irq_8080(I8080State *s, uint8_t vector) {
+  DBG(s, "Interrupt generated, vector %d\n", vector);
+  s->int_pend = 1;
+  s->int_vec = vector;
+}
+
 void run_8080(I8080State *s) {
 	uint16_t cur_pc;
-	uint8_t opcode;
 	IODevice *cur_dev;
 	LNode *cur_node;
 	while (!s->hlt) {
@@ -327,10 +333,19 @@ void run_8080(I8080State *s) {
 		s->reg_mod = 0;
 		/* Cache PC */
 		cur_pc = s->pc;
-		opcode = s->mem[cur_pc];
+		s->opcode = s->mem[cur_pc];
+		/* Handle any pending interrupts */
+		if (s->int_pend && s->int_ff) {
+			s->int_pend = 0;
+			/* Entering an ISR automatically disables interrupts */
+			s->int_ff = 0;
+			/* Override opcode with reset vector */
+			s->opcode = 0xC7 | (s->int_vec << 3);
+			/* RST stacks PC + 1, so - 1 from the PC */
+			s->pc -= 1;
+		}
 		/* Execute current opcode */
-		(*instr_decode[opcode])(s);
-
+		(*instr_decode[s->opcode])(s);
 		dbg_8080(s, cur_pc);
 		/* Run device tick functions */
 		for (cur_node = iter_start_llist(s->devices); cur_node; cur_node = iter_next_llist(s->devices)) {
@@ -341,7 +356,7 @@ void run_8080(I8080State *s) {
 		}
 		/* If the instr didn't modify the PC, move on to next instruction. */
 		if (!(s->reg_mod & MOD_PC)) {
-			s->pc += instr_length[opcode];
+			s->pc += instr_length[s->opcode];
 		}
 	}
 	#ifdef TRACE_FILE

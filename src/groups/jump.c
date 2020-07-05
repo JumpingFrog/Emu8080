@@ -191,7 +191,7 @@ void instr_rpo(I8080State *s) {
 
 /* RESET */
 void instr_rst(I8080State *s) {
-	uint8_t vector = READ_OP(s) & 0x38;
+	uint8_t vector = s->opcode & 0x38;
 	DBG(s, "Instruction: rst\n");
 	WRITE_MEM(s, s->sp - 1, (s->pc + 1) >> 8);
 	WRITE_MEM(s, s->sp - 2, s->pc + 1);

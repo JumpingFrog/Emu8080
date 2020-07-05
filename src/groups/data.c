@@ -3,7 +3,7 @@
 
 /* Move Immediate Register - Affects: None */
 void instr_mvir(I8080State *s) {
-	uint8_t r = (READ_OP(s) & 0x38) >> 3;
+	uint8_t r = (s->opcode & 0x38) >> 3;
 	DBG(s, "Instruction: mvir\n");
 	WRITE_REG(s, r, READ_IMM8(s));
 }
@@ -17,23 +17,23 @@ void instr_mvim(I8080State *s) {
 /* Move register to register  - Affects: None */
 void instr_movrr(I8080State *s) {
 	/* Dest */
-	uint8_t r1 = (READ_OP(s) & 0x38) >> 3;
+	uint8_t r1 = (s->opcode & 0x38) >> 3;
 	/* Src */
-	uint8_t r2 = (READ_OP(s) & 0x07);
+	uint8_t r2 = (s->opcode & 0x07);
 	DBG(s, "Instruction: movrr\n");
 	WRITE_REG(s, r1, s->regs[r2]);
 }
 
 /* Move register to memory  - Affects: None */
 void instr_movmr(I8080State *s) {
-	uint8_t r = (READ_OP(s) & 0x07);
+	uint8_t r = (s->opcode & 0x07);
 	DBG(s, "Instruction: movmr\n");
 	WRITE_MEM(s, RP_HL(s), s->regs[r]);
 }
 
 /* Move memory to register  - Affects: None */
 void instr_movrm(I8080State *s) {
-	uint8_t r = (READ_OP(s) & 0x38) >> 3;
+	uint8_t r = (s->opcode & 0x38) >> 3;
 	DBG(s, "Instruction: movrm\n");
 	WRITE_REG(s, r, READ_MEM(s, RP_HL(s)));
 }

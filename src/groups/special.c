@@ -36,13 +36,16 @@ void instr_out(I8080State *s) {
 	}
 }
 
-/* Interrupt just NOPs */
+/* Enable interrupts */
 void instr_ei(I8080State *s) {
 	DBG(s, "Instruction: ei\n");
+	s->int_ff = 1;
 }
 
+/* Disable interrupts */
 void instr_di(I8080State *s) {
 	DBG(s, "Instruction: di\n");
+	s->int_ff = 0;
 }
 
 /* No operation */

@@ -3,7 +3,7 @@
 
 /* Add register to A - Affects: S Z A P C */
 void instr_addr(I8080State *s) {
-	uint8_t operand = s->regs[READ_OP(s) & 0x07];
+	uint8_t operand = s->regs[s->opcode & 0x07];
 	uint16_t res = s->regs[REG_A] + operand;
 	DBG(s, "Instruction: addr\n");
 	/* Carry */
@@ -64,7 +64,7 @@ void instr_adcm(I8080State *s) {
 
 /* Add register to A with carry - Affects: S Z A P C */
 void instr_adcr(I8080State *s) {
-	uint16_t operand = s->regs[READ_OP(s) & 0x07] + READ_FLAG(s, FLG_C);
+	uint16_t operand = s->regs[s->opcode & 0x07] + READ_FLAG(s, FLG_C);
 	uint16_t res = s->regs[REG_A] + operand;
 	DBG(s, "Instruction: adcr\n");
 	/* Carry */
@@ -138,7 +138,7 @@ void instr_dads(I8080State *s) {
 
 /* Increment register - Affects: S Z A P */
 void instr_inrr(I8080State *s) {
-	uint8_t r = (READ_OP(s) & 0x38) >> 3;
+	uint8_t r = (s->opcode & 0x38) >> 3;
 	DBG(s, "Instruction: inrr\n");
 	/* Aux Carry */
 	COND_FLAG(s, (s->regs[r] & 0x0F) == 0x0F, FLG_A);
@@ -159,7 +159,7 @@ void instr_inrm(I8080State *s) {
 
 /* Decrement register - Affects: S Z A P */
 void instr_dcrr(I8080State *s) {
-	uint8_t r = (READ_OP(s) & 0x38) >> 3;
+	uint8_t r = (s->opcode & 0x38) >> 3;
 	DBG(s, "Instruction: dcrr\n");
 	/* Aux Carry - Could do with verifying this on a real chip. */
 	COND_FLAG(s, s->regs[r] & 0x0F, FLG_A);
@@ -241,7 +241,7 @@ void instr_dcxs(I8080State *s) {
 /* Subtract register from A - Affects: S Z A P C */
 void instr_subr(I8080State *s) {
 	/* Two's complement */
-	uint8_t operand = ~s->regs[READ_OP(s) & 0x07] + 1;
+	uint8_t operand = ~s->regs[s->opcode & 0x07] + 1;
 	uint16_t res = s->regs[REG_A] + operand;
 	DBG(s, "Instruction: subr\n");
 	/* Carry */
@@ -286,7 +286,7 @@ void instr_sui(I8080State *s) {
 /* Subtract register from A with borrow - Affects: S Z A P C */
 void instr_sbbr(I8080State *s) {
 	/* Two's complement */
-	uint8_t operand = ~(s->regs[READ_OP(s) & 0x07] + READ_FLAG(s, FLG_C)) + 1;
+	uint8_t operand = ~(s->regs[s->opcode & 0x07] + READ_FLAG(s, FLG_C)) + 1;
 	uint16_t res = s->regs[REG_A] + operand;
 	DBG(s, "Instruction: sbbr\n");
 	/* Carry */

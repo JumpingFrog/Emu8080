@@ -1,3 +1,6 @@
+#ifndef I8080_H
+#define I8080_H
+
 #include <stdint.h>
 #include <stdio.h>
 #include <util.h>
@@ -71,7 +74,6 @@
 /* Macros for memory */
 #define READ_MEM(S, A) ((S)->mem[A])
 #define WRITE_MEM(S, A, V) ((S)->mem[A] = ((V) & 0xff))
-#define READ_OP(S) READ_MEM(S, (S)->pc)
 #define READ_IMM8(S) READ_MEM(S, (S)->pc + 1)
 #define READ_IMM16(S) ((READ_MEM(S, (S)->pc + 2) << 8) | READ_MEM(S, (S)->pc + 1))
 
@@ -97,10 +99,18 @@
 typedef struct {
 	/* Halt flag */
 	uint8_t hlt;
+	/* Interrupt flip-flop */
+	uint8_t int_ff;
+	/* Interrupt pending */
+	uint8_t int_pend;
+	/* Interrupt vector */
+	uint8_t int_vec;
 	/* Registers */
 	uint8_t regs[8];
 	/* Program Counter */
 	uint16_t pc;
+	/* Current opcode, required for IRQ functionality */
+	uint8_t opcode;
 	/* Flags Register */
 	uint8_t flags;
 	/* Stack Pointer */
@@ -152,3 +162,5 @@ I8080State *init_8080();
 void gen_p(I8080State *, uint8_t);
 void add_dev_8080(I8080State *, uint8_t, IODevice *);
 void rm_dev_8080(I8080State *, uint8_t);
+void irq_8080(I8080State *, uint8_t);
+#endif
